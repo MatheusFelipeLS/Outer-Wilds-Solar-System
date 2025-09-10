@@ -69,26 +69,50 @@ static GLfloat
         rotation_dark_bramble = 0.0,
         rotation_interloper = 0.0;
 
+static GLdouble x = 0.0, y = 0.0, z = 30.0;
+
 void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
-    glShadeModel (GL_FLAT);
+    glShadeModel (GL_SMOOTH);
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void display(void) {
-    glClear (GL_COLOR_BUFFER_BIT);
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glColor3f (1.0, 1.0, 1.0);
 
-    glPushMatrix(); // Sol
-    glutWireSphere(2.0, 20, 16);   
-    glRotatef ((GLfloat) rotation_sun, 0.0, 1.0, 0.0);
+    GLfloat light_pos[] = {0.0f, 0.0f, 0.0f, 1.0f};
+    GLfloat light_color[] = {1.0f, 1.0f, 1.0f, 1.0f};
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_color);
+
+    // material emissivo (faz a esfera "brilhar")
+    GLfloat emission[] = {1.0f, 1.0f, 0.0f, 1.0f}; // amarelo
+    glMaterialfv(GL_FRONT, GL_EMISSION, emission);
+
+    glPushMatrix();
+        glutSolidSphere(2.0, 20, 16);
     glPopMatrix();
+
+    // reseta para não deixar os outros objetos brilharem também
+    GLfloat no_emission[] = {0.0f, 0.0f, 0.0f, 1.0f};
+    glMaterialfv(GL_FRONT, GL_EMISSION, no_emission);
+    
 
     glPushMatrix(); // recanto lenhoso
     glRotatef ((GLfloat) translation_timber_hearth, 0.0, 1.0, 0.0);
     distance += 6.0f;
     glTranslatef (distance, 0.0, 0.0);
     glRotatef ((GLfloat) rotation_timber_hearth, 0.0, 1.0, 0.0);
-    glutWireSphere(0.2, 10, 8);    
+    glutSolidSphere(0.2, 10, 8);    
     glPopMatrix();
 
     glPushMatrix(); // vale incerto
@@ -96,7 +120,7 @@ void display(void) {
     distance += 2.0f;
     glTranslatef (distance, 0.0, 0.0);
     glRotatef ((GLfloat) rotation_brittle_hollow, 0.0, 1.0, 0.0);
-    glutWireSphere(0.2, 10, 8);    
+    glutSolidSphere(0.2, 10, 8);    
     glPopMatrix();
     
     glPushMatrix(); // profundezas do gigante
@@ -104,7 +128,7 @@ void display(void) {
     distance += 4.0f;
     glTranslatef (distance, 0.0, 0.0);
     glRotatef ((GLfloat) rotation_giants_deep, 0.0, 1.0, 0.0);
-    glutWireSphere(1.0, 10, 8);    
+    glutSolidSphere(1.0, 10, 8);    
     glPopMatrix();
     
     glPushMatrix(); // abrolho sinistro 
@@ -112,17 +136,16 @@ void display(void) {
     distance += 4.0f;
     glTranslatef (distance, 0.0, 0.0);
     glRotatef ((GLfloat) rotation_dark_bramble, 0.0, 1.0, 0.0);
-    glutWireSphere(0.9, 10, 8);    
+    glutSolidSphere(0.9, 10, 8);    
     glPopMatrix();
 
     // o xereta se movimenta numa elipse, eu acho. Talvez uma curva de bezier seja melhor para ele
     glPushMatrix(); // xereta 
     glRotatef ((GLfloat) translation_interloper, 0.0, 0.0, 1.0);
-    distance += 2.0f;
-    printf("%f\n", distance);
+    distance += 1.0f;
     glTranslatef (distance, 0.0, 0.0);
     glRotatef ((GLfloat) rotation_interloper, 0.0, 1.0, 0.0);
-    glutWireSphere(0.9, 10, 8);    
+    glutSolidSphere(0.9, 10, 8);    
     glPopMatrix();
 
     distance = 0.0f; // toda vez que chamar essa função, a distância aumentaria, o que não faz sentido
@@ -141,7 +164,18 @@ void reshape (int w, int h) {
 }
 
 void keyboard (unsigned char key, int x, int y) {
+    printf("%c\n",key);
     switch (key){
+        case 'z':
+            z -= 0.5;
+            printf("a\n");
+            glutPostRedisplay();
+            break;
+        case 'Z':
+            z += 0.5;
+            printf("b\n");
+            glutPostRedisplay();
+            break;
         case 27:
             exit(0);
             break;
@@ -149,7 +183,7 @@ void keyboard (unsigned char key, int x, int y) {
             break;
     }
 
-    glutPostRedisplay();
+    
 }
 
 void idle(void) {
@@ -172,7 +206,7 @@ void idle(void) {
     int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
+    glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize (500, 500); 
     glutInitWindowPosition (100, 100);
     glutCreateWindow (argv[0]);

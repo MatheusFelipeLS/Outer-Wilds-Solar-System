@@ -44,37 +44,30 @@
 */
 #include <GL/glut.h>
 #include <stdlib.h>
+#include <iostream>
 
-int animating = 0;    
-int forward = 1;      
-float t = 0.0f;
-float dt = 0.0001f;
-
-float ctrlPoints[][3] ={
-    {0.0, 3.0, -6.}, // ponto inicial
-    {6.0, 2.5, 0.}, // arrasta a curva para direita
-    {0.0, 2.0, 5.}, // arrasta a curva para baixo
-    {0.0, 0.5, 3.}  // ponto final
-};
-
-int numPoints = sizeof(ctrlPoints) / sizeof(ctrlPoints[0]);
+int animating = 0; // indica se a animação deve ocorrer ou não
+int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
+float dt = 1.0f;  // velocidade da animação
 
 static int rotation_sun = 0, day = 0, year = 0;
 static GLfloat distance = 0.0f;
 
 // A translação aqui definida refere-se ao movimento em torno do Sol, não ao deslocamento no espaço
-static int 
+static GLfloat 
         translation_timber_hearth = 0.0, 
         translation_brittle_hollow = 0.0, 
         translation_giants_deep = 0.0, 
-        translation_dark_bramble = 0.0;
+        translation_dark_bramble = 0.0,
+        translation_interloper = 0.0;
 
 // A rotação aqui definida refere-se ao movimento do planeta em todo de "si mesmo"
-static int 
+static GLfloat
         rotation_timber_hearth = 0.0, 
         rotation_brittle_hollow = 0.0, 
         rotation_giants_deep = 0.0, 
-        rotation_dark_bramble = 0.0;
+        rotation_dark_bramble = 0.0,
+        rotation_interloper = 0.0;
 
 void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
@@ -92,8 +85,9 @@ void display(void) {
 
     glPushMatrix(); // recanto lenhoso
     glRotatef ((GLfloat) translation_timber_hearth, 0.0, 1.0, 0.0);
+    distance += 6.0f;
     glTranslatef (distance, 0.0, 0.0);
-    glRotatef ((GLfloat) day, 0.0, 1.0, 0.0);
+    glRotatef ((GLfloat) rotation_timber_hearth, 0.0, 1.0, 0.0);
     glutWireSphere(0.2, 10, 8);    
     glPopMatrix();
 
@@ -101,7 +95,7 @@ void display(void) {
     glRotatef ((GLfloat) translation_brittle_hollow, 0.0, 1.0, 0.0);
     distance += 2.0f;
     glTranslatef (distance, 0.0, 0.0);
-    glRotatef ((GLfloat) day, 0.0, 1.0, 0.0);
+    glRotatef ((GLfloat) rotation_brittle_hollow, 0.0, 1.0, 0.0);
     glutWireSphere(0.2, 10, 8);    
     glPopMatrix();
     
@@ -109,7 +103,7 @@ void display(void) {
     glRotatef ((GLfloat) translation_giants_deep, 0.0, 1.0, 0.0);
     distance += 4.0f;
     glTranslatef (distance, 0.0, 0.0);
-    glRotatef ((GLfloat) day, 0.0, 1.0, 0.0);
+    glRotatef ((GLfloat) rotation_giants_deep, 0.0, 1.0, 0.0);
     glutWireSphere(1.0, 10, 8);    
     glPopMatrix();
     
@@ -117,9 +111,21 @@ void display(void) {
     glRotatef ((GLfloat) translation_dark_bramble, 0.0, 1.0, 0.0);
     distance += 4.0f;
     glTranslatef (distance, 0.0, 0.0);
-    glRotatef ((GLfloat) day, 0.0, 1.0, 0.0);
+    glRotatef ((GLfloat) rotation_dark_bramble, 0.0, 1.0, 0.0);
     glutWireSphere(0.9, 10, 8);    
     glPopMatrix();
+
+    // o xereta se movimenta numa elipse, eu acho. Talvez uma curva de bezier seja melhor para ele
+    glPushMatrix(); // xereta 
+    glRotatef ((GLfloat) translation_interloper, 0.0, 0.0, 1.0);
+    distance += 2.0f;
+    printf("%f\n", distance);
+    glTranslatef (distance, 0.0, 0.0);
+    glRotatef ((GLfloat) rotation_interloper, 0.0, 1.0, 0.0);
+    glutWireSphere(0.9, 10, 8);    
+    glPopMatrix();
+
+    distance = 0.0f; // toda vez que chamar essa função, a distância aumentaria, o que não faz sentido
 
     glutSwapBuffers();
 }
@@ -128,7 +134,7 @@ void reshape (int w, int h) {
     glViewport (0, 0, (GLsizei) w, (GLsizei) h); 
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
-    gluPerspective(60.0, (GLfloat) w/(GLfloat) h, 1.0, 200.0);
+    gluPerspective(60.0, (GLfloat) w/(GLfloat) h, 1.0, 300.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt (0.0, 0.0, 30.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
@@ -136,48 +142,31 @@ void reshape (int w, int h) {
 
 void keyboard (unsigned char key, int x, int y) {
     switch (key){
-        case 'd':
-            day = (day + 10) % 360;
-            glutPostRedisplay();
-            break;
-        case 'D':
-            day = (day - 10) % 360;
-            glutPostRedisplay();
-            break;
-        case 'y':
-            year = (year + 5) % 360;
-            glutPostRedisplay();
-            break;
-        case 'Y':
-            year = (year - 5) % 360;
-            glutPostRedisplay();
-            break;
         case 27:
             exit(0);
             break;
         default:
             break;
     }
+
+    glutPostRedisplay();
 }
 
-void idle(void){
-    if (animating){
-        if (forward){
-            t += dt;
-            if (t >= numPoints - 3){ // chegou no fim
-                t = numPoints - 3;
-                // forward = 0; // começa a voltar
-        }
-    } else{ // voltando
-            t -= dt;
-            if (t <= 0.0f){ // chegou no início
-                t = 0.0f;
-                // forward = 1; // muda direção de novo
-                animating = 0; // opcional: para a animação no início
-        }
-    }
-        glutPostRedisplay();
-    }
+void idle(void) {
+
+    translation_timber_hearth += 0.2;
+    translation_brittle_hollow += 0.16;
+    translation_giants_deep += 0.12; 
+    translation_dark_bramble += 0.08;
+    translation_interloper += 1.0;
+
+    rotation_timber_hearth += 0.3; 
+    rotation_brittle_hollow += 0.3; 
+    rotation_giants_deep += 0.3; 
+    rotation_dark_bramble += 0.3;
+    rotation_interloper += 0.3;
+    
+    glutPostRedisplay();
 }
 
     int main(int argc, char** argv)

@@ -6,5 +6,5 @@ Este projeto tem o intuito de recriar parte do sistema solar do jogo outer wilds
 
 Compilar:
 ```
-g++ main.c -o main -lGL -lGLU -lglut 
+g++ main.cpp planet.cpp -o main -lGL -lGLU -lglut 
 ```

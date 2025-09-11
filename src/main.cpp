@@ -45,6 +45,7 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <iostream>
+#include "planet.cpp"
 
 int animating = 0; // indica se a animação deve ocorrer ou não
 int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
@@ -70,6 +71,13 @@ static GLfloat
         rotation_interloper = 0.0;
 
 static GLdouble x = 0.0, y = 0.0, z = 30.0;
+
+static Planet 
+    timber_hearth(0.2f, distance + 6.0f, 0.0f, 0.0f, 200.0f/255.0f), 
+    brittle_hollow(0.2f, distance + 8.0f, 74.0f/255.0f, 0.0f, 128.0f/255.0f), 
+    giants_deep(1.0f, distance + 12.0f, 0.0f, 100.0f/255.0f, 0.0f), 
+    dark_bramble(1.0f, distance + 16.0f, 255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f), 
+    interloper(0.1f, distance + 18.0f, 26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f);
 
 void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
@@ -106,49 +114,11 @@ void display(void) {
     GLfloat no_emission[] = {0.0f, 0.0f, 0.0f, 1.0f};
     glMaterialfv(GL_FRONT, GL_EMISSION, no_emission);
     
-
-    glPushMatrix(); // recanto lenhoso
-    glRotatef ((GLfloat) translation_timber_hearth, 0.0, 1.0, 0.0);
-    distance += 6.0f;
-    glTranslatef (distance, 0.0, 0.0);
-    glRotatef ((GLfloat) rotation_timber_hearth, 0.0, 1.0, 0.0);
-    glutSolidSphere(0.2, 10, 8);    
-    glPopMatrix();
-
-    glPushMatrix(); // vale incerto
-    glRotatef ((GLfloat) translation_brittle_hollow, 0.0, 1.0, 0.0);
-    distance += 2.0f;
-    glTranslatef (distance, 0.0, 0.0);
-    glRotatef ((GLfloat) rotation_brittle_hollow, 0.0, 1.0, 0.0);
-    glutSolidSphere(0.2, 10, 8);    
-    glPopMatrix();
-    
-    glPushMatrix(); // profundezas do gigante
-    glRotatef ((GLfloat) translation_giants_deep, 0.0, 1.0, 0.0);
-    distance += 4.0f;
-    glTranslatef (distance, 0.0, 0.0);
-    glRotatef ((GLfloat) rotation_giants_deep, 0.0, 1.0, 0.0);
-    glutSolidSphere(1.0, 10, 8);    
-    glPopMatrix();
-    
-    glPushMatrix(); // abrolho sinistro 
-    glRotatef ((GLfloat) translation_dark_bramble, 0.0, 1.0, 0.0);
-    distance += 4.0f;
-    glTranslatef (distance, 0.0, 0.0);
-    glRotatef ((GLfloat) rotation_dark_bramble, 0.0, 1.0, 0.0);
-    glutSolidSphere(0.9, 10, 8);    
-    glPopMatrix();
-
-    // o xereta se movimenta numa elipse, eu acho. Talvez uma curva de bezier seja melhor para ele
-    glPushMatrix(); // xereta 
-    glRotatef ((GLfloat) translation_interloper, 0.0, 0.0, 1.0);
-    distance += 1.0f;
-    glTranslatef (distance, 0.0, 0.0);
-    glRotatef ((GLfloat) rotation_interloper, 0.0, 1.0, 0.0);
-    glutSolidSphere(0.9, 10, 8);    
-    glPopMatrix();
-
-    distance = 0.0f; // toda vez que chamar essa função, a distância aumentaria, o que não faz sentido
+    timber_hearth.draw();
+    brittle_hollow.draw();
+    giants_deep.draw();
+    dark_bramble.draw();
+    interloper.draw();
 
     glutSwapBuffers();
 }
@@ -187,24 +157,16 @@ void keyboard (unsigned char key, int x, int y) {
 }
 
 void idle(void) {
-
-    translation_timber_hearth += 0.2;
-    translation_brittle_hollow += 0.16;
-    translation_giants_deep += 0.12; 
-    translation_dark_bramble += 0.08;
-    translation_interloper += 1.0;
-
-    rotation_timber_hearth += 0.3; 
-    rotation_brittle_hollow += 0.3; 
-    rotation_giants_deep += 0.3; 
-    rotation_dark_bramble += 0.3;
-    rotation_interloper += 0.3;
+    timber_hearth.update_position(0.2f, 0.3f);
+    brittle_hollow.update_position(0.16f, 0.3f);
+    giants_deep.update_position(0.12f, 0.3f);
+    dark_bramble.update_position(0.08f, 0.3f);
+    interloper.update_position(0.1f, 0.3f);
     
     glutPostRedisplay();
 }
 
-    int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize (500, 500); 

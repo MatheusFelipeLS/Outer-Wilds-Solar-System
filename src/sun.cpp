@@ -6,14 +6,15 @@
 
 class Sun {
     public:
-        Sun(GLfloat radius, GLfloat r, GLfloat g, GLfloat b) { 
-            this->rotation = 0.0;
-            this->radius = radius; 
-            this->r = r;
-            this->g = g;
-            this->b = b;
-
-        }
+        Sun(
+            GLfloat radius, 
+            GLfloat r, GLfloat g, GLfloat b, 
+            GLint slices, GLint stacks
+        ) :
+        radius(radius),
+        slices(slices), stacks(stacks),
+        r(r), g(g), b(b)
+        {}
 
         void draw() {
             if(d) {
@@ -40,7 +41,7 @@ class Sun {
             glMaterialfv(GL_FRONT, GL_EMISSION, emission);
 
             glPushMatrix();
-                glutSolidSphere(radius, 20, 16);
+                glutSolidSphere(radius, slices, stacks);
             glPopMatrix();
 
             // reseta para não deixar os outros objetos brilharem também
@@ -58,8 +59,10 @@ class Sun {
         }
 
     private:
-        GLfloat rotation;    // movimento de rotação => quanto girou em torno de si mesmo
+        GLfloat rotation = 0.0;    // movimento de rotação => quanto girou em torno de si mesmo
         GLfloat radius;      // raio do planeta
+        GLint slices;
+        GLint stacks;
         GLfloat r;          
         GLfloat g;
         GLfloat b;

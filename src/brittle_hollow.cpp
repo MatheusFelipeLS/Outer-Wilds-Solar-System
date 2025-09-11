@@ -1,12 +1,12 @@
-#ifndef GIANTS_DEEP
-#define GIANTS_DEEP
+#ifndef BRITTLE_HOLLOW
+#define BRITTLE_HOLLOW
 
 #include <GL/glut.h>
 #include <iostream>
 
-class GiantsDeep {
+class BrittleHollow {
     public:
-        GiantsDeep(
+        BrittleHollow(
             GLfloat radius, GLfloat distance, GLfloat t0, 
             GLfloat r, GLfloat g, GLfloat b,
             GLint slices, GLint stacks
@@ -58,7 +58,7 @@ class GiantsDeep {
 
     private:
         GLfloat translation; // movimento de translação => quanto girou em torno do sol
-        GLfloat rotation = 0.0;    // movimento de rotação => quanto girou em torno de si mesmo
+        GLfloat rotation;    // movimento de rotação => quanto girou em torno de si mesmo
         GLfloat distance;    // distancia do sol
         GLfloat radius;      // raio do planeta
         GLint slices;

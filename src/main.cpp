@@ -48,14 +48,16 @@
 #include "sun.cpp"
 #include "planet.cpp"
 #include "giants_deep.cpp"
+#include "brittle_hollow.cpp"
 
-#define DEBUG false
+#define DEBUG true
 #define SPACE 32
+#define EPSILON 1e6
 
-bool animating = false; // indica se a animação deve ocorrer ou não
+bool animating = true; // indica se a animação deve ocorrer ou não
 int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
 float dt = 1.0f;  // velocidade da animação
-int side = 1;
+int side = -1;
 
 static GLfloat distance = 0.0f;
 
@@ -63,7 +65,7 @@ static GLdouble lookfrom[] = {0.0f, 0.0f, 75.0f};
 static GLdouble lookat[] = {0.0f, 0.0f, 34.0f};
 
 /* raio, r, g, b */ 
-static Sun sun(8.0f, 1.0f, 1.0f, 1.0f);
+static Sun sun(8.0f, 1.0f, 1.0f, 1.0f, 30, 20);
 
 /* raio do planeta, distancia do sol, r, g, b */ 
 static Planet 
@@ -71,35 +73,42 @@ static Planet
         1.0f, 
         distance + 14.0f, 
         0.0f, 
-        0.0f, 0.0f, 200.0f/255.0f
-    ), 
+        0.0f, 0.0f, 200.0f/255.0f,
+        30, 20
+    );
+
+static BrittleHollow
     brittle_hollow(
         1.0f, 
         distance + 18.0f, 
-        15.0f, 
-        74.0f/255.0f, 0.0f, 128.0f/255.0f
+        0.0f, 
+        74.0f/255.0f, 0.0f, 128.0f/255.0f,
+        30, 20
     );
 
 static GiantsDeep 
     giants_deep(
         4.0f, 
         distance + 28.0f, 
-        70.0f, 
-        0.0f, 253.0f/255.0f, 72.0f/255.0f
+        0.0f, 
+        0.0f, 253.0f/255.0f, 72.0f/255.0f,
+        30, 20
     );
 
 static Planet 
     dark_bramble(
         4.0f, 
         distance + 42.0f, 
-        145.0f, 
-        255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f
+        0.0f, 
+        255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f,
+        30, 20
     ), 
     interloper(
         0.3f, 
         distance + 50.0f, 
-        200.0f, 
-        26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f
+        0.0f, 
+        26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f,
+        30, 20
     );
 
 
@@ -140,10 +149,10 @@ void keyboard (unsigned char key, int x, int y) {
         std::cout << lookfrom[0] << " " << lookfrom[1] << " " << lookfrom[2] << std::endl;
     }
 
-    if(lookfrom[2] <= 0) {
-        side = -1;
-    } else {
+    if(lookfrom[2] > lookat[2]) {
         side = 1;
+    } else {
+        side = -1;
     }
 
     // não funciona como eu achei que funcionaria
@@ -165,18 +174,15 @@ void keyboard (unsigned char key, int x, int y) {
             lookat[0] += 0.5f * side;
             break;
         case 's': // mover para trás
-            lookfrom[2] += 0.5f;
-            lookat[2] += 0.5f;
+            lookfrom[2] += 0.5f * side;
+            lookat[2] += 0.5f * side;
             break;
         case 'w': // mover para frente
-            lookfrom[2] -= 0.5f;
-            lookat[2] -= 0.5f;
+            lookfrom[2] -= 0.5f * side;
+            lookat[2] -= 0.5f * side;
             break;
-        case '0': // parar animação
-            animating = false;
-            break;
-        case '1': // ativar animação
-            animating = true;
+        case '1': // ativar/desativar animação
+            animating = !animating;
             break;
         case 27:
             exit(0);
@@ -196,7 +202,7 @@ void idle(void) {
     brittle_hollow.update_position(0.16f, 0.3f);
     giants_deep.update_position(0.12f, 0.3f);
     dark_bramble.update_position(0.08f, 0.3f);
-    interloper.update_position(0.1f, 0.3f);
+    interloper.update_position(0.02f, 0.3f);
     
     glutPostRedisplay();
 }

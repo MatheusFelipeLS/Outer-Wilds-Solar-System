@@ -45,33 +45,26 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <iostream>
+#include "sun.cpp"
 #include "planet.cpp"
+
+#define DEBUG true
+#define SPACE 32
 
 int animating = 0; // indica se a animação deve ocorrer ou não
 int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
 float dt = 1.0f;  // velocidade da animação
+int side = 1;
 
-static int rotation_sun = 0, day = 0, year = 0;
 static GLfloat distance = 0.0f;
 
-// A translação aqui definida refere-se ao movimento em torno do Sol, não ao deslocamento no espaço
-static GLfloat 
-        translation_timber_hearth = 0.0, 
-        translation_brittle_hollow = 0.0, 
-        translation_giants_deep = 0.0, 
-        translation_dark_bramble = 0.0,
-        translation_interloper = 0.0;
+static GLdouble lookfrom[] = {0.0f, 0.0f, 35.0f};
+static GLdouble lookat[] = {0.0f, 0.0f, 34.0f};
 
-// A rotação aqui definida refere-se ao movimento do planeta em todo de "si mesmo"
-static GLfloat
-        rotation_timber_hearth = 0.0, 
-        rotation_brittle_hollow = 0.0, 
-        rotation_giants_deep = 0.0, 
-        rotation_dark_bramble = 0.0,
-        rotation_interloper = 0.0;
+/* raio, r, g, b */ 
+static Sun sun(2.0, 1.0f, 1.0f, 1.0f);
 
-static GLdouble x = 0.0, y = 0.0, z = 30.0;
-
+/* raio do planeta, distancia do sol, r, g, b */ 
 static Planet 
     timber_hearth(0.2f, distance + 6.0f, 0.0f, 0.0f, 200.0f/255.0f), 
     brittle_hollow(0.2f, distance + 8.0f, 74.0f/255.0f, 0.0f, 128.0f/255.0f), 
@@ -83,42 +76,26 @@ void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glShadeModel (GL_SMOOTH);
 
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
 }
 
 void display(void) {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glColor3f (1.0, 1.0, 1.0);
-
-    GLfloat light_pos[] = {0.0f, 0.0f, 0.0f, 1.0f};
-    GLfloat light_color[] = {1.0f, 1.0f, 1.0f, 1.0f};
-
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-
-    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light_color);
-
-    // material emissivo (faz a esfera "brilhar")
-    GLfloat emission[] = {1.0f, 1.0f, 0.0f, 1.0f}; // amarelo
-    glMaterialfv(GL_FRONT, GL_EMISSION, emission);
-
-    glPushMatrix();
-        glutSolidSphere(2.0, 20, 16);
-    glPopMatrix();
-
-    // reseta para não deixar os outros objetos brilharem também
-    GLfloat no_emission[] = {0.0f, 0.0f, 0.0f, 1.0f};
-    glMaterialfv(GL_FRONT, GL_EMISSION, no_emission);
     
+    sun.draw();
     timber_hearth.draw();
     brittle_hollow.draw();
     giants_deep.draw();
     dark_bramble.draw();
     interloper.draw();
+
+    glPushMatrix();
+    glTranslatef(0.0, 3.0, 0.0);
+    glutWireCube(1.0);
+    glPopMatrix();
+
+    glLoadIdentity();
+    gluLookAt (lookfrom[0], lookfrom[1], lookfrom[2], lookat[0], lookat[1], lookat[2], 0.0, 1.0, 0.0);
 
     glutSwapBuffers();
 }
@@ -129,22 +106,45 @@ void reshape (int w, int h) {
     glLoadIdentity ();
     gluPerspective(60.0, (GLfloat) w/(GLfloat) h, 1.0, 300.0);
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt (0.0, 0.0, 30.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 }
 
 void keyboard (unsigned char key, int x, int y) {
-    printf("%c\n",key);
+    if(DEBUG) {
+        std::cout << key << " " << x << " " << y << std::endl;
+        std::cout << lookfrom[0] << " " << lookfrom[1] << " " << lookfrom[2] << std::endl;
+    }
+
+    if(lookfrom[2] <= 0) {
+        side = -1;
+    } else {
+        side = 1;
+    }
+
+    // não funciona como eu achei que funcionaria
     switch (key){
-        case 'z':
-            z -= 0.5;
-            printf("a\n");
-            glutPostRedisplay();
+        case SPACE: // mover para cima (32 = space bar em ASCII)
+            lookfrom[1] += 0.5f;
+            lookat[1] += 0.5f;
             break;
-        case 'Z':
-            z += 0.5;
-            printf("b\n");
-            glutPostRedisplay();
+        case 'b': // mover para baixo 
+            lookfrom[1] -= 0.5f;
+            lookat[1] -= 0.5f;
+            break;
+        case 'a': // mover para esquerda
+            lookfrom[0] -= 0.5f * side;
+            lookat[0] -= 0.5f * side;
+            break;
+        case 'd': // mover para direita
+            lookfrom[0] += 0.5f * side;
+            lookat[0] += 0.5f * side;
+            break;
+        case 's': // mover para trás
+            lookfrom[2] += 0.5f;
+            lookat[2] += 0.5f;
+            break;
+        case 'w': // mover para frente
+            lookfrom[2] -= 0.5f;
+            lookat[2] -= 0.5f;
             break;
         case 27:
             exit(0);
@@ -153,6 +153,7 @@ void keyboard (unsigned char key, int x, int y) {
             break;
     }
 
+    glutPostRedisplay();
     
 }
 

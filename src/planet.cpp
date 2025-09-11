@@ -30,7 +30,7 @@ class Planet {
             GLfloat material_color[] = {r, g, b};
             glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
             glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
-            glPushMatrix(); // profundezas do gigante
+            glPushMatrix(); 
                 glRotatef (translation, 0.0, 1.0, 0.0);
                 glTranslatef (distance, 0.0, 0.0);
                 glRotatef (rotation, 0.0, 1.0, 0.0);
@@ -48,11 +48,11 @@ class Planet {
         }
 
     private:
-        GLfloat translation;
-        GLfloat rotation; 
-        GLfloat distance;
-        GLfloat radius;
-        GLfloat r;
+        GLfloat translation; // movimento de translação => quanto girou em torno do sol
+        GLfloat rotation;    // movimento de rotação => quanto girou em torno de si mesmo
+        GLfloat distance;    // distancia do sol
+        GLfloat radius;      // raio do planeta
+        GLfloat r;          
         GLfloat g;
         GLfloat b;
 

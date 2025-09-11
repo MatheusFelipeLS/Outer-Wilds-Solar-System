@@ -1,12 +1,12 @@
-#ifndef PLANET_H
-#define PLANET_H
+#ifndef GIANTS_DEEP
+#define GIANTS_DEEP
 
 #include <GL/glut.h>
 #include <iostream>
 
-class Planet {
+class GiantsDeep {
     public:
-        Planet(GLfloat radius, GLfloat distance, GLfloat t0, GLfloat r, GLfloat g, GLfloat b) { 
+        GiantsDeep(GLfloat radius, GLfloat distance, GLfloat t0, GLfloat r, GLfloat g, GLfloat b) { 
             this->translation = t0;
             this->rotation = 0.0;
             this->distance = distance;
@@ -14,7 +14,6 @@ class Planet {
             this->r = r;
             this->g = g;
             this->b = b;
-
         }
 
         void draw() {
@@ -28,14 +27,23 @@ class Planet {
                           << "b = " << b
                 << std::endl;
             }
-            GLfloat material_color[] = {r, g, b};
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
-            glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
+            
             glPushMatrix(); 
                 glRotatef (translation, 0.0, 1.0, 0.0);
                 glTranslatef (distance, 0.0, 0.0);
                 glRotatef (rotation, 0.0, 1.0, 0.0);
+
+                GLfloat material_color[] = {r, g, b};
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
+                glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
                 glutSolidSphere(radius, 20, 16);    
+
+                material_color[0] = 10.0f/255.0f;
+                material_color[1] = 105.0f/255.0f;
+                material_color[2] = 174.0f/255.0f;
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
+                glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
+                glutSolidSphere(radius / 4, 20, 16);    
             glPopMatrix();
         }
 

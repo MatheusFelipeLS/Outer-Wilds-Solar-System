@@ -47,30 +47,61 @@
 #include <iostream>
 #include "sun.cpp"
 #include "planet.cpp"
+#include "giants_deep.cpp"
 
-#define DEBUG true
+#define DEBUG false
 #define SPACE 32
 
-int animating = 0; // indica se a animação deve ocorrer ou não
+bool animating = false; // indica se a animação deve ocorrer ou não
 int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
 float dt = 1.0f;  // velocidade da animação
 int side = 1;
 
 static GLfloat distance = 0.0f;
 
-static GLdouble lookfrom[] = {0.0f, 0.0f, 35.0f};
+static GLdouble lookfrom[] = {0.0f, 0.0f, 75.0f};
 static GLdouble lookat[] = {0.0f, 0.0f, 34.0f};
 
 /* raio, r, g, b */ 
-static Sun sun(2.0, 1.0f, 1.0f, 1.0f);
+static Sun sun(8.0f, 1.0f, 1.0f, 1.0f);
 
 /* raio do planeta, distancia do sol, r, g, b */ 
 static Planet 
-    timber_hearth(0.2f, distance + 6.0f, 0.0f, 0.0f, 200.0f/255.0f), 
-    brittle_hollow(0.2f, distance + 8.0f, 74.0f/255.0f, 0.0f, 128.0f/255.0f), 
-    giants_deep(1.0f, distance + 12.0f, 0.0f, 100.0f/255.0f, 0.0f), 
-    dark_bramble(1.0f, distance + 16.0f, 255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f), 
-    interloper(0.1f, distance + 18.0f, 26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f);
+    timber_hearth(
+        1.0f, 
+        distance + 14.0f, 
+        0.0f, 
+        0.0f, 0.0f, 200.0f/255.0f
+    ), 
+    brittle_hollow(
+        1.0f, 
+        distance + 18.0f, 
+        15.0f, 
+        74.0f/255.0f, 0.0f, 128.0f/255.0f
+    );
+
+static GiantsDeep 
+    giants_deep(
+        4.0f, 
+        distance + 28.0f, 
+        70.0f, 
+        0.0f, 253.0f/255.0f, 72.0f/255.0f
+    );
+
+static Planet 
+    dark_bramble(
+        4.0f, 
+        distance + 42.0f, 
+        145.0f, 
+        255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f
+    ), 
+    interloper(
+        0.3f, 
+        distance + 50.0f, 
+        200.0f, 
+        26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f
+    );
+
 
 void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
@@ -82,20 +113,15 @@ void init(void) {
 void display(void) {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    glLoadIdentity();
+    gluLookAt (lookfrom[0], lookfrom[1], lookfrom[2], lookat[0], lookat[1], lookat[2], 0.0, 1.0, 0.0);
+
     sun.draw();
     timber_hearth.draw();
     brittle_hollow.draw();
     giants_deep.draw();
     dark_bramble.draw();
     interloper.draw();
-
-    glPushMatrix();
-    glTranslatef(0.0, 3.0, 0.0);
-    glutWireCube(1.0);
-    glPopMatrix();
-
-    glLoadIdentity();
-    gluLookAt (lookfrom[0], lookfrom[1], lookfrom[2], lookat[0], lookat[1], lookat[2], 0.0, 1.0, 0.0);
 
     glutSwapBuffers();
 }
@@ -146,6 +172,12 @@ void keyboard (unsigned char key, int x, int y) {
             lookfrom[2] -= 0.5f;
             lookat[2] -= 0.5f;
             break;
+        case '0': // parar animação
+            animating = false;
+            break;
+        case '1': // ativar animação
+            animating = true;
+            break;
         case 27:
             exit(0);
             break;
@@ -158,6 +190,8 @@ void keyboard (unsigned char key, int x, int y) {
 }
 
 void idle(void) {
+    if (!animating) return;
+
     timber_hearth.update_position(0.2f, 0.3f);
     brittle_hollow.update_position(0.16f, 0.3f);
     giants_deep.update_position(0.12f, 0.3f);

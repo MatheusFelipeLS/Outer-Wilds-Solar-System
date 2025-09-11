@@ -40,7 +40,7 @@ class Sun {
             glMaterialfv(GL_FRONT, GL_EMISSION, emission);
 
             glPushMatrix();
-                glutSolidSphere(2.0, 20, 16);
+                glutSolidSphere(radius, 20, 16);
             glPopMatrix();
 
             // reseta para não deixar os outros objetos brilharem também

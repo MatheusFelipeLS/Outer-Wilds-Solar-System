@@ -42,9 +42,13 @@
 *  Interaction:  pressing the d and y keys (day and year)
 *  alters the rotation of the planet around the sun.
 */
+#define STB_IMAGE_IMPLEMENTATION 
+#include "../include/stb_image.h"
+
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <iostream>
+
 #include "sun.cpp"
 #include "planet.cpp"
 #include "giants_deep.cpp"
@@ -52,64 +56,74 @@
 
 #define DEBUG true
 #define SPACE 32
-#define EPSILON 1e6
+#define EPSILON 1e6 // talvez inutil
+
+// RAIO, R, G, B, SLICES, STACKS
+#define SUN_PARAMS 8.0f, 1.0f, 1.0f, 1.0f, 30, 20
+
+// RAIO, DISTANCIA DO SOL, TRANSLAÇÃO INICIAL, R, G, B, SLICES, STACKS
+#define THIMBER_HEARTH_PARAMS 1.0f, 14.0f, 0.0f, 0.0f, 0.0f, 200.0f/255.0f, 30, 20
+#define BRITTLE_HOLLOW_PARAMS 1.0f, 18.0f, 0.0f, 74.0f/255.0f, 0.0f, 128.0f/255.0f, 30, 20
+#define GIANTS_DEEP_PARAMS 4.0f, 28.0f, 0.0f, 0.0f, 253.0f/255.0f, 72.0f/255.0f, 30, 20
+#define DARK_BRAMBLE_PARAMS 4.0f, 42.0f, 0.0f, 255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f, 30, 20
+#define INTERLOPER_PARAMS 0.3f, 50.0f, 0.0f, 26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f, 30, 20
+    
+
+void loadTexture ( const char * filename, GLuint &texture) {
+    int width , height , nrChannels ;
+    std::cout << filename << std::endl; 
+    unsigned char * data = stbi_load ( filename , & width , & height ,
+    & nrChannels , 0);
+    if ( data ) {
+        glGenTextures (1 , & texture );
+        glBindTexture ( GL_TEXTURE_2D , texture );
+        // Set texture wrapping and filtering parameters
+        glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_WRAP_S ,
+        GL_REPEAT );
+        glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_WRAP_T ,
+        GL_REPEAT );
+        glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER ,
+        GL_LINEAR_MIPMAP_LINEAR );
+        glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER ,
+        GL_LINEAR );
+        // Load the texture data ( check if it 's RGB or RGBA )
+        if ( nrChannels == 3) {
+            gluBuild2DMipmaps ( GL_TEXTURE_2D , GL_RGB , width ,
+            height , GL_RGB , GL_UNSIGNED_BYTE , data );
+        } else if ( nrChannels == 4) {
+            gluBuild2DMipmaps ( GL_TEXTURE_2D , GL_RGBA , width ,
+            height , GL_RGBA , GL_UNSIGNED_BYTE , data );
+        }
+        stbi_image_free ( data );
+    } else {
+        std::cerr << "Failed to load texture : " << filename << std::endl ;
+    }
+}
 
 bool animating = true; // indica se a animação deve ocorrer ou não
 int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
 float dt = 1.0f;  // velocidade da animação
 int side = -1;
 
-static GLfloat distance = 0.0f;
-
 static GLdouble lookfrom[] = {0.0f, 0.0f, 75.0f};
 static GLdouble lookat[] = {0.0f, 0.0f, 34.0f};
 
 /* raio, r, g, b */ 
-static Sun sun(8.0f, 1.0f, 1.0f, 1.0f, 30, 20);
+static Sun sun(SUN_PARAMS);
 
 /* raio do planeta, distancia do sol, r, g, b */ 
 static Planet 
-    timber_hearth(
-        1.0f, 
-        distance + 14.0f, 
-        0.0f, 
-        0.0f, 0.0f, 200.0f/255.0f,
-        30, 20
-    );
+    timber_hearth(THIMBER_HEARTH_PARAMS);
 
 static BrittleHollow
-    brittle_hollow(
-        1.0f, 
-        distance + 18.0f, 
-        0.0f, 
-        74.0f/255.0f, 0.0f, 128.0f/255.0f,
-        30, 20
-    );
+    brittle_hollow(BRITTLE_HOLLOW_PARAMS);
 
 static GiantsDeep 
-    giants_deep(
-        4.0f, 
-        distance + 28.0f, 
-        0.0f, 
-        0.0f, 253.0f/255.0f, 72.0f/255.0f,
-        30, 20
-    );
+    giants_deep(GIANTS_DEEP_PARAMS);
 
 static Planet 
-    dark_bramble(
-        4.0f, 
-        distance + 42.0f, 
-        0.0f, 
-        255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f,
-        30, 20
-    ), 
-    interloper(
-        0.3f, 
-        distance + 50.0f, 
-        0.0f, 
-        26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f,
-        30, 20
-    );
+    dark_bramble(DARK_BRAMBLE_PARAMS), 
+    interloper(INTERLOPER_PARAMS);
 
 
 void init(void) {
@@ -117,6 +131,7 @@ void init(void) {
     glShadeModel (GL_SMOOTH);
 
     glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_TEXTURE_2D);    
 }
 
 void display(void) {
@@ -124,6 +139,8 @@ void display(void) {
     
     glLoadIdentity();
     gluLookAt (lookfrom[0], lookfrom[1], lookfrom[2], lookat[0], lookat[1], lookat[2], 0.0, 1.0, 0.0);
+
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
     sun.draw();
     timber_hearth.draw();
@@ -198,6 +215,7 @@ void keyboard (unsigned char key, int x, int y) {
 void idle(void) {
     if (!animating) return;
 
+    sun.update_position(0.3f);
     timber_hearth.update_position(0.2f, 0.3f);
     brittle_hollow.update_position(0.16f, 0.3f);
     giants_deep.update_position(0.12f, 0.3f);

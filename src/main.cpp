@@ -49,6 +49,8 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include "params.cpp"
+
 #include "sun.cpp"
 #include "planet.cpp"
 #include "giants_deep.cpp"
@@ -58,16 +60,6 @@
 #define DEBUG false
 #define SPACE 32
 #define EPSILON 1e-6 // talvez inutil
-
-// RAIO, R, G, B, SLICES, STACKS
-#define SUN_PARAMS 8.0f, 1.0f, 1.0f, 1.0f, 30, 20
-
-// RAIO, DISTANCIA DO SOL, TRANSLAÇÃO INICIAL, R, G, B, SLICES, STACKS
-#define THIMBER_HEARTH_PARAMS 1.0f, 14.0f, 0.0f, 0.0f, 0.0f, 200.0f/255.0f, 30, 20
-#define BRITTLE_HOLLOW_PARAMS 1.0f, 18.0f, 0.0f, 74.0f/255.0f, 0.0f, 128.0f/255.0f, 30, 20
-#define GIANTS_DEEP_PARAMS 4.0f, 28.0f, 0.0f, 0.0f, 253.0f/255.0f, 72.0f/255.0f, 30, 20
-#define DARK_BRAMBLE_PARAMS 4.0f, 42.0f, 0.0f, 255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f, 30, 20
-#define INTERLOPER_PARAMS 0.3f, 50.0f, 0.0f, 26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f, 30, 20
 
 void loadTexture ( const char * filename, GLuint &texture) {
     int width , height , nrChannels ;
@@ -131,9 +123,7 @@ static Interloper
 void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glShadeModel (GL_SMOOTH);
-
-    glEnable(GL_DEPTH_TEST);
-    // glEnable(GL_TEXTURE_2D);    
+    glEnable(GL_DEPTH_TEST);    
 }
 
 void display(void) {
@@ -142,8 +132,6 @@ void display(void) {
     glLoadIdentity();
     gluLookAt (lookfrom[0], lookfrom[1], lookfrom[2], lookat[0], lookat[1], lookat[2], 0.0, 0.0, 1.0);
 
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-
     sun.draw();
     timber_hearth.draw();
     brittle_hollow.draw();
@@ -151,7 +139,6 @@ void display(void) {
     dark_bramble.draw();
     interloper.draw();
     
-
     glutSwapBuffers();
 }
 

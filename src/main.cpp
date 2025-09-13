@@ -53,10 +53,11 @@
 #include "planet.cpp"
 #include "giants_deep.cpp"
 #include "brittle_hollow.cpp"
+#include "interloper.cpp"
 
-#define DEBUG true
+#define DEBUG false
 #define SPACE 32
-#define EPSILON 1e6 // talvez inutil
+#define EPSILON 1e-6 // talvez inutil
 
 // RAIO, R, G, B, SLICES, STACKS
 #define SUN_PARAMS 8.0f, 1.0f, 1.0f, 1.0f, 30, 20
@@ -67,7 +68,6 @@
 #define GIANTS_DEEP_PARAMS 4.0f, 28.0f, 0.0f, 0.0f, 253.0f/255.0f, 72.0f/255.0f, 30, 20
 #define DARK_BRAMBLE_PARAMS 4.0f, 42.0f, 0.0f, 255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f, 30, 20
 #define INTERLOPER_PARAMS 0.3f, 50.0f, 0.0f, 26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f, 30, 20
-    
 
 void loadTexture ( const char * filename, GLuint &texture) {
     int width , height , nrChannels ;
@@ -105,8 +105,8 @@ int forward = 1;   // indica se a animação vai do início ao fim ou ao contrá
 float dt = 1.0f;  // velocidade da animação
 int side = -1;
 
-static GLdouble lookfrom[] = {0.0f, 0.0f, 75.0f};
-static GLdouble lookat[] = {0.0f, 0.0f, 34.0f};
+static GLdouble lookfrom[] = {0.0f, 100.0f, 0.0f};
+static GLdouble lookat[] = {0.0f, 0.0f, 0.0f};
 
 /* raio, r, g, b */ 
 static Sun sun(SUN_PARAMS);
@@ -122,7 +122,9 @@ static GiantsDeep
     giants_deep(GIANTS_DEEP_PARAMS);
 
 static Planet 
-    dark_bramble(DARK_BRAMBLE_PARAMS), 
+    dark_bramble(DARK_BRAMBLE_PARAMS);
+
+static Interloper
     interloper(INTERLOPER_PARAMS);
 
 
@@ -138,7 +140,7 @@ void display(void) {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     glLoadIdentity();
-    gluLookAt (lookfrom[0], lookfrom[1], lookfrom[2], lookat[0], lookat[1], lookat[2], 0.0, 1.0, 0.0);
+    gluLookAt (lookfrom[0], lookfrom[1], lookfrom[2], lookat[0], lookat[1], lookat[2], 0.0, 0.0, 1.0);
 
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
@@ -148,6 +150,7 @@ void display(void) {
     giants_deep.draw();
     dark_bramble.draw();
     interloper.draw();
+    
 
     glutSwapBuffers();
 }
@@ -220,7 +223,7 @@ void idle(void) {
     brittle_hollow.update_position(0.16f, 0.3f);
     giants_deep.update_position(0.12f, 0.3f);
     dark_bramble.update_position(0.08f, 0.3f);
-    interloper.update_position(0.02f, 0.3f);
+    interloper.update_position(0.001f, 0.3f);
     
     glutPostRedisplay();
 }

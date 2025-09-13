@@ -18,11 +18,11 @@ class Sun {
 
         void draw() {
             if(d) {
-                std::cout << "rt =" << rotation
-                          << "radius =" << radius
-                          << "r = " << r
-                          << "g = " << g
-                          << "b = " << b
+                std::cout << "rt = " << rotation
+                          << " radius = " << radius
+                          << " r = " << r
+                          << " g = " << g
+                          << " b = " << b
                 << std::endl;
             }
                     
@@ -55,7 +55,6 @@ class Sun {
 
         void update_position(GLfloat r) {
             rotation += r;
-            printf("%f\n", emission[1]);
             if (emission[1] >= 1.0f) {
                 transition_color_signal = -1;
             } else if (emission[1] <= 0.5f) {

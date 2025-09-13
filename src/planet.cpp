@@ -18,13 +18,13 @@ class Planet {
 
         void draw() {
             if(d) {
-                std::cout << "tl =" << translation
-                          << "rt =" << rotation
-                          << "dist =" << distance
-                          << "radius =" << radius
-                          << "r = " << r
-                          << "g = " << g
-                          << "b = " << b
+                std::cout << "tl = " << translation
+                          << " rt = " << rotation
+                          << " dist = " << distance
+                          << " radius = " << radius
+                          << " r = " << r
+                          << " g = " << g
+                          << " b = " << b
                 << std::endl;
             }
             GLfloat material_color[] = {r, g, b};

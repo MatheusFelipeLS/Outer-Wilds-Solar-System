@@ -1,19 +1,19 @@
-#ifndef PLANET_H
-#define PLANET_H
+#ifndef THIMBER_HEARTH_H
+#define THIMBER_HEARTH_H
 
 #include <GL/glut.h>
 #include <iostream>
 
-class Planet {
+#define THIMBER_HEARTH_COLOR 0.0f, 0.0f, 200.0f/255.0f
+
+class ThimberHearth {
     public:
-        Planet(
+        ThimberHearth(
             GLfloat radius, GLfloat distance, GLfloat t0, 
-            GLfloat r, GLfloat g, GLfloat b,
             GLint slices, GLint stacks
         ) :
         translation(t0), distance(distance), radius(radius),
-        slices(slices), stacks(stacks),
-        r(r), g(g), b(b)
+        slices(slices), stacks(stacks)
         {}
 
         void draw() {
@@ -22,12 +22,9 @@ class Planet {
                           << " rt = " << rotation
                           << " dist = " << distance
                           << " radius = " << radius
-                          << " r = " << r
-                          << " g = " << g
-                          << " b = " << b
                 << std::endl;
             }
-            GLfloat material_color[] = {r, g, b};
+            GLfloat material_color[] = {THIMBER_HEARTH_COLOR};
             glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
             glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
             glPushMatrix(); 
@@ -54,9 +51,6 @@ class Planet {
         GLfloat radius;      // raio do planeta
         GLint slices;
         GLint stacks;
-        GLfloat r;          
-        GLfloat g;
-        GLfloat b;
 
         bool d;
 };

@@ -52,9 +52,10 @@
 #include "params.cpp"
 
 #include "sun.cpp"
-#include "planet.cpp"
-#include "giants_deep.cpp"
+#include "thimber_hearth.cpp"
 #include "brittle_hollow.cpp"
+#include "giants_deep.cpp"
+#include "dark_brumble.cpp"
 #include "interloper.cpp"
 
 #define DEBUG false
@@ -104,7 +105,7 @@ static GLdouble lookat[] = {0.0f, 0.0f, 0.0f};
 static Sun sun(SUN_PARAMS);
 
 /* raio do planeta, distancia do sol, r, g, b */ 
-static Planet 
+static ThimberHearth 
     timber_hearth(THIMBER_HEARTH_PARAMS);
 
 static BrittleHollow
@@ -113,7 +114,7 @@ static BrittleHollow
 static GiantsDeep 
     giants_deep(GIANTS_DEEP_PARAMS);
 
-static Planet 
+static DarkBrumble 
     dark_bramble(DARK_BRAMBLE_PARAMS);
 
 static Interloper

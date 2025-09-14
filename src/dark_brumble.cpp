@@ -1,14 +1,14 @@
-#ifndef GIANTS_DEEP_H
-#define GIANTS_DEEP_H
+#ifndef DARK_BRUMBLE_H
+#define DARK_BRUMBLE_H
 
 #include <GL/glut.h>
 #include <iostream>
 
-#define GIANTS_DEEP_SURFACE_COLOR 0.0f, 253.0f/255.0f, 72.0f/255.0f
-#define GIANTS_DEEP_INNER_GLOBE_COLOR 10.0f/255.0f, 105.0f/255.0f, 74.0f/255.0f
-class GiantsDeep {
+#define DARK_BRAMBLE_COLOR 255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f
+
+class DarkBrumble {
     public:
-        GiantsDeep(
+        DarkBrumble(
             GLfloat radius, GLfloat distance, GLfloat t0, 
             GLint slices, GLint stacks
         ) :
@@ -24,21 +24,14 @@ class GiantsDeep {
                           << " radius = " << radius
                 << std::endl;
             }
-            
+            GLfloat material_color[] = {DARK_BRAMBLE_COLOR};
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
             glPushMatrix(); 
                 glRotatef (translation, 0.0, 1.0, 0.0);
                 glTranslatef (distance, 0.0, 0.0);
                 glRotatef (rotation, 0.0, 1.0, 0.0);
-
-                GLfloat material_color[] = {GIANTS_DEEP_SURFACE_COLOR};
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
-                glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
                 glutSolidSphere(radius, slices, stacks);    
-
-                GLfloat inner_globe_material_color[] = {GIANTS_DEEP_INNER_GLOBE_COLOR};
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, inner_globe_material_color);
-                glMaterialfv(GL_FRONT, GL_SPECULAR, inner_globe_material_color);
-                glutSolidSphere(radius / 4, slices, stacks);    
             glPopMatrix();
         }
 
@@ -53,7 +46,7 @@ class GiantsDeep {
 
     private:
         GLfloat translation; // movimento de translação => quanto girou em torno do sol
-        GLfloat rotation = 0.0;    // movimento de rotação => quanto girou em torno de si mesmo
+        GLfloat rotation = 0;    // movimento de rotação => quanto girou em torno de si mesmo
         GLfloat distance;    // distancia do sol
         GLfloat radius;      // raio do planeta
         GLint slices;

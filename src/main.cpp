@@ -97,7 +97,7 @@ int forward = 1;   // indica se a animação vai do início ao fim ou ao contrá
 float dt = 1.0f;  // velocidade da animação
 int side = -1;
 
-static GLdouble lookfrom[] = {0.0f, 100.0f, 0.0f};
+static GLdouble lookfrom[] = {0.0f, 200.0f, 0.0f};
 static GLdouble lookat[] = {0.0f, 0.0f, 0.0f};
 
 /* raio, r, g, b */ 
@@ -146,7 +146,7 @@ void reshape (int w, int h) {
     glViewport (0, 0, (GLsizei) w, (GLsizei) h); 
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
-    gluPerspective(60.0, (GLfloat) w/(GLfloat) h, 1.0, 300.0);
+    gluPerspective(100.0, (GLfloat) w/(GLfloat) h, 1.0, 500.0);
     glMatrixMode(GL_MODELVIEW);
 }
 

@@ -6,5 +6,13 @@ Este projeto tem o intuito de recriar parte do sistema solar do jogo outer wilds
 
 Compilar:
 ```
-g++ main.cpp planet.cpp -o main -lGL -lGLU -lglut 
+make
+```
+
+* Observação: aparentemente, compilar não funciona diretamente, por isso recomendo dar um make clean antes.
+
+Executar:
+
+```
+./main
 ```

@@ -3,18 +3,43 @@
 
 #include <GL/glut.h>
 #include <iostream>
+#include <vector>
+
+#define INTERLOPER_COLOR 26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f
+
 
 class Interloper {
     public:
         Interloper(
-            GLfloat radius, GLfloat distance, GLfloat t0, 
-            GLfloat r, GLfloat g, GLfloat b,
+            GLfloat radius,
+            GLfloat sun_radius, GLfloat initial_point,
+            GLfloat t0,
             GLint slices, GLint stacks
         ) :
-        translation(t0), distance(distance), radius(radius),
-        slices(slices), stacks(stacks),
-        r(r), g(g), b(b)
-        {}
+        translation(t0), radius(radius),
+        slices(slices), stacks(stacks)
+        {
+
+            // ponto inicial
+            this->ctrl_points[0][0] = initial_point;
+            this->ctrl_points[0][1] = 0.0f;
+            this->ctrl_points[0][2] = 0.0f;
+
+            // primeiro ponto de controle
+            this->ctrl_points[1][0] = initial_point * 0.9f;
+            this->ctrl_points[1][1] = 0.0f;
+            this->ctrl_points[1][2] = sun_radius * 3.0f;
+
+            // segundo ponto de controle
+            this->ctrl_points[2][0] = -sun_radius;
+            this->ctrl_points[2][1] = 0.0f;
+            this->ctrl_points[2][2] = sun_radius * 1.7f;
+
+            // ponto final
+            this->ctrl_points[3][0] = -sun_radius * 1.17f;
+            this->ctrl_points[3][1] = 0.0f;
+            this->ctrl_points[3][2] = 0.0f;
+        }
 
         void draw() {
             if(d) {
@@ -26,40 +51,41 @@ class Interloper {
                           << " p0 = " << pos[0]
                           << " p1 = " << pos[1]
                           << " p2 = " << pos[2]
-                        //   << " r = " << r
-                        //   << " g = " << g
-                        //   << " b = " << b
                 << std::endl;
             }
 
-            GLfloat material_color[] = {r, g, b};
+            GLfloat material_color[] = {INTERLOPER_COLOR};
             glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
             glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
 
-            bezier(
-                t, 
-                ctrlPoints[0+animation_idx], 
-                ctrlPoints[1+animation_idx], 
-                ctrlPoints[2+animation_idx], 
-                ctrlPoints[3+animation_idx], 
-                pos
-            );
+            if (animation_direction) {
+                bezier(
+                    t, 
+                    ctrl_points[0], 
+                    ctrl_points[1], 
+                    ctrl_points[2], 
+                    ctrl_points[3], 
+                    pos
+                );
+            } else {
+                bezier(
+                    t, 
+                    ctrl_points[3], 
+                    ctrl_points[2], 
+                    ctrl_points[1], 
+                    ctrl_points[0], 
+                    pos
+                );
+            }
 
             glPushMatrix(); 
                 glTranslatef(pos[0], pos[1], pos[2]);
                 glRotatef (rotation, 0.0, 1.0, 0.0);
                 glutSolidSphere(radius, slices, stacks);    
             glPopMatrix();
-
-            // glPushMatrix(); 
-            //     glRotatef (translation, 0.0, 1.0, 0.0);
-            //     glTranslatef (distance, 0.0, 0.0);
-            //     glRotatef (rotation, 0.0, 1.0, 0.0);
-            //     glutSolidSphere(radius, slices, stacks);    
-            // glPopMatrix();
         }
 
-        void bezier(float t, float *p0, float *p1, float *p2, float *p3, float *out) {
+        void bezier(float t, GLfloat *p0, GLfloat *p1, GLfloat *p2, GLfloat *p3, float *out) {
             float poly = 1.0f - t;
             float b0 = poly * poly * poly;
             float b1 = 3 * t * poly * poly;
@@ -75,8 +101,10 @@ class Interloper {
             translation += t;
             this->t += t;  
             if (this->t > 1-1e-5) {
-                animation_idx = 4 - animation_idx;
+                animation_direction = !animation_direction;
                 this->t = 0.0f;
+                this->ctrl_points[1][2] = -this->ctrl_points[1][2];
+                this->ctrl_points[2][2] = -this->ctrl_points[2][2];
             } 
             rotation += r;
         }
@@ -90,31 +118,15 @@ class Interloper {
         GLfloat rotation = 0;    // movimento de rotação => quanto girou em torno de si mesmo
         GLfloat distance;    // distancia do sol
         GLfloat radius;      // raio do planeta
+        GLfloat ctrl_points[4][3];
         GLint slices;
         GLint stacks;
-        GLfloat r;          
-        GLfloat g;
-        GLfloat b;
 
         // animação eliptica em torno do sol
-        GLint animation_idx = 0;
+        bool animation_direction = true; // true => indo em direção ao sol, false => se afastando do sol
         GLfloat t = 0.0f;
-        GLfloat ctrlPoints[8][3] = {
-            // animação 1
-            {50.0f, 0.0f, 0.0f}, // ponto inicial
-            {45.0f, 0.0f, 30.0f}, // arrasta a curva para direita
-            {-10.0f, 0.0f, 15.0f}, // arrasta a curva para baixo
-            {-12.0f, 0.0f, 0.0f},  // ponto final  
 
-            // animação 2
-            {-12.0f, 0.0f, 0.0f},  // ponto final
-            {-10.0f, 0.0f, -15.0f}, // arrasta a curva para baixo
-            {45.0f, 0.0f, -30.0f}, // arrasta a curva para direita
-            {50.0f, 0.0f, 0.0f}, // ponto inicial
-
-        };
-
-        GLint numPoints = sizeof(ctrlPoints) / sizeof(ctrlPoints[0]);
+        GLint numPoints = sizeof(ctrl_points) / sizeof(ctrl_points[0]);
         GLfloat pos[3];
 
         bool d;

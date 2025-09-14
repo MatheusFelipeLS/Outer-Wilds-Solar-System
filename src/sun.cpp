@@ -4,6 +4,8 @@
 #include <GL/glut.h>
 #include <iostream>
 
+#define SUN_COLOR 1.0f, 1.0f, 1.0f
+
 class Sun {
     public:
         Sun(

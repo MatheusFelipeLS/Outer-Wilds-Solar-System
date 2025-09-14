@@ -1,19 +1,19 @@
-#ifndef GIANTS_DEEP
-#define GIANTS_DEEP
+#ifndef GIANTS_DEEP_H
+#define GIANTS_DEEP_H
 
 #include <GL/glut.h>
 #include <iostream>
+
+#define GIANTS_DEEP_COLOR 0.0f, 253.0f/255.0f, 72.0f/255.0f
 
 class GiantsDeep {
     public:
         GiantsDeep(
             GLfloat radius, GLfloat distance, GLfloat t0, 
-            GLfloat r, GLfloat g, GLfloat b,
             GLint slices, GLint stacks
         ) :
         translation(t0), distance(distance), radius(radius),
-        slices(slices), stacks(stacks),
-        r(r), g(g), b(b)
+        slices(slices), stacks(stacks)
         {}
 
         void draw() {
@@ -22,9 +22,6 @@ class GiantsDeep {
                           << " rt = " << rotation
                           << " dist = " << distance
                           << " radius = " << radius
-                          << " r = " << r
-                          << " g = " << g
-                          << " b = " << b
                 << std::endl;
             }
             
@@ -33,7 +30,7 @@ class GiantsDeep {
                 glTranslatef (distance, 0.0, 0.0);
                 glRotatef (rotation, 0.0, 1.0, 0.0);
 
-                GLfloat material_color[] = {r, g, b};
+                GLfloat material_color[] = {GIANTS_DEEP_COLOR};
                 glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
                 glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
                 glutSolidSphere(radius, slices, stacks);    
@@ -63,9 +60,6 @@ class GiantsDeep {
         GLfloat radius;      // raio do planeta
         GLint slices;
         GLint stacks;
-        GLfloat r;          
-        GLfloat g;
-        GLfloat b;
 
         bool d;
 };

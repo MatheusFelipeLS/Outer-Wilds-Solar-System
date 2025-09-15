@@ -55,10 +55,11 @@ class Interloper {
             }
 
             GLfloat material_color[] = {INTERLOPER_COLOR};
-            GLfloat shine[] = {80.0};
+            GLfloat shininess[] = {80.0};
             glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
             glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
-            glMaterialfv(GL_FRONT, GL_SHININESS, shine);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, material_color);
+            glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
 
             if (animation_direction) {
                 bezier(

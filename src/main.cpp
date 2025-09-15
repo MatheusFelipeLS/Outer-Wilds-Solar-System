@@ -101,25 +101,12 @@ int side = -1;
 static GLdouble lookfrom[] = {141, 56, -1};
 static GLdouble lookat[] = {141, -124, -1};
 
-/* raio, r, g, b */ 
 static Sun sun(SUN_PARAMS);
-
-/* raio do planeta, distancia do sol, r, g, b */ 
-static ThimberHearth 
-    timber_hearth(THIMBER_HEARTH_PARAMS);
-
-static BrittleHollow
-    brittle_hollow(BRITTLE_HOLLOW_PARAMS);
-
-static GiantsDeep 
-    giants_deep(GIANTS_DEEP_PARAMS);
-
-static DarkBrumble 
-    dark_bramble(DARK_BRAMBLE_PARAMS);
-
-static Interloper
-    interloper(INTERLOPER_PARAMS);
-
+static ThimberHearth timber_hearth(THIMBER_HEARTH_PARAMS);
+static BrittleHollow brittle_hollow(BRITTLE_HOLLOW_PARAMS);
+static GiantsDeep giants_deep(GIANTS_DEEP_PARAMS);
+static DarkBrumble dark_bramble(DARK_BRAMBLE_PARAMS);
+static Interloper interloper(INTERLOPER_PARAMS);
 
 void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
@@ -127,7 +114,7 @@ void init(void) {
     glEnable(GL_DEPTH_TEST);  
     glEnable(GL_LIGHTING); 
 
-    GLfloat global_ambient[] = {0.08f, 0.08f, 0.0f, 1.0f};
+    GLfloat global_ambient[] = {0.5f, 0.5f, 0.5f, 1.0f};//{0.08f, 0.08f, 0.0f, 1.0f};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient); 
 }
 

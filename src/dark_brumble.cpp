@@ -26,8 +26,12 @@ class DarkBrumble {
             }
 
             GLfloat material_color[] = {DARK_BRAMBLE_COLOR};
+            GLfloat shininess[] = {10.0f};
             glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
             glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, material_color);
+            glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+                
 
             glPushMatrix(); 
                 glRotatef (translation, 0.0, 1.0, 0.0);

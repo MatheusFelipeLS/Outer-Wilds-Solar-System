@@ -1,14 +1,14 @@
-#ifndef DARK_BRUMBLE_H
-#define DARK_BRUMBLE_H
+#ifndef DARK_BRAMBLE_H
+#define DARK_BRAMBLE_H
 
 #include <GL/glut.h>
 #include <iostream>
 
 #define DARK_BRAMBLE_COLOR 255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f, 1.0f
 
-class DarkBrumble {
+class DarkBramble {
     public:
-        DarkBrumble(
+        DarkBramble(
             GLfloat radius, GLfloat distance, GLfloat t0, 
             GLint slices, GLint stacks
         ) :

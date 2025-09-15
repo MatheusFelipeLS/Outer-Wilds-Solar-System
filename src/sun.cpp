@@ -4,7 +4,7 @@
 #include <GL/glut.h>
 #include <iostream>
 
-#define SUN_COLOR 1.0f, 1.0f, 1.0f, 1.0f
+#define SUN_LIGHT_COLOR 1.0f, 1.0f, 1.0f, 1.0f
 
 class Sun {
     public:
@@ -22,15 +22,13 @@ class Sun {
                           << " radius = " << radius
                 << std::endl;
             }
-                    
-            glEnable(GL_LIGHT0);
-
-            GLfloat ambient[4] = {0.12f, 0.12f, 0.08f, 1.0f};
+                
+            // GLfloat ambient[4] = {0.12f, 0.12f, 0.08f, 1.0f};
 
             glLightfv(GL_LIGHT0, GL_POSITION, this->light_pos);
             glLightfv(GL_LIGHT0, GL_DIFFUSE, this->light_color);
             glLightfv(GL_LIGHT0, GL_SPECULAR, this->light_color);
-            glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+            // glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
 
             // material emissivo (faz a esfera "brilhar")
             glMaterialfv(GL_FRONT, GL_EMISSION, this->emission);
@@ -48,18 +46,15 @@ class Sun {
 
         }
 
-        void apply_texture(GLuint texture) {
-            this->texture = texture;
-        }
-
         void update_position(GLfloat r) {
             rotation += r;
             if (emission[1] >= 1.0f) {
                 transition_color_signal = -1;
-            } else if (emission[1] <= 0.5f) {
+            } else if (emission[1] <= lower_bound_color) {
                 transition_color_signal = 1;
             }
             emission[1] += transition_color_signal * 0.003;
+            light_color[1] = emission[1];
         }
 
         void debug() {
@@ -72,8 +67,8 @@ class Sun {
         GLint slices;
         GLint stacks;
         GLint transition_color_signal = 1;
-        GLuint texture;
         GLUquadric *quad;
+        GLfloat lower_bound_color = 0.5f;
         GLfloat light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
         GLfloat light_color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
         GLfloat emission[4] = {1.0f, 1.0f, 0.0f, 1.0f}; // amarelo

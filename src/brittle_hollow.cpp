@@ -3,8 +3,10 @@
 
 #include <GL/glut.h>
 #include <iostream>
+#include <cmath>
 
 #define BRITTLE_HOLLOW_COLOR 74.0f/255.0f, 0.0f, 128.0f/255.0f, 1.0f
+#define RAD 3.14159/180
 
 class BrittleHollow {
     public:
@@ -55,6 +57,19 @@ class BrittleHollow {
         void update_position(GLfloat t, GLfloat r) {
             translation += t;
             rotation += r;
+        }
+
+        bool inside_dark_hole(GLdouble lookfrom[]) {
+            // encontrando a posição do buraco negro
+            double x = distance * cos(translation*RAD);
+            double y = distance * sin(translation*RAD);
+            double dh_radius = radius / 4.0f;
+
+            return (
+                (lookfrom[0] < x + dh_radius && lookfrom[0] > x-dh_radius) && 
+                (lookfrom[1] < y + dh_radius && lookfrom[1] > y-dh_radius) && 
+                (lookfrom[2] < dh_radius && lookfrom[2] > -dh_radius)
+            );
         }
 
         void debug() {

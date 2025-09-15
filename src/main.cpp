@@ -48,6 +48,7 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <iostream>
+#include <cstdlib>
 
 #include "params.cpp"
 
@@ -55,12 +56,14 @@
 #include "thimber_hearth.cpp"
 #include "brittle_hollow.cpp"
 #include "giants_deep.cpp"
-#include "dark_brumble.cpp"
+#include "dark_bramble.cpp"
 #include "interloper.cpp"
 
 #define DEBUG true
 #define SPACE 32
 #define EPSILON 1e-6 // talvez inutil
+
+#define WHITE_HOLE_RADIUS SUN_RADIUS/50.0f
 
 void loadTexture ( const char * filename, GLuint &texture) {
     int width , height , nrChannels ;
@@ -93,20 +96,50 @@ void loadTexture ( const char * filename, GLuint &texture) {
     }
 }
 
-bool animating = false; // indica se a animação deve ocorrer ou não
+bool animating = true; // indica se a animação deve ocorrer ou não
 int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
 float dt = 1.0f;  // velocidade da animação
 int side = -1;
 
-static GLdouble lookfrom[] = {141, 56, -1};
-static GLdouble lookat[] = {141, -124, -1};
+// visão do sistema inteiro
+static GLdouble lookfrom[] = {0, 250, 0};
+static GLdouble lookat[] = {0, -99, 0};
+
+// zoom no profundezas do gigante
+// static GLdouble lookfrom[] = {141, 56, -1};
+// static GLdouble lookat[] = {141, -124, -1};
 
 static Sun sun(SUN_PARAMS);
 static ThimberHearth timber_hearth(THIMBER_HEARTH_PARAMS);
 static BrittleHollow brittle_hollow(BRITTLE_HOLLOW_PARAMS);
 static GiantsDeep giants_deep(GIANTS_DEEP_PARAMS);
-static DarkBrumble dark_bramble(DARK_BRAMBLE_PARAMS);
+static DarkBramble dark_bramble(DARK_BRAMBLE_PARAMS);
 static Interloper interloper(INTERLOPER_PARAMS);
+
+
+void draw_white_hole() {
+    GLfloat light_pos[4] = {-250.0f, 0.0f, 0.0f, 1.0f};
+    GLfloat light_color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    GLfloat emission[4] = {1.0f, 1.0f, 1.0f, 1.0f}; // branco
+
+    glLightfv(GL_LIGHT1, GL_POSITION, light_pos);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_color);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, light_color);
+
+    // material emissivo (faz a esfera "brilhar")
+    glMaterialfv(GL_FRONT, GL_EMISSION, emission);
+
+    glPushMatrix();
+        glTranslatef(-250.0f, 0.0f, 0.0f);
+        GLUquadric *quad = gluNewQuadric ();
+        gluQuadricTexture ( quad , GL_TRUE );
+        gluSphere ( quad , WHITE_HOLE_RADIUS , SLICES , STACKS);
+    glPopMatrix();
+    
+    // Depois, sempre volte a emissão pro "zero" pros outros planetas:
+    GLfloat black_emission[] = {0.0f, 0.0f, 0.0f, 1.0f};
+    glMaterialfv(GL_FRONT, GL_EMISSION, black_emission);
+}
 
 void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
@@ -114,8 +147,10 @@ void init(void) {
     glEnable(GL_DEPTH_TEST);  
     glEnable(GL_LIGHTING); 
 
-    GLfloat global_ambient[] = {0.5f, 0.5f, 0.5f, 1.0f};//{0.08f, 0.08f, 0.0f, 1.0f};
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient); 
+    GLfloat global_ambient[] = {0.3f, 0.3f, 0.3f, 1.0f};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
 }
 
 void display(void) {
@@ -129,7 +164,24 @@ void display(void) {
     brittle_hollow.draw();
     giants_deep.draw();
     dark_bramble.draw();
-    interloper.draw();
+    interloper.draw();   
+
+    draw_white_hole();
+
+    if(brittle_hollow.inside_dark_hole(lookfrom)) {
+        int delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
+        lookfrom[0] = -250.0f + WHITE_HOLE_RADIUS + delta;
+        lookat[0] = -250.0f + WHITE_HOLE_RADIUS + delta;
+
+        delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
+        lookfrom[1] = 0.0f + WHITE_HOLE_RADIUS + delta;
+        lookat[1] = 0.0f + WHITE_HOLE_RADIUS + delta - 1;
+
+        delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
+        lookfrom[2] = 0.0f + WHITE_HOLE_RADIUS + delta;
+        lookat[2] = 0.0f + WHITE_HOLE_RADIUS + delta;
+    }
+    
     
     glutSwapBuffers();
 }
@@ -145,8 +197,8 @@ void reshape (int w, int h) {
 void keyboard (unsigned char key, int x, int y) {
     if(DEBUG) {
         std::cout << key << " " << x << " " << y << std::endl;
-        std::cout << lookfrom[0] << ", " << lookfrom[1] << ", " << lookfrom[2] << std::endl;
-        std::cout << lookat[0] << ", " << lookat[1] << ", " << lookat[2] << std::endl;
+        std::cout << "lf: " <<  lookfrom[0] << ", " << lookfrom[1] << ", " << lookfrom[2] << std::endl;
+        std::cout << "la:" << lookat[0] << ", " << lookat[1] << ", " << lookat[2] << std::endl;
     }
 
     if(lookfrom[2] > lookat[2]) {
@@ -210,6 +262,7 @@ void idle(void) {
 }
 
 int main(int argc, char** argv) {
+    srand(25);
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize (500, 500); 

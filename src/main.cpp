@@ -58,7 +58,7 @@
 #include "dark_brumble.cpp"
 #include "interloper.cpp"
 
-#define DEBUG false
+#define DEBUG true
 #define SPACE 32
 #define EPSILON 1e-6 // talvez inutil
 
@@ -93,13 +93,13 @@ void loadTexture ( const char * filename, GLuint &texture) {
     }
 }
 
-bool animating = true; // indica se a animação deve ocorrer ou não
+bool animating = false; // indica se a animação deve ocorrer ou não
 int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
 float dt = 1.0f;  // velocidade da animação
 int side = -1;
 
-static GLdouble lookfrom[] = {0.0f, 200.0f, 0.0f};
-static GLdouble lookat[] = {0.0f, 0.0f, 0.0f};
+static GLdouble lookfrom[] = {141, 56, -1};
+static GLdouble lookat[] = {141, -124, -1};
 
 /* raio, r, g, b */ 
 static Sun sun(SUN_PARAMS);
@@ -124,7 +124,11 @@ static Interloper
 void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glShadeModel (GL_SMOOTH);
-    glEnable(GL_DEPTH_TEST);    
+    glEnable(GL_DEPTH_TEST);  
+    glEnable(GL_LIGHTING); 
+
+    GLfloat global_ambient[] = {0.08f, 0.08f, 0.0f, 1.0f};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient); 
 }
 
 void display(void) {
@@ -154,7 +158,8 @@ void reshape (int w, int h) {
 void keyboard (unsigned char key, int x, int y) {
     if(DEBUG) {
         std::cout << key << " " << x << " " << y << std::endl;
-        std::cout << lookfrom[0] << " " << lookfrom[1] << " " << lookfrom[2] << std::endl;
+        std::cout << lookfrom[0] << ", " << lookfrom[1] << ", " << lookfrom[2] << std::endl;
+        std::cout << lookat[0] << ", " << lookat[1] << ", " << lookat[2] << std::endl;
     }
 
     if(lookfrom[2] > lookat[2]) {
@@ -163,31 +168,32 @@ void keyboard (unsigned char key, int x, int y) {
         side = -1;
     }
 
+    double velocity = 1.0f;
     // não funciona como eu achei que funcionaria
     switch (key){
         case SPACE: // mover para cima (32 = space bar em ASCII)
-            lookfrom[1] += 0.5f;
-            lookat[1] += 0.5f;
+            lookfrom[1] += velocity;
+            lookat[1] += velocity;
             break;
         case 'b': // mover para baixo 
-            lookfrom[1] -= 0.5f;
-            lookat[1] -= 0.5f;
+            lookfrom[1] -= velocity;
+            lookat[1] -= velocity;
             break;
         case 'a': // mover para esquerda
-            lookfrom[0] -= 0.5f * side;
-            lookat[0] -= 0.5f * side;
+            lookfrom[0] -= velocity * side;
+            lookat[0] -= velocity * side;
             break;
         case 'd': // mover para direita
-            lookfrom[0] += 0.5f * side;
-            lookat[0] += 0.5f * side;
+            lookfrom[0] += velocity * side;
+            lookat[0] += velocity * side;
             break;
         case 's': // mover para trás
-            lookfrom[2] += 0.5f * side;
-            lookat[2] += 0.5f * side;
+            lookfrom[2] += velocity * side;
+            lookat[2] += velocity * side;
             break;
         case 'w': // mover para frente
-            lookfrom[2] -= 0.5f * side;
-            lookat[2] -= 0.5f * side;
+            lookfrom[2] -= velocity * side;
+            lookat[2] -= velocity * side;
             break;
         case '1': // ativar/desativar animação
             animating = !animating;

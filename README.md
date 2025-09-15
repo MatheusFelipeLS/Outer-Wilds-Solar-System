@@ -16,3 +16,8 @@ Executar:
 ```
 ./main
 ```
+
+Ou, para executar make clean, make e ./main juntos, use:
+```
+./run.sh
+```

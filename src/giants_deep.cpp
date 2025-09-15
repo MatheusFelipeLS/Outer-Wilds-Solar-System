@@ -4,8 +4,9 @@
 #include <GL/glut.h>
 #include <iostream>
 
-#define GIANTS_DEEP_SURFACE_COLOR 0.0f, 253.0f/255.0f, 72.0f/255.0f
-#define GIANTS_DEEP_INNER_GLOBE_COLOR 10.0f/255.0f, 105.0f/255.0f, 74.0f/255.0f
+#define GIANTS_DEEP_SURFACE_COLOR 0.0f, 253.0f/255.0f, 72.0f/255.0f, 1.0f
+#define GIANTS_DEEP_INNER_GLOBE_COLOR 10.0f/255.0f, 105.0f/255.0f, 74.0f/255.0f, 1.0f
+
 class GiantsDeep {
     public:
         GiantsDeep(
@@ -25,20 +26,35 @@ class GiantsDeep {
                 << std::endl;
             }
             
+            GLfloat mat_ambient[]  = {0.3f, 0.3f, 0.3f, 1.0f};
+            GLfloat shininess[]    = {30.0f};
             glPushMatrix(); 
                 glRotatef (translation, 0.0, 1.0, 0.0);
                 glTranslatef (distance, 0.0, 0.0);
                 glRotatef (rotation, 0.0, 1.0, 0.0);
 
                 GLfloat material_color[] = {GIANTS_DEEP_SURFACE_COLOR};
+
                 glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
                 glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
+                glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+                glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+
                 glutSolidSphere(radius, slices, stacks);    
 
                 GLfloat inner_globe_material_color[] = {GIANTS_DEEP_INNER_GLOBE_COLOR};
                 glMaterialfv(GL_FRONT, GL_DIFFUSE, inner_globe_material_color);
                 glMaterialfv(GL_FRONT, GL_SPECULAR, inner_globe_material_color);
                 glutSolidSphere(radius / 4, slices, stacks);    
+
+                glPushMatrix(); 
+                glTranslatef(4.0, 4.0, 4.0);
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
+                glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
+                glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+                glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+                glutSolidCube(1.0);
+                glPopMatrix();
             glPopMatrix();
         }
 

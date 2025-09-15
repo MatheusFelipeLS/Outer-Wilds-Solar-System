@@ -4,36 +4,33 @@
 #include <GL/glut.h>
 #include <iostream>
 
-#define SUN_COLOR 1.0f, 1.0f, 1.0f
+#define SUN_COLOR 1.0f, 1.0f, 1.0f, 1.0f
 
 class Sun {
     public:
         Sun(
             GLfloat radius, 
-            GLfloat r, GLfloat g, GLfloat b, 
             GLint slices, GLint stacks
         ) :
         radius(radius),
-        slices(slices), stacks(stacks),
-        r(r), g(g), b(b)
+        slices(slices), stacks(stacks)
         {}
 
         void draw() {
             if(d) {
                 std::cout << "rt = " << rotation
                           << " radius = " << radius
-                          << " r = " << r
-                          << " g = " << g
-                          << " b = " << b
                 << std::endl;
             }
                     
-            glEnable(GL_LIGHTING);
             glEnable(GL_LIGHT0);
+
+            GLfloat ambient[4] = {0.12f, 0.12f, 0.08f, 1.0f};
 
             glLightfv(GL_LIGHT0, GL_POSITION, this->light_pos);
             glLightfv(GL_LIGHT0, GL_DIFFUSE, this->light_color);
             glLightfv(GL_LIGHT0, GL_SPECULAR, this->light_color);
+            glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
 
             // material emissivo (faz a esfera "brilhar")
             glMaterialfv(GL_FRONT, GL_EMISSION, this->emission);
@@ -74,9 +71,6 @@ class Sun {
         GLfloat radius;      // raio do planeta
         GLint slices;
         GLint stacks;
-        GLfloat r;          
-        GLfloat g;
-        GLfloat b;
         GLint transition_color_signal = 1;
         GLuint texture;
         GLUquadric *quad;

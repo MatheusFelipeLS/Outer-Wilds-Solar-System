@@ -4,7 +4,7 @@
 #include <GL/glut.h>
 #include <iostream>
 
-#define DARK_BRAMBLE_COLOR 255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f
+#define DARK_BRAMBLE_COLOR 255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f, 1.0f
 
 class DarkBrumble {
     public:
@@ -24,9 +24,11 @@ class DarkBrumble {
                           << " radius = " << radius
                 << std::endl;
             }
+
             GLfloat material_color[] = {DARK_BRAMBLE_COLOR};
             glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
             glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
+
             glPushMatrix(); 
                 glRotatef (translation, 0.0, 1.0, 0.0);
                 glTranslatef (distance, 0.0, 0.0);

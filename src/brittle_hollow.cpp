@@ -4,7 +4,7 @@
 #include <GL/glut.h>
 #include <iostream>
 
-#define BRITTLE_HOLLOW_COLOR 74.0f/255.0f, 0.0f, 128.0f/255.0f
+#define BRITTLE_HOLLOW_COLOR 74.0f/255.0f, 0.0f, 128.0f/255.0f, 1.0f
 
 class BrittleHollow {
     public:

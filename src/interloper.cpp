@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-#define INTERLOPER_COLOR 26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f
+#define INTERLOPER_COLOR 26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f, 1.0f
 
 
 class Interloper {
@@ -55,8 +55,10 @@ class Interloper {
             }
 
             GLfloat material_color[] = {INTERLOPER_COLOR};
+            GLfloat shine[] = {80.0};
             glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
             glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
+            glMaterialfv(GL_FRONT, GL_SHININESS, shine);
 
             if (animation_direction) {
                 bezier(

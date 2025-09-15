@@ -61,15 +61,22 @@ class BrittleHollow {
 
         bool inside_dark_hole(GLdouble lookfrom[]) {
             // encontrando a posição do buraco negro
-            double x = distance * cos(translation*RAD);
-            double y = distance * sin(translation*RAD);
+            auto [x, z] = get_black_hole_position();
             double dh_radius = radius / 4.0f;
 
+            printf("%f\n", dh_radius);
+            printf("(%f %f)\n", x, z);
+            printf("%f %f %f\n", lookfrom[0], lookfrom[1], -lookfrom[2]);
+
             return (
-                (lookfrom[0] < x + dh_radius && lookfrom[0] > x-dh_radius) && 
-                (lookfrom[1] < y + dh_radius && lookfrom[1] > y-dh_radius) && 
-                (lookfrom[2] < dh_radius && lookfrom[2] > -dh_radius)
+                (lookfrom[0] < x+dh_radius && lookfrom[0] > x-dh_radius) && 
+                (lookfrom[1] < dh_radius && lookfrom[1] > -dh_radius) && 
+                ((-lookfrom[2]) < z+dh_radius && (-lookfrom[2]) > z-dh_radius)
             );
+        }
+
+        std::pair<double, double> get_black_hole_position() {
+            return std::make_pair(distance * cos(translation*RAD), distance * sin(translation*RAD));
         }
 
         void debug() {

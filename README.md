@@ -2,7 +2,7 @@
 
 Este projeto tem o intuito de recriar parte do sistema solar do jogo outer wilds e as mecânicas de cada planeta.
   
-![Solar System](outerwilds-solar-system.webp)
+![Solar System](outer-wilds-solar-system.jpg)
 
 #
 

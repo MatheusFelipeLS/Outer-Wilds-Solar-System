@@ -58,12 +58,11 @@
 #include "giants_deep.cpp"
 #include "dark_bramble.cpp"
 #include "interloper.cpp"
+#include "white_hole.cpp"
 
-#define DEBUG true
+#define DEBUG false
 #define SPACE 32
 #define EPSILON 1e-6 // talvez inutil
-
-#define WHITE_HOLE_RADIUS SUN_RADIUS/50.0f
 
 void loadTexture ( const char * filename, GLuint &texture) {
     int width , height , nrChannels ;
@@ -96,18 +95,18 @@ void loadTexture ( const char * filename, GLuint &texture) {
     }
 }
 
-bool animating = true; // indica se a animação deve ocorrer ou não
+bool animating = false; // indica se a animação deve ocorrer ou não
 int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
 float dt = 1.0f;  // velocidade da animação
 int side = -1;
 
 // visão do sistema inteiro
-static GLdouble lookfrom[] = {0, 250, 0};
-static GLdouble lookat[] = {0, -99, 0};
+// static GLdouble lookfrom[] = {0, 250, 0};
+// static GLdouble lookat[] = {0, -99, 0};
 
 // zoom no profundezas do gigante
-// static GLdouble lookfrom[] = {141, 56, -1};
-// static GLdouble lookat[] = {141, -124, -1};
+static GLdouble lookfrom[] = {111, 36, -1};
+static GLdouble lookat[] = {111, -124, -1};
 
 static Sun sun(SUN_PARAMS);
 static ThimberHearth timber_hearth(THIMBER_HEARTH_PARAMS);
@@ -115,31 +114,7 @@ static BrittleHollow brittle_hollow(BRITTLE_HOLLOW_PARAMS);
 static GiantsDeep giants_deep(GIANTS_DEEP_PARAMS);
 static DarkBramble dark_bramble(DARK_BRAMBLE_PARAMS);
 static Interloper interloper(INTERLOPER_PARAMS);
-
-
-void draw_white_hole() {
-    GLfloat light_pos[4] = {-250.0f, 0.0f, 0.0f, 1.0f};
-    GLfloat light_color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    GLfloat emission[4] = {1.0f, 1.0f, 1.0f, 1.0f}; // branco
-
-    glLightfv(GL_LIGHT1, GL_POSITION, light_pos);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_color);
-    glLightfv(GL_LIGHT1, GL_SPECULAR, light_color);
-
-    // material emissivo (faz a esfera "brilhar")
-    glMaterialfv(GL_FRONT, GL_EMISSION, emission);
-
-    glPushMatrix();
-        glTranslatef(-250.0f, 0.0f, 0.0f);
-        GLUquadric *quad = gluNewQuadric ();
-        gluQuadricTexture ( quad , GL_TRUE );
-        gluSphere ( quad , WHITE_HOLE_RADIUS , SLICES , STACKS);
-    glPopMatrix();
-    
-    // Depois, sempre volte a emissão pro "zero" pros outros planetas:
-    GLfloat black_emission[] = {0.0f, 0.0f, 0.0f, 1.0f};
-    glMaterialfv(GL_FRONT, GL_EMISSION, black_emission);
-}
+static WhiteHole white_hole(WHITE_HOLE_PARAMS);
 
 void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
@@ -151,6 +126,37 @@ void init(void) {
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
+}
+
+void hole_teleport() {
+    if(brittle_hollow.inside_dark_hole(lookfrom)) {
+        //teleportando para o buraco branco
+        int delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
+        lookfrom[0] = -250.0f + WHITE_HOLE_RADIUS + delta;
+        lookat[0] = -250.0f + WHITE_HOLE_RADIUS + delta;
+
+        delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
+        lookfrom[1] = 0.0f + WHITE_HOLE_RADIUS + delta;
+        lookat[1] = 0.0f + WHITE_HOLE_RADIUS + delta - 1;
+
+        delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
+        lookfrom[2] = 0.0f + WHITE_HOLE_RADIUS + delta;
+        lookat[2] = 0.0f + WHITE_HOLE_RADIUS + delta;
+    } else if(white_hole.inside(lookfrom)) {
+        auto [x, y] = brittle_hollow.get_black_hole_position();
+
+        int delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
+        lookfrom[0] = x + WHITE_HOLE_RADIUS + delta;
+        lookat[0] = x + WHITE_HOLE_RADIUS + delta;
+
+        delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
+        lookfrom[1] = y + WHITE_HOLE_RADIUS + delta;
+        lookat[1] = y + WHITE_HOLE_RADIUS + delta - 1;
+
+        delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
+        lookfrom[2] = 0.0f + WHITE_HOLE_RADIUS + delta;
+        lookat[2] = 0.0f + WHITE_HOLE_RADIUS + delta;
+    }
 }
 
 void display(void) {
@@ -165,24 +171,10 @@ void display(void) {
     giants_deep.draw();
     dark_bramble.draw();
     interloper.draw();   
+    white_hole.draw();
 
-    draw_white_hole();
+    hole_teleport();
 
-    if(brittle_hollow.inside_dark_hole(lookfrom)) {
-        int delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        lookfrom[0] = -250.0f + WHITE_HOLE_RADIUS + delta;
-        lookat[0] = -250.0f + WHITE_HOLE_RADIUS + delta;
-
-        delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        lookfrom[1] = 0.0f + WHITE_HOLE_RADIUS + delta;
-        lookat[1] = 0.0f + WHITE_HOLE_RADIUS + delta - 1;
-
-        delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        lookfrom[2] = 0.0f + WHITE_HOLE_RADIUS + delta;
-        lookat[2] = 0.0f + WHITE_HOLE_RADIUS + delta;
-    }
-    
-    
     glutSwapBuffers();
 }
 
@@ -208,7 +200,6 @@ void keyboard (unsigned char key, int x, int y) {
     }
 
     double velocity = 1.0f;
-    // não funciona como eu achei que funcionaria
     switch (key){
         case SPACE: // mover para cima (32 = space bar em ASCII)
             lookfrom[1] += velocity;
@@ -236,6 +227,12 @@ void keyboard (unsigned char key, int x, int y) {
             break;
         case '1': // ativar/desativar animação
             animating = !animating;
+            break;
+        case 'v': // aumentar minha velocidade
+            velocity += 0.01f;
+            break;
+        case 'V': // aumentar minha velocidade
+            velocity -= 0.01f;
             break;
         case 27:
             exit(0);

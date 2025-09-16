@@ -42,13 +42,14 @@ class BrittleHollow {
 
                 glutSolidSphere(radius, slices, stacks);    
 
-                material_color[0] = 0.0f; //10.0f/255.0f;
-                material_color[1] = 0.0f; //105.0f/255.0f;
-                material_color[2] = 0.0f; //174.0f/255.0f;
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
-                glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
-                glMaterialfv(GL_FRONT, GL_AMBIENT, material_color);
-                glMaterialfv(GL_FRONT, GL_SHININESS, material_color);
+                GLfloat bh_ambient[] = {0.0f, 0.0f, 0.0f};
+                GLfloat bh_diffuse[] = {1.0f, 1.0f, 1.0f};
+                GLfloat bh_specular[] = {0.1f, 0.1f, 0.1f};
+                GLfloat bh_shininess[] = { 120.0f };
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, bh_ambient);
+                glMaterialfv(GL_FRONT, GL_SPECULAR, bh_diffuse);
+                glMaterialfv(GL_FRONT, GL_AMBIENT, bh_specular);
+                glMaterialfv(GL_FRONT, GL_SHININESS, bh_shininess);
                 
                 glutSolidSphere(radius / 4, slices, stacks);    
             glPopMatrix();

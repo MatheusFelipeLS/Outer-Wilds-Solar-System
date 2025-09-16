@@ -104,9 +104,9 @@ int side = -1;
 // static GLdouble lookfrom[] = {0, 250, 0};
 // static GLdouble lookat[] = {0, -99, 0};
 
-// zoom no profundezas do gigante
-static GLdouble lookfrom[] = {111, 36, -1};
-static GLdouble lookat[] = {111, -124, -1};
+// zoom no buraco negro
+static GLdouble lookfrom[] = {98, 2, 0};
+static GLdouble lookat[] = {98, -124, 0};
 
 static Sun sun(SUN_PARAMS);
 static ThimberHearth timber_hearth(THIMBER_HEARTH_PARAMS);

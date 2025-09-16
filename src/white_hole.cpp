@@ -22,6 +22,7 @@ class WhiteHole {
             glLightfv(GL_LIGHT1, GL_POSITION, light_pos);
             glLightfv(GL_LIGHT1, GL_DIFFUSE, light_color);
             glLightfv(GL_LIGHT1, GL_SPECULAR, light_color);
+            glLightfv(GL_LIGHT1, GL_AMBIENT, light_color);
 
             // material emissivo (faz a esfera "brilhar")
             glMaterialfv(GL_FRONT, GL_EMISSION, emission);

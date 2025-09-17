@@ -49,6 +49,7 @@
 
 #include "params.cpp"
 
+#include "player.cpp"
 #include "sun.cpp"
 #include "thimber_hearth.cpp"
 #include "brittle_hollow.cpp"
@@ -60,20 +61,19 @@
 #define DEBUG false
 #define SPACE 32
 #define EPSILON 1e-6 // talvez inutil
+#define FPS 60
+// #define TO_RADIANS 3.14/180.0 //tecnicamente tem essa mesma constante em brittle hollow. Talvez usar extern para remover
 
+const int width = 16*50;
+const int height = 9*50;
 bool animating = false; // indica se a animação deve ocorrer ou não
 int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
 float dt = 1.0f;  // velocidade da animação
-int side = -1;
 
-// visão do sistema inteiro
-// static GLdouble lookfrom[] = {0, 250, 0};
-// static GLdouble lookat[] = {0, -99, 0};
+// x, y, z, pitch, yaw iniciais
+#define PLAYER_PARAMS 50.0f, 0.0f, -30.0f, 0.0f, 0.0f
 
-// zoom no buraco negro
-static GLdouble lookfrom[] = {98, 2, 0};
-static GLdouble lookat[] = {98, -124, 0};
-
+static Player player(PLAYER_PARAMS);
 static Sun sun(SUN_PARAMS);
 static ThimberHearth timber_hearth(THIMBER_HEARTH_PARAMS);
 static BrittleHollow brittle_hollow(BRITTLE_HOLLOW_PARAMS);
@@ -82,28 +82,10 @@ static DarkBramble dark_bramble(DARK_BRAMBLE_PARAMS);
 static Interloper interloper(INTERLOPER_PARAMS);
 static WhiteHole white_hole(WHITE_HOLE_PARAMS);
 
-struct Motion
-{
-    bool Forward,Backward,Left,Right;
-};
-
-Motion motion = {false,false,false,false};
-
-#define FPS 60
-#define TO_RADIANS 3.14/180.0
-
-//width and height of the window ( Aspect ratio 16:9 )
-const int width = 16*50;
-const int height = 9*50;
-
-float pitch = 0.0, yaw= 0.0;
-float camX = 50.0, camY = 0.0, camZ = -30.0;
-
 void display();
 void reshape(int w,int h);
 void timer(int);
 void passive_motion(int,int);
-void camera();
 void keyboard(unsigned char key,int x,int y);
 void keyboard_up(unsigned char key,int x,int y);
 
@@ -123,27 +105,12 @@ void init(void) {
 }
 
 void hole_teleport() {
-    if(brittle_hollow.inside_dark_hole(camX, camY, camZ)) {
+    if(brittle_hollow.inside_dark_hole(player.camX, player.camY, player.camZ)) {
         //teleportando para o buraco branco
-        int delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        camX = -250.0f + WHITE_HOLE_RADIUS + delta;
-
-        delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        camY = 0.0f + WHITE_HOLE_RADIUS + delta;
-
-        delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        camZ = 0.0f + WHITE_HOLE_RADIUS + delta;
-    } else if(white_hole.inside(camX, camY, camZ)) {
-        auto [x, y] = brittle_hollow.get_black_hole_position();
-
-        int delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        camX = x + WHITE_HOLE_RADIUS + delta;
-
-        delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        camY = y + WHITE_HOLE_RADIUS + delta;
-
-        delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        camZ = 0.0f + WHITE_HOLE_RADIUS + delta;
+        player.teleport(WHITE_HOLE_TX, WHITE_HOLE_TY, WHITE_HOLE_TZ, WHITE_HOLE_RADIUS);
+    } else if(white_hole.inside(player.camX, player.camY, player.camZ)) {
+        auto [x, z] = brittle_hollow.get_black_hole_position();
+        player.teleport(x, 0.0f, z, WHITE_HOLE_RADIUS); // acho q o gap (white hole radius) tá muito grande
     }
 }
 
@@ -151,7 +118,7 @@ void display(void) {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     glLoadIdentity();
-    camera();
+    player.camera();
 
     sun.draw();
     timber_hearth.draw();
@@ -182,47 +149,13 @@ void timer(int) {
 
 void passive_motion(int x,int y) {
     /* two variables to store X and Y coordinates, as observed from the center
-      of the window
-    */
+      of the window */
     int dev_x,dev_y;
     dev_x = (width/2)-x;
     dev_y = (height/2)-y;
 
     /* apply the changes to pitch and yaw*/
-    yaw += (float)dev_x/10.0;
-    pitch += (float)dev_y/10.0;
-}
-
-void camera() {
-    if(motion.Forward) {
-        camX += cos((yaw+90)*TO_RADIANS)/5.0;
-        camZ -= sin((yaw+90)*TO_RADIANS)/5.0;
-    }
-    if(motion.Backward) {
-        camX += cos((yaw+90+180)*TO_RADIANS)/5.0;
-        camZ -= sin((yaw+90+180)*TO_RADIANS)/5.0;
-    }
-    if(motion.Left) {
-        camX += cos((yaw+90+90)*TO_RADIANS)/5.0;
-        camZ -= sin((yaw+90+90)*TO_RADIANS)/5.0;
-    }
-    if(motion.Right) {
-        camX += cos((yaw+90-90)*TO_RADIANS)/5.0;
-        camZ -= sin((yaw+90-90)*TO_RADIANS)/5.0;
-    }
-
-    /*limit the values of pitch
-      between -60 and 70
-    */
-    // if(pitch>=70)
-    //     pitch = 70;
-    // if(pitch<=-60)
-    //     pitch=-60;
-
-    glRotatef(-pitch,1.0,0.0,0.0); // Along X axis
-    glRotatef(-yaw,0.0,1.0,0.0);    //Along Y axis
-
-    glTranslatef(-camX,-camY,-camZ);
+    player.update_pitch_yall(dev_x, dev_y);
 }
 
 void keyboard(unsigned char key,int x,int y) {
@@ -232,27 +165,27 @@ void keyboard(unsigned char key,int x,int y) {
 
     switch(key) {
         case SPACE: // mover para cima (32 = space bar em ASCII)
-            camY += 0.5;    
+            player.camY += 0.5;    
             break;
         case 'b': // mover para baixo 
         case 'B': // mover para baixo 
-            camY -= 0.5;
+            player.camY -= 0.5;
             break;
         case 'W':
         case 'w':
-            motion.Forward = true;
+            player.move_forward();
             break;
         case 'A':
         case 'a':
-            motion.Left = true;
+        player.move_left();
             break;
         case 'S':
         case 's':
-            motion.Backward = true;
+            player.move_backward();
             break;
         case 'D':
         case 'd':
-            motion.Right = true;
+            player.move_right();
             break;
         case '1': // ativar/desativar animação
             animating = !animating;
@@ -267,19 +200,19 @@ void keyboard_up(unsigned char key,int x,int y) {
     switch(key) {
         case 'W':
         case 'w':
-            motion.Forward = false;
+            player.stop_forward();
             break;
         case 'A':
         case 'a':
-            motion.Left = false;
+            player.stop_left();
             break;
         case 'S':
         case 's':
-            motion.Backward = false;
+            player.stop_backward();
             break;
         case 'D':
         case 'd':
-            motion.Right = false;
+            player.stop_right();
             break;
     }
 }

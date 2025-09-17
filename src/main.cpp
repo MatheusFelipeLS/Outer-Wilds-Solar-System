@@ -111,15 +111,15 @@ void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glShadeModel (GL_SMOOTH);
     glutSetCursor(GLUT_CURSOR_NONE);
-    glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    glutWarpPointer(width/2,height/2);
+    glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING); 
-
-    GLfloat global_ambient[] = {0.3f, 0.3f, 0.3f, 1.0f};
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
+    GLfloat global_ambient[] = {0.3f, 0.3f, 0.3f, 1.0f};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+    glutWarpPointer(width/2,height/2);
+
 }
 
 void hole_teleport() {

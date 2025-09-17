@@ -73,7 +73,7 @@ class BrittleHollow {
             return (
                 (camX < x+dh_radius && camX > x-dh_radius) && 
                 (camY < dh_radius && camY > -dh_radius) && 
-                ((camZ) < z+dh_radius && (camZ) > z-dh_radius)
+                ((-camZ) < z+dh_radius && (-camZ) > z-dh_radius)
             );
         }
 

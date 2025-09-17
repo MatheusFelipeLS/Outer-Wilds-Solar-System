@@ -71,7 +71,7 @@ int forward = 1;   // indica se a animação vai do início ao fim ou ao contrá
 float dt = 1.0f;  // velocidade da animação
 
 // x, y, z, pitch, yaw iniciais
-#define PLAYER_PARAMS 50.0f, 0.0f, -30.0f, 0.0f, 0.0f
+#define PLAYER_PARAMS 0.0f, 2*SUN_RADIUS, 0.0f, 0.0f, 0.0f
 
 static Player player(PLAYER_PARAMS);
 static Sun sun(SUN_PARAMS);
@@ -137,7 +137,7 @@ void reshape (int w, int h) {
     glViewport (0, 0, (GLsizei) w, (GLsizei) h); 
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
-    gluPerspective(60.0, (GLfloat) w/(GLfloat) h, 1.0, 500.0);
+    gluPerspective(60.0, (GLfloat) w/(GLfloat) h, 1.0, 1000.0);
     glMatrixMode(GL_MODELVIEW);
 }
 

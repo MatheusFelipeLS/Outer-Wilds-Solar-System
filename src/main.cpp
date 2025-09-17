@@ -42,9 +42,6 @@
 *  Interaction:  pressing the d and y keys (day and year)
 *  alters the rotation of the planet around the sun.
 */
-#define STB_IMAGE_IMPLEMENTATION 
-#include "../include/stb_image.h"
-
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <iostream>
@@ -63,37 +60,6 @@
 #define DEBUG false
 #define SPACE 32
 #define EPSILON 1e-6 // talvez inutil
-
-void loadTexture ( const char * filename, GLuint &texture) {
-    int width , height , nrChannels ;
-    std::cout << filename << std::endl; 
-    unsigned char * data = stbi_load ( filename , & width , & height ,
-    & nrChannels , 0);
-    if ( data ) {
-        glGenTextures (1 , & texture );
-        glBindTexture ( GL_TEXTURE_2D , texture );
-        // Set texture wrapping and filtering parameters
-        glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_WRAP_S ,
-        GL_REPEAT );
-        glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_WRAP_T ,
-        GL_REPEAT );
-        glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER ,
-        GL_LINEAR_MIPMAP_LINEAR );
-        glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER ,
-        GL_LINEAR );
-        // Load the texture data ( check if it 's RGB or RGBA )
-        if ( nrChannels == 3) {
-            gluBuild2DMipmaps ( GL_TEXTURE_2D , GL_RGB , width ,
-            height , GL_RGB , GL_UNSIGNED_BYTE , data );
-        } else if ( nrChannels == 4) {
-            gluBuild2DMipmaps ( GL_TEXTURE_2D , GL_RGBA , width ,
-            height , GL_RGBA , GL_UNSIGNED_BYTE , data );
-        }
-        stbi_image_free ( data );
-    } else {
-        std::cerr << "Failed to load texture : " << filename << std::endl ;
-    }
-}
 
 bool animating = false; // indica se a animação deve ocorrer ou não
 int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
@@ -116,10 +82,38 @@ static DarkBramble dark_bramble(DARK_BRAMBLE_PARAMS);
 static Interloper interloper(INTERLOPER_PARAMS);
 static WhiteHole white_hole(WHITE_HOLE_PARAMS);
 
+struct Motion
+{
+    bool Forward,Backward,Left,Right;
+};
+
+Motion motion = {false,false,false,false};
+
+#define FPS 60
+#define TO_RADIANS 3.14/180.0
+
+//width and height of the window ( Aspect ratio 16:9 )
+const int width = 16*50;
+const int height = 9*50;
+
+float pitch = 0.0, yaw= 0.0;
+float camX = 50.0, camY = 0.0, camZ = -30.0;
+
+void display();
+void reshape(int w,int h);
+void timer(int);
+void passive_motion(int,int);
+void camera();
+void keyboard(unsigned char key,int x,int y);
+void keyboard_up(unsigned char key,int x,int y);
+
 void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glShadeModel (GL_SMOOTH);
-    glEnable(GL_DEPTH_TEST);  
+    glutSetCursor(GLUT_CURSOR_NONE);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glutWarpPointer(width/2,height/2);
     glEnable(GL_LIGHTING); 
 
     GLfloat global_ambient[] = {0.3f, 0.3f, 0.3f, 1.0f};
@@ -129,33 +123,27 @@ void init(void) {
 }
 
 void hole_teleport() {
-    if(brittle_hollow.inside_dark_hole(lookfrom)) {
+    if(brittle_hollow.inside_dark_hole(camX, camY, camZ)) {
         //teleportando para o buraco branco
         int delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        lookfrom[0] = -250.0f + WHITE_HOLE_RADIUS + delta;
-        lookat[0] = -250.0f + WHITE_HOLE_RADIUS + delta;
+        camX = -250.0f + WHITE_HOLE_RADIUS + delta;
 
         delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        lookfrom[1] = 0.0f + WHITE_HOLE_RADIUS + delta;
-        lookat[1] = 0.0f + WHITE_HOLE_RADIUS + delta - 1;
+        camY = 0.0f + WHITE_HOLE_RADIUS + delta;
 
         delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        lookfrom[2] = 0.0f + WHITE_HOLE_RADIUS + delta;
-        lookat[2] = 0.0f + WHITE_HOLE_RADIUS + delta;
-    } else if(white_hole.inside(lookfrom)) {
+        camZ = 0.0f + WHITE_HOLE_RADIUS + delta;
+    } else if(white_hole.inside(camX, camY, camZ)) {
         auto [x, y] = brittle_hollow.get_black_hole_position();
 
         int delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        lookfrom[0] = x + WHITE_HOLE_RADIUS + delta;
-        lookat[0] = x + WHITE_HOLE_RADIUS + delta;
+        camX = x + WHITE_HOLE_RADIUS + delta;
 
         delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        lookfrom[1] = y + WHITE_HOLE_RADIUS + delta;
-        lookat[1] = y + WHITE_HOLE_RADIUS + delta - 1;
+        camY = y + WHITE_HOLE_RADIUS + delta;
 
         delta = (rand() % ((int) (2 * WHITE_HOLE_RADIUS)));
-        lookfrom[2] = 0.0f + WHITE_HOLE_RADIUS + delta;
-        lookat[2] = 0.0f + WHITE_HOLE_RADIUS + delta;
+        camZ = 0.0f + WHITE_HOLE_RADIUS + delta;
     }
 }
 
@@ -163,7 +151,7 @@ void display(void) {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     glLoadIdentity();
-    gluLookAt (lookfrom[0], lookfrom[1], lookfrom[2], lookat[0], lookat[1], lookat[2], 0.0, 0.0, 1.0);
+    camera();
 
     sun.draw();
     timber_hearth.draw();
@@ -182,67 +170,118 @@ void reshape (int w, int h) {
     glViewport (0, 0, (GLsizei) w, (GLsizei) h); 
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
-    gluPerspective(100.0, (GLfloat) w/(GLfloat) h, 1.0, 500.0);
+    gluPerspective(60.0, (GLfloat) w/(GLfloat) h, 1.0, 500.0);
     glMatrixMode(GL_MODELVIEW);
 }
 
-void keyboard (unsigned char key, int x, int y) {
+void timer(int) {
+    glutPostRedisplay();
+    glutWarpPointer(width/2,height/2);
+    glutTimerFunc(1000/FPS,timer,0);
+}
+
+void passive_motion(int x,int y) {
+    /* two variables to store X and Y coordinates, as observed from the center
+      of the window
+    */
+    int dev_x,dev_y;
+    dev_x = (width/2)-x;
+    dev_y = (height/2)-y;
+
+    /* apply the changes to pitch and yaw*/
+    yaw += (float)dev_x/10.0;
+    pitch += (float)dev_y/10.0;
+}
+
+void camera() {
+    if(motion.Forward) {
+        camX += cos((yaw+90)*TO_RADIANS)/5.0;
+        camZ -= sin((yaw+90)*TO_RADIANS)/5.0;
+    }
+    if(motion.Backward) {
+        camX += cos((yaw+90+180)*TO_RADIANS)/5.0;
+        camZ -= sin((yaw+90+180)*TO_RADIANS)/5.0;
+    }
+    if(motion.Left) {
+        camX += cos((yaw+90+90)*TO_RADIANS)/5.0;
+        camZ -= sin((yaw+90+90)*TO_RADIANS)/5.0;
+    }
+    if(motion.Right) {
+        camX += cos((yaw+90-90)*TO_RADIANS)/5.0;
+        camZ -= sin((yaw+90-90)*TO_RADIANS)/5.0;
+    }
+
+    /*limit the values of pitch
+      between -60 and 70
+    */
+    // if(pitch>=70)
+    //     pitch = 70;
+    // if(pitch<=-60)
+    //     pitch=-60;
+
+    glRotatef(-pitch,1.0,0.0,0.0); // Along X axis
+    glRotatef(-yaw,0.0,1.0,0.0);    //Along Y axis
+
+    glTranslatef(-camX,-camY,-camZ);
+}
+
+void keyboard(unsigned char key,int x,int y) {
     if(DEBUG) {
         std::cout << key << " " << x << " " << y << std::endl;
-        std::cout << "lf: " <<  lookfrom[0] << ", " << lookfrom[1] << ", " << lookfrom[2] << std::endl;
-        std::cout << "la:" << lookat[0] << ", " << lookat[1] << ", " << lookat[2] << std::endl;
     }
 
-    if(lookfrom[2] > lookat[2]) {
-        side = 1;
-    } else {
-        side = -1;
-    }
-
-    double velocity = 1.0f;
-    switch (key){
+    switch(key) {
         case SPACE: // mover para cima (32 = space bar em ASCII)
-            lookfrom[1] += velocity;
-            lookat[1] += velocity;
+            camY += 0.5;    
             break;
         case 'b': // mover para baixo 
-            lookfrom[1] -= velocity;
-            lookat[1] -= velocity;
+        case 'B': // mover para baixo 
+            camY -= 0.5;
             break;
-        case 'a': // mover para esquerda
-            lookfrom[0] -= velocity * side;
-            lookat[0] -= velocity * side;
+        case 'W':
+        case 'w':
+            motion.Forward = true;
             break;
-        case 'd': // mover para direita
-            lookfrom[0] += velocity * side;
-            lookat[0] += velocity * side;
+        case 'A':
+        case 'a':
+            motion.Left = true;
             break;
-        case 's': // mover para trás
-            lookfrom[2] += velocity * side;
-            lookat[2] += velocity * side;
+        case 'S':
+        case 's':
+            motion.Backward = true;
             break;
-        case 'w': // mover para frente
-            lookfrom[2] -= velocity * side;
-            lookat[2] -= velocity * side;
+        case 'D':
+        case 'd':
+            motion.Right = true;
             break;
         case '1': // ativar/desativar animação
             animating = !animating;
             break;
-        case 'v': // aumentar minha velocidade
-            velocity += 0.01f;
-            break;
-        case 'V': // aumentar minha velocidade
-            velocity -= 0.01f;
-            break;
         case 27:
             exit(0);
             break;
-        default:
+    }
+}
+
+void keyboard_up(unsigned char key,int x,int y) {
+    switch(key) {
+        case 'W':
+        case 'w':
+            motion.Forward = false;
+            break;
+        case 'A':
+        case 'a':
+            motion.Left = false;
+            break;
+        case 'S':
+        case 's':
+            motion.Backward = false;
+            break;
+        case 'D':
+        case 'd':
+            motion.Right = false;
             break;
     }
-
-    glutPostRedisplay();
-    
 }
 
 void idle(void) {
@@ -260,16 +299,23 @@ void idle(void) {
 
 int main(int argc, char** argv) {
     srand(25);
+
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize (500, 500); 
+    glutInitWindowSize (width, height); 
     glutInitWindowPosition (100, 100);
     glutCreateWindow (argv[0]);
+
     init ();
-    glutDisplayFunc(display); 
+
+    glutDisplayFunc(display);
     glutReshapeFunc(reshape);
+    glutPassiveMotionFunc(passive_motion);
+    glutTimerFunc(0,timer,0);    
     glutKeyboardFunc(keyboard);
+    glutKeyboardUpFunc(keyboard_up);
     glutIdleFunc(idle); 
     glutMainLoop();
+
     return 0;
 }

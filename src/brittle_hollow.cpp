@@ -60,19 +60,20 @@ class BrittleHollow {
             rotation += r;
         }
 
-        bool inside_dark_hole(GLdouble lookfrom[]) {
+        bool inside_dark_hole(GLdouble camX, GLdouble camY, GLdouble camZ) {
             // encontrando a posição do buraco negro
             auto [x, z] = get_black_hole_position();
             double dh_radius = radius / 4.0f;
-
+            
+            
+            printf("DARK HOLE\n");
             printf("%f\n", dh_radius);
             printf("(%f %f)\n", x, z);
-            printf("%f %f %f\n", lookfrom[0], lookfrom[1], -lookfrom[2]);
 
             return (
-                (lookfrom[0] < x+dh_radius && lookfrom[0] > x-dh_radius) && 
-                (lookfrom[1] < dh_radius && lookfrom[1] > -dh_radius) && 
-                ((-lookfrom[2]) < z+dh_radius && (-lookfrom[2]) > z-dh_radius)
+                (camX < x+dh_radius && camX > x-dh_radius) && 
+                (camY < dh_radius && camY > -dh_radius) && 
+                ((camZ) < z+dh_radius && (camZ) > z-dh_radius)
             );
         }
 

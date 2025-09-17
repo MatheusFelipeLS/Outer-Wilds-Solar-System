@@ -39,13 +39,11 @@ class WhiteHole {
             glMaterialfv(GL_FRONT, GL_EMISSION, black_emission);
         }
 
-        bool inside(GLdouble lookfrom[]) {
-            printf("wh radius: %f\n", radius);
-            printf("%f %f %f\n", lookfrom[0], lookfrom[1], lookfrom[2]);
+        bool inside(GLdouble camX, GLdouble camY, GLdouble camZ) {
             return (
-                (lookfrom[0] <= x+radius && lookfrom[0] >= x-radius) && 
-                (lookfrom[1] <= y+radius && lookfrom[1] >= y-radius) && 
-                (lookfrom[2] <= z+radius && lookfrom[2] >= z-radius)
+                (camX <= x+radius && camX >= x-radius) && 
+                (camY <= y+radius && camY >= y-radius) && 
+                (camZ <= z+radius && camZ >= z-radius)
             );
         }
 

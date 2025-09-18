@@ -71,7 +71,7 @@ int forward = 1;   // indica se a animação vai do início ao fim ou ao contrá
 float dt = 1.0f;  // velocidade da animação
 
 // x, y, z, pitch, yaw iniciais
-#define PLAYER_PARAMS 0.0f, 2*SUN_RADIUS, 0.0f, 0.0f, 0.0f
+#define PLAYER_PARAMS DARK_BRAMBLE_DISTANCE, 0, 0.0f, 0.0f, 0.0f
 
 static Player player(PLAYER_PARAMS);
 static Sun sun(SUN_PARAMS);
@@ -89,6 +89,107 @@ void passive_motion(int,int);
 void keyboard(unsigned char key,int x,int y);
 void keyboard_up(unsigned char key,int x,int y);
 
+typedef struct {
+    float x, y, z;
+} Vertex;
+
+#define MAX_VERTICES 100000
+#define MAX_FACES    200000   // depois de triangulação pode dobrar
+
+Vertex vertices[MAX_VERTICES];
+int faces[MAX_FACES][3];  // sempre triângulos
+int num_vertices = 0, num_faces = 0;
+
+GLuint icosphere;
+GLuint sphere;
+
+// ==================== OBJ LOADER ====================
+void loadObj(const char *fname) {
+    FILE *fp = fopen(fname, "r");
+    if (!fp) {
+        printf("Can't open file %s\n", fname);
+        exit(1);
+    }
+
+    int indexes = 0;
+    char line[256];
+    int current_idx = 0;
+    while (fgets(line, sizeof(line), fp)) {
+        // vértices
+        if (line[0] == 'v' && line[1] == ' ') {
+            Vertex v;
+            printf("%d %d\n", current_idx, num_vertices);
+            sscanf(line, "v %f %f %f", &v.x, &v.y, &v.z);
+            vertices[num_vertices++] = v;
+            current_idx++;
+        }
+        // faces
+        else if (line[0] == 'f') {
+            int v[4];
+            int count = sscanf(line,
+                "f %d/%*d/%*d %d/%*d/%*d %d/%*d/%*d %d/%*d/%*d",
+                &v[0], &v[1], &v[2], &v[3]);
+
+            if (count == 3) {
+                // triângulo
+                faces[num_faces][0] = v[0] - 1;
+                faces[num_faces][1] = v[1] - 1;
+                faces[num_faces][2] = v[2] - 1;
+                num_faces++;
+            } else if (count == 4) {
+                // quad → triangula em 2 triângulos
+                faces[num_faces][0] = v[0] - 1;
+                faces[num_faces][1] = v[1] - 1;
+                faces[num_faces][2] = v[2] - 1;
+                num_faces++;
+
+                faces[num_faces][0] = v[0] - 1;
+                faces[num_faces][1] = v[2] - 1;
+                faces[num_faces][2] = v[3] - 1;
+                num_faces++;
+            }
+        } else if(line[0] == 'o') {
+            indexes = current_idx; 
+            printf("%d\n", current_idx);
+        }
+    }
+    fclose(fp);
+
+    printf("%d %d\n", indexes, num_faces);
+    // Criar display list
+    icosphere = glGenLists(1);
+    glNewList(icosphere, GL_COMPILE);
+    {
+        glBegin(GL_TRIANGLES);
+        for (int i = 0; i < indexes; i++) {
+            Vertex v1 = vertices[faces[i][0]];
+            Vertex v2 = vertices[faces[i][1]];
+            Vertex v3 = vertices[faces[i][2]];
+            glVertex3f(v1.x, v1.y, v1.z);
+            glVertex3f(v2.x, v2.y, v2.z);
+            glVertex3f(v3.x, v3.y, v3.z);
+        }
+        glEnd();
+    }
+    glEndList();
+
+    sphere = glGenLists(1);
+    glNewList(sphere, GL_COMPILE);
+    {
+        glBegin(GL_TRIANGLES);
+        for (int i = indexes; i < num_faces; i++) {
+            Vertex v1 = vertices[faces[i][0]];
+            Vertex v2 = vertices[faces[i][1]];
+            Vertex v3 = vertices[faces[i][2]];
+            glVertex3f(v1.x, v1.y, v1.z);
+            glVertex3f(v2.x, v2.y, v2.z);
+            glVertex3f(v3.x, v3.y, v3.z);
+        }
+        glEnd();
+    }
+    glEndList();
+}
+
 void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glShadeModel (GL_SMOOTH);
@@ -102,6 +203,9 @@ void init(void) {
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
     glutWarpPointer(width/2,height/2);
 
+    loadObj("3d_models/abrolho/abrolho.obj");
+    dark_bramble.set_icosphere(icosphere);
+    dark_bramble.set_sphere(sphere);
 }
 
 void hole_teleport() {

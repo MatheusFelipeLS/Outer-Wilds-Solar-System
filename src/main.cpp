@@ -49,7 +49,7 @@
 
 #include "params.cpp"
 
-#include "player.cpp"
+#include "player.h"
 #include "sun.cpp"
 #include "thimber_hearth.cpp"
 #include "brittle_hollow.cpp"

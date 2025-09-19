@@ -48,7 +48,23 @@ class GiantsDeep {
                 glMaterialfv(GL_FRONT, GL_AMBIENT, material_color);
                 glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
             
-                glutSolidSphere(radius / 4, slices, stacks);    
+                glutSolidSphere(radius / 4, slices, stacks);   
+            glPopMatrix();
+
+            GLfloat tornado_color[] = {1.0, 1.0, 1.0, 1.0};
+
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, tornado_color);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, tornado_color);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, material_color);
+            glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+
+            glPushMatrix(); 
+                glRotatef (translation, 0.0, 1.0, 0.0);
+                glTranslatef (distance - (radius/4.0f), 0.0f, 0.0);
+                glScalef(4.5, 1.0f, 1.0f);
+                glRotatef (-90.0f, 0.0, 0.0, 1.0);
+                glRotatef (tornado_rotation, 0.0, 1.0, 0.0);
+                glCallList(tornados);
             glPopMatrix();
         }
 
@@ -57,8 +73,16 @@ class GiantsDeep {
             rotation += r;
         }
 
+        void rotate_tornado() {
+            tornado_rotation += 0.01;
+        }
+
         void debug() {
             d = true;
+        }
+
+        void set_tornado(GLuint t) {
+            tornados = t;
         }
 
     private:
@@ -68,6 +92,8 @@ class GiantsDeep {
         GLfloat radius;      // raio do planeta
         GLint slices;
         GLint stacks;
+        GLuint tornados;
+        GLfloat tornado_rotation = 0.0;
 
         bool d;
 };

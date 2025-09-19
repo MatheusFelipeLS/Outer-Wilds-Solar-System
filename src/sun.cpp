@@ -23,12 +23,10 @@ class Sun {
                 << std::endl;
             }
                 
-            // GLfloat ambient[4] = {0.12f, 0.12f, 0.08f, 1.0f};
 
             glLightfv(GL_LIGHT0, GL_POSITION, this->light_pos);
             glLightfv(GL_LIGHT0, GL_DIFFUSE, this->light_color);
             glLightfv(GL_LIGHT0, GL_SPECULAR, this->light_color);
-            // glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
 
             // material emissivo (faz a esfera "brilhar")
             glMaterialfv(GL_FRONT, GL_EMISSION, this->emission);

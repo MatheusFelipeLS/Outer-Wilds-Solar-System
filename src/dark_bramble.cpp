@@ -4,7 +4,7 @@
 #include <GL/glut.h>
 #include <iostream>
 
-#define DARK_BRAMBLE_COLOR 255.0f/255.0f, 255.0f/255.0f, 255.0f/255.0f, 1.0f
+#define DARK_BRAMBLE_COLOR 128.0f/255.0f, 128.0f/255.0f, 128.0f/255.0f, 0.3f
 
 class DarkBramble {
     public:
@@ -25,12 +25,14 @@ class DarkBramble {
                 << std::endl;
             }
 
-            GLfloat material_color[] = {DARK_BRAMBLE_COLOR};
-            GLfloat shininess[] = {10.0f};
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
-            glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
-            glMaterialfv(GL_FRONT, GL_AMBIENT, material_color);
-            glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+            GLfloat portal_diffuse[] = {DARK_BRAMBLE_COLOR};
+            GLfloat portal_specular[] = {DARK_BRAMBLE_COLOR};
+            GLfloat portal_ambient[] = {DARK_BRAMBLE_COLOR};
+            GLfloat portal_shininess[] = {0.0f};
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, portal_diffuse);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, portal_specular);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, portal_ambient);
+            glMaterialfv(GL_FRONT, GL_SHININESS, portal_shininess);
                 
 
             glPushMatrix(); 
@@ -40,12 +42,14 @@ class DarkBramble {
                 glCallList(sphere);
             glPopMatrix();
 
-            GLfloat sla[] = {0.26f, 0.125f, 0.0f, 1.0f};
-            GLfloat sla_shininess[] = {10.0f};
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, sla);
-            glMaterialfv(GL_FRONT, GL_SPECULAR, sla);
-            glMaterialfv(GL_FRONT, GL_AMBIENT, sla);
-            glMaterialfv(GL_FRONT, GL_SHININESS, sla_shininess);
+            GLfloat wooden_diffuse[] = {0.26f, 0.125f, 0.0f, 1.0f};
+            GLfloat wooden_specular[] = {0.0, 0.0, 0.0f, 1.0f};
+            GLfloat wooden_ambient[] = {0.26f, 0.125f, 0.0f, 1.0f};
+            GLfloat wooden_shininess[] = {0.0f};
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, wooden_diffuse);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, wooden_specular);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, wooden_ambient);
+            glMaterialfv(GL_FRONT, GL_SHININESS, wooden_shininess);
 
             glPushMatrix(); 
                 glRotatef (translation, 0.0, 1.0, 0.0);

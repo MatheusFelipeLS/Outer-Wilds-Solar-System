@@ -23,20 +23,20 @@ class Player {
         
         void camera() {
             if(motion.Forward) {
-                camX += cos((yaw+90)*TO_RADIANS)/5.0;
-                camZ -= sin((yaw+90)*TO_RADIANS)/5.0;
+                camX += cos((yaw+90)*TO_RADIANS); // /5.0;
+                camZ -= sin((yaw+90)*TO_RADIANS); // /5.0;
             }
             if(motion.Backward) {
-                camX += cos((yaw+90+180)*TO_RADIANS)/5.0;
-                camZ -= sin((yaw+90+180)*TO_RADIANS)/5.0;
+                camX += cos((yaw+90+180)*TO_RADIANS); // /5.0;
+                camZ -= sin((yaw+90+180)*TO_RADIANS); // /5.0;
             }
             if(motion.Left) {
-                camX += cos((yaw+90+90)*TO_RADIANS)/5.0;
-                camZ -= sin((yaw+90+90)*TO_RADIANS)/5.0;
+                camX += cos((yaw+90+90)*TO_RADIANS); // /5.0;
+                camZ -= sin((yaw+90+90)*TO_RADIANS); // /5.0;
             }
             if(motion.Right) {
-                camX += cos((yaw+90-90)*TO_RADIANS)/5.0;
-                camZ -= sin((yaw+90-90)*TO_RADIANS)/5.0;
+                camX += cos((yaw+90-90)*TO_RADIANS); // /5.0;
+                camZ -= sin((yaw+90-90)*TO_RADIANS); // /5.0;
             }
 
             /*limit the values of pitch
@@ -75,7 +75,7 @@ class Player {
         }
 
         void move_backward() {
-            motion.Forward = true;
+            motion.Backward = true;
         }
 
         void move_right() {
@@ -91,7 +91,7 @@ class Player {
         }
 
         void stop_backward() {
-            motion.Forward = false;
+            motion.Backward = false;
         }
 
         void stop_right() {
@@ -108,7 +108,7 @@ class Player {
 
     private:
         float pitch = 0.0; 
-        float yaw= 0.0;
+        float yaw = 0.0;
         Motion motion = {false,false,false,false};
 };
 

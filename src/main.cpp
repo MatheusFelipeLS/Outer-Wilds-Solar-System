@@ -71,7 +71,7 @@ int forward = 1;   // indica se a animação vai do início ao fim ou ao contrá
 float dt = 1.0f;  // velocidade da animação
 
 // x, y, z, pitch, yaw iniciais
-#define PLAYER_PARAMS DARK_BRAMBLE_DISTANCE, 0, 0.0f, 0.0f, 0.0f
+#define PLAYER_PARAMS 0.0f, SUN_RADIUS + 10, 0.0f, 0.0f, 0.0f
 
 static Player player(PLAYER_PARAMS);
 static Sun sun(SUN_PARAMS);
@@ -190,6 +190,7 @@ void loadObj(const char *fname) {
     glEndList();
 }
 
+
 void init(void) {
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glShadeModel (GL_SMOOTH);
@@ -206,6 +207,7 @@ void init(void) {
     loadObj("3d_models/abrolho/abrolho.obj");
     dark_bramble.set_icosphere(icosphere);
     dark_bramble.set_sphere(sphere);
+
 }
 
 void hole_teleport() {
@@ -222,6 +224,7 @@ void display(void) {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     glLoadIdentity();
+    
     player.camera();
 
     sun.draw();
@@ -241,7 +244,7 @@ void reshape (int w, int h) {
     glViewport (0, 0, (GLsizei) w, (GLsizei) h); 
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
-    gluPerspective(60.0, (GLfloat) w/(GLfloat) h, 1.0, 1000.0);
+    gluPerspective(60.0, (GLfloat) w/(GLfloat) h, 1.0, 5000.0);
     glMatrixMode(GL_MODELVIEW);
 }
 

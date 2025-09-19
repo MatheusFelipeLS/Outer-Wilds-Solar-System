@@ -64,11 +64,6 @@ class BrittleHollow {
             // encontrando a posição do buraco negro
             auto [x, z] = get_black_hole_position();
             double dh_radius = radius / 4.0f;
-            
-            
-            printf("DARK HOLE\n");
-            printf("%f\n", dh_radius);
-            printf("(%f %f)\n", x, z);
 
             return (
                 (camX < x+dh_radius && camX > x-dh_radius) && 

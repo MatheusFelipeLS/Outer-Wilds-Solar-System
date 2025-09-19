@@ -25,6 +25,12 @@ void Player::camera() {
         camX += cos((yaw+90-90)*TO_RADIANS); // /5.0;
         camZ -= sin((yaw+90-90)*TO_RADIANS); // /5.0;
     }
+    if(motion.Up) {
+        camY += 1.0;
+    }
+    if(motion.Down) {
+        camY -= 1.0;
+    }
 
     /*limit the values of pitch
     between -60 and 70

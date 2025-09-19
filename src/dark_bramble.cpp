@@ -39,7 +39,8 @@ class DarkBramble {
                 glRotatef (translation, 0.0, 1.0, 0.0);
                 glTranslatef (distance, 0.0, 0.0);
                 glRotatef (rotation, 0.0, 1.0, 0.0);
-                glCallList(sphere);
+                glScalef(10.0f, 10.0f, 10.0f);
+                glCallList(portal);
             glPopMatrix();
 
             GLfloat wooden_diffuse[] = {0.26f, 0.125f, 0.0f, 1.0f};
@@ -55,7 +56,25 @@ class DarkBramble {
                 glRotatef (translation, 0.0, 1.0, 0.0);
                 glTranslatef (distance, 0.0, 0.0);
                 glRotatef (rotation, 0.0, 1.0, 0.0);
-                glCallList(icosphere);
+                glScalef(10.0f, 10.0f, 10.0f);
+                glCallList(shell);
+            glPopMatrix();
+
+            GLfloat ice_diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+            GLfloat ice_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+            GLfloat ice_ambient[] = {1.0f, 1.0f, 1.0f, 1.0f};
+            GLfloat ice_shininess[] = {127.0f};
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, ice_diffuse);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, ice_specular);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, ice_ambient);
+            glMaterialfv(GL_FRONT, GL_SHININESS, ice_shininess);
+
+            glPushMatrix(); 
+                glRotatef (translation, 0.0, 1.0, 0.0);
+                glTranslatef (distance, 0.0, 0.0);
+                glRotatef (rotation, 0.0, 1.0, 0.0);
+                glScalef(10.0f, 10.0f, 10.0f);
+                glCallList(ice);
             glPopMatrix();
         }
 
@@ -68,13 +87,11 @@ class DarkBramble {
             d = true;
         }
 
-        void set_sphere(GLuint s) {
-            sphere = s;
-        }
+        void set_portal(GLuint s) { portal = s; }
 
-        void set_icosphere(GLuint i) {
-            icosphere = i;
-        }
+        void set_shell(GLuint i) { shell = i; }
+
+        void set_ice(GLuint i) { ice = i; }
 
     private:
         GLfloat translation; // movimento de translação => quanto girou em torno do sol
@@ -83,8 +100,9 @@ class DarkBramble {
         GLfloat radius;      // raio do planeta
         GLint slices;
         GLint stacks;
-        GLuint sphere;
-        GLuint icosphere;
+        GLuint portal;
+        GLuint shell;
+        GLuint ice;
 
         bool d;
 };

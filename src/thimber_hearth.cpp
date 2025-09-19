@@ -24,11 +24,13 @@ class ThimberHearth {
                           << " radius = " << radius
                 << std::endl;
             }
-            GLfloat material_color[] = {THIMBER_HEARTH_COLOR};
+            GLfloat diffuse_color[] = {THIMBER_HEARTH_COLOR};
+            GLfloat specular_color[] = {THIMBER_HEARTH_COLOR};
+            GLfloat ambient_color[] = {THIMBER_HEARTH_COLOR};
             GLfloat shininess[] = {10.0f};
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
-            glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
-            glMaterialfv(GL_FRONT, GL_AMBIENT, material_color);
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse_color);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, specular_color);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, ambient_color);
             glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
             
             glPushMatrix(); 

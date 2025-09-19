@@ -27,12 +27,15 @@ class BrittleHollow {
                 << std::endl;
             }
             
-            GLfloat material_color[] = {BRITTLE_HOLLOW_COLOR};
-            GLfloat shininess[] = {10.0f};
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
-            glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
-            glMaterialfv(GL_FRONT, GL_AMBIENT, material_color);
-            glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+            GLfloat surface_diffuse_color[] = {BRITTLE_HOLLOW_COLOR};
+            GLfloat surface_specular_color[] = {BRITTLE_HOLLOW_COLOR};
+            GLfloat surface_ambient_color[] = {BRITTLE_HOLLOW_COLOR};
+            GLfloat surface_shininess[] = {10.0f};
+            
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, surface_diffuse_color);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, surface_specular_color);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, surface_ambient_color);
+            glMaterialfv(GL_FRONT, GL_SHININESS, surface_shininess);
 
             glPushMatrix(); 
                 glRotatef (translation, 0.0, 1.0, 0.0);

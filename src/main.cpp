@@ -72,7 +72,7 @@ int forward = 1;   // indica se a animação vai do início ao fim ou ao contrá
 float dt = 1.0f;  // velocidade da animação
 
 // x, y, z, pitch, yaw iniciais
-#define PLAYER_PARAMS GIANTS_DEEP_DISTANCE, 0, -15, 0.0f, 0.0f
+#define PLAYER_PARAMS DARK_BRAMBLE_DISTANCE, 0, -15, 0.0f, 0.0f
 
 static Player player(PLAYER_PARAMS);
 static Sun sun(SUN_PARAMS);
@@ -104,11 +104,44 @@ void init(void) {
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
     glutWarpPointer(width/2,height/2);
 
-    GLuint dark_bramble_objects[2]; 
-    int objects_indexes[] = {1, 2, 2};
-    loadObj("3d_models/abrolho/abrolho.obj", dark_bramble_objects, 3, objects_indexes);
-    dark_bramble.set_icosphere(dark_bramble_objects[0]);
-    dark_bramble.set_sphere(dark_bramble_objects[1]);
+    // GLuint dark_bramble_objects[33]; 
+    // int objects_indexes[] = {
+    //     1, 1, 2,
+    //     2, 2, 2,
+    //     2, 2, 2,
+    //     2, 2, 2,
+    //     2, 2, 2,
+    //     2, 2, 2,
+    //     2, 2, 2,
+    //     2, 2, 2,
+    //     2, 2, 2,
+    //     2, 2, 2,
+    //     2, 2, 2
+    // };
+    
+    // loadObj("3d_models/abrolho/abrolho.obj", dark_bramble_objects, 33, objects_indexes);
+    // dark_bramble.set_portal(dark_bramble_objects[0]);
+    // dark_bramble.set_shell(dark_bramble_objects[1]);
+
+    GLuint dark_bramble_objects[33]; 
+    int objects_indexes[] = {
+        0, 0, 1,
+        1, 1, 1,
+        1, 1, 1,
+        1, 1, 1,
+        1, 1, 1,
+        1, 1, 1,
+        2, 1, 1,
+        1, 1, 1,
+        1, 1, 1,
+        1, 1, 1,
+        2, 2, 1
+    };
+    
+    loadObj2("3d_models/abrolho/abrolho.obj", dark_bramble_objects, 33, objects_indexes);
+    dark_bramble.set_portal(dark_bramble_objects[0]);
+    dark_bramble.set_shell(dark_bramble_objects[1]);
+    dark_bramble.set_ice(dark_bramble_objects[2]);
 
     GLuint tornados_objects[2]; 
     int tor_objects_indexes[] = {1, 1};
@@ -178,11 +211,11 @@ void keyboard(unsigned char key,int x,int y) {
 
     switch(key) {
         case SPACE: // mover para cima (32 = space bar em ASCII)
-            player.camY += 0.5;    
+            player.move_up();   
             break;
         case 'b': // mover para baixo 
         case 'B': // mover para baixo 
-            player.camY -= 0.5;
+            player.move_down();
             break;
         case 'W':
         case 'w':
@@ -202,6 +235,10 @@ void keyboard(unsigned char key,int x,int y) {
             break;
         case '1': // ativar/desativar animação
             animating = !animating;
+            break;
+        case 'l': 
+        case 'L':
+            player.turn_on_off_light();
             break;
         case 27:
             exit(0);
@@ -226,6 +263,13 @@ void keyboard_up(unsigned char key,int x,int y) {
         case 'D':
         case 'd':
             player.stop_right();
+            break;
+        case SPACE: // mover para cima (32 = space bar em ASCII)
+            player.stop_up();   
+            break;
+        case 'b': // mover para baixo 
+        case 'B': // mover para baixo 
+            player.stop_down();
             break;
     }
 }

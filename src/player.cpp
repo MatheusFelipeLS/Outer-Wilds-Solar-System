@@ -66,6 +66,18 @@ void Player::camera() {
     glRotatef(-yaw,0.0,1.0,0.0);    //Along Y axis
 
     glTranslatef(-camX,-camY,-camZ);
+
+    if (light_on) {
+        GLfloat light_pos[] = {-camX,-camY,-camZ, 0.0};
+        glLightfv(GL_LIGHT1, GL_POSITION, light_pos);
+        GLfloat light_color[] = {1.0f,1.0f,1.0f, 1.0};
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, light_color);
+        glLightfv(GL_LIGHT1, GL_SPECULAR, light_color);
+        glLightfv(GL_LIGHT1, GL_AMBIENT, light_color);
+        glLightf (GL_LIGHT1 , GL_CONSTANT_ATTENUATION , 0.5);
+        glLightf (GL_LIGHT1 , GL_LINEAR_ATTENUATION , 0.5);
+        glLightf (GL_LIGHT1 , GL_QUADRATIC_ATTENUATION , 0.2);
+    }
 }
 
 void Player::teleport(float x, float y, float z, float delta_min) {

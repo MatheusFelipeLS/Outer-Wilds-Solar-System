@@ -48,6 +48,6 @@ struct BoundingBox {
 };
 
 // ==================== OBJ LOADER ====================
-void loadObj(const char *fname, GLuint *objects, int qt_objects, int object_indexes[], BoundingBox bboxes[]);
+void loadObj(const char *fname, GLuint *objects, int qt_objects, int object_indexes[], BoundingBox bboxes[], float scale);
 
 #endif

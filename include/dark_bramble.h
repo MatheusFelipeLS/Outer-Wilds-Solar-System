@@ -6,7 +6,6 @@
 #include "utils.h"
 
 #define DARK_BRAMBLE_COLOR 128.0f/255.0f, 128.0f/255.0f, 128.0f/255.0f, 0.3f
-#define SCALE 10 
 
 class DarkBramble {
     public:
@@ -27,6 +26,9 @@ class DarkBramble {
             for(int i = 0; i < qt_bb; i++) {
                 bboxes[i] = bb[i];
             }
+
+            bboxes[0].expand(Vertex(bboxes[32].min.x - 1, bboxes[0].min.y, bboxes[0].min.z));
+            bboxes[1].expand(Vertex(bboxes[0].min.x, bboxes[32].min.y-1, bboxes[0].min.z));
         }
 
         void update_position(GLfloat t, GLfloat r) {
@@ -42,7 +44,7 @@ class DarkBramble {
 
         void debug() { d = true; }
 
-    private:
+        private:
         GLfloat translation; // movimento de translação => quanto girou em torno do sol
         GLfloat rotation = 0;    // movimento de rotação => quanto girou em torno de si mesmo
         GLfloat distance;    // distancia do sol

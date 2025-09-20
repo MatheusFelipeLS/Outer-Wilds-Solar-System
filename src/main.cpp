@@ -121,7 +121,7 @@ void init(void) {
     };
     BoundingBox dark_bramble_bboxes[33];
     
-    loadObj("3d_models/abrolho/abrolho.obj", dark_bramble_objects, 33, objects_indexes, dark_bramble_bboxes);
+    loadObj("3d_models/abrolho/abrolho.obj", dark_bramble_objects, 33, objects_indexes, dark_bramble_bboxes, 10.0);
     dark_bramble.set_portal(dark_bramble_objects[0]);
     dark_bramble.set_shell(dark_bramble_objects[1]);
     dark_bramble.set_ice(dark_bramble_objects[2]);
@@ -130,7 +130,7 @@ void init(void) {
     GLuint tornados_objects[1]; 
     int tor_objects_indexes[] = {1};
     BoundingBox giants_deep_bboxes[1];
-    loadObj("3d_models/profundezas/tornado.obj", tornados_objects, 1, tor_objects_indexes, giants_deep_bboxes);
+    loadObj("3d_models/profundezas/tornado.obj", tornados_objects, 1, tor_objects_indexes, giants_deep_bboxes, 1.0);
     giants_deep.set_tornado(tornados_objects[0]);
 
     player.set_system(&sun, &thimber_hearth, &brittle_hollow, &giants_deep, &dark_bramble, &interloper, &white_hole);
@@ -269,7 +269,7 @@ void idle(void) {
     thimber_hearth.update_position(0.2f, 0.3f);
     brittle_hollow.update_position(0.16f, 0.3f);
     giants_deep.update_position(0.12f, 0.3f);
-    dark_bramble.update_position(0.08f, 0.3f);
+    dark_bramble.update_position(0.3f, -0.3f); // a rotação precisar ser o oposto da translação 
     interloper.update_position(0.001f, 0.3f);
     
     glutPostRedisplay();

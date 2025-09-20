@@ -1,7 +1,7 @@
 #include "utils.h"
 
 // ==================== OBJ LOADER ====================
-void loadObj(const char *fname, GLuint *objects, int qt_objects, int object_indexes[], BoundingBox bboxes[]) {
+void loadObj(const char *fname, GLuint *objects, int qt_objects, int object_indexes[], BoundingBox bboxes[], float scale) {
     FILE *fp = fopen(fname, "r");
     if (!fp) {
         printf("Can't open file %s\n", fname);
@@ -74,9 +74,9 @@ void loadObj(const char *fname, GLuint *objects, int qt_objects, int object_inde
             {
             glBegin(GL_TRIANGLES);
             for (int j = it; j < indexes[i]; j++) {
-                Vertex v1 = vertices[faces[j][0]];
-                Vertex v2 = vertices[faces[j][1]];
-                Vertex v3 = vertices[faces[j][2]];
+                Vertex v1 = vertices[faces[j][0]] * scale;
+                Vertex v2 = vertices[faces[j][1]] * scale;
+                Vertex v3 = vertices[faces[j][2]] * scale;
                 bboxes[i].expand(v1);
                 bboxes[i].expand(v2);
                 bboxes[i].expand(v3);

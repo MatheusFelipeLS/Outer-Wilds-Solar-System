@@ -23,7 +23,7 @@
 // controle da animação
 #define INTERLOPER_ANIMATION_PARAMS SUN_RADIUS, INTERLOPER_DISTANCE
 
-#define WHITE_HOLE_TX -SUN_RADIUS * 5.0f
+#define WHITE_HOLE_TX -SUN_RADIUS * 7.0f
 #define WHITE_HOLE_TY 0.0f
 #define WHITE_HOLE_TZ 0.0f
 

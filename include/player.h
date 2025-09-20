@@ -5,6 +5,14 @@
 #include <iostream>
 #include <cmath>
 
+#include "sun.h"
+#include "thimber_hearth.h"
+#include "brittle_hollow.h"
+#include "giants_deep.h"
+#include "dark_bramble.h"
+#include "interloper.h"
+#include "white_hole.h"
+
 #define TO_RADIANS 3.14159/180
 
 struct Motion {
@@ -17,6 +25,7 @@ class Player {
         
         void camera();
         
+        bool check_collision(float deltaX, float deltaY, float deltaZ);
         void teleport(float x, float y, float z, float delta_min);
 
         void update_pitch_yall(int dev_x, int dev_y);
@@ -38,6 +47,26 @@ class Player {
         void stop_up() { motion.Up = false; }
         void stop_down() { motion.Down = false; }
 
+        void set_system(
+            Sun *sun,
+            ThimberHearth *thimber_hearth,
+            BrittleHollow *brittle_hollow,
+            GiantsDeep *giants_deep,
+            DarkBramble *dark_bramble,
+            Interloper *interloper,
+            WhiteHole *white_hole
+        ) {
+            this->sun = sun;
+            this->thimber_hearth = thimber_hearth;
+            this->brittle_hollow = brittle_hollow;
+            this->giants_deep = giants_deep;
+            this->dark_bramble = dark_bramble;
+            this->interloper = interloper;
+            this->white_hole = white_hole;
+
+            printf("sol size %ld", sizeof(this->sun));
+        }
+
         float camX = 50.0; 
         float camY = 0.0; 
         float camZ = -30.0;
@@ -47,6 +76,14 @@ class Player {
         float yaw = 0.0;
         Motion motion = {false,false,false,false,false,false};
         bool light_on = false;
+
+        Sun *sun;
+        ThimberHearth *thimber_hearth;
+        BrittleHollow *brittle_hollow;
+        GiantsDeep *giants_deep;
+        DarkBramble *dark_bramble;
+        Interloper *interloper;
+        WhiteHole *white_hole;
 };
 
 #endif

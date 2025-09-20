@@ -1,6 +1,6 @@
 # Compilador e flags
 CXX = g++
-CXXFLAGS = -Wall -g -Iinclude
+CXXFLAGS = -Wall -g -Iinclude -O3
 LDFLAGS = -lGL -lGLU -lglut
 
 # Pastas

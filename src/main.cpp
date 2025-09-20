@@ -51,13 +51,14 @@
 #include "params.cpp"
 
 #include "player.h"
-#include "sun.cpp"
-#include "thimber_hearth.cpp"
-#include "brittle_hollow.cpp"
-#include "giants_deep.cpp"
-#include "dark_bramble.cpp"
-#include "interloper.cpp"
-#include "white_hole.cpp"
+
+#include "sun.h"
+#include "thimber_hearth.h"
+#include "brittle_hollow.h"
+#include "giants_deep.h"
+#include "dark_bramble.h"
+#include "interloper.h"
+#include "white_hole.h"
 
 #define DEBUG false
 #define SPACE 32
@@ -72,11 +73,11 @@ int forward = 1;   // indica se a animação vai do início ao fim ou ao contrá
 float dt = 1.0f;  // velocidade da animação
 
 // x, y, z, pitch, yaw iniciais
-#define PLAYER_PARAMS DARK_BRAMBLE_DISTANCE, 0, -15, 0.0f, 0.0f
+#define PLAYER_PARAMS DARK_BRAMBLE_DISTANCE, 0, -200, 0.0f, 0.0f
 
 static Player player(PLAYER_PARAMS);
 static Sun sun(SUN_PARAMS);
-static ThimberHearth timber_hearth(THIMBER_HEARTH_PARAMS);
+static ThimberHearth thimber_hearth(THIMBER_HEARTH_PARAMS);
 static BrittleHollow brittle_hollow(BRITTLE_HOLLOW_PARAMS);
 static GiantsDeep giants_deep(GIANTS_DEEP_PARAMS);
 static DarkBramble dark_bramble(DARK_BRAMBLE_PARAMS);
@@ -104,25 +105,6 @@ void init(void) {
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
     glutWarpPointer(width/2,height/2);
 
-    // GLuint dark_bramble_objects[33]; 
-    // int objects_indexes[] = {
-    //     1, 1, 2,
-    //     2, 2, 2,
-    //     2, 2, 2,
-    //     2, 2, 2,
-    //     2, 2, 2,
-    //     2, 2, 2,
-    //     2, 2, 2,
-    //     2, 2, 2,
-    //     2, 2, 2,
-    //     2, 2, 2,
-    //     2, 2, 2
-    // };
-    
-    // loadObj("3d_models/abrolho/abrolho.obj", dark_bramble_objects, 33, objects_indexes);
-    // dark_bramble.set_portal(dark_bramble_objects[0]);
-    // dark_bramble.set_shell(dark_bramble_objects[1]);
-
     GLuint dark_bramble_objects[33]; 
     int objects_indexes[] = {
         0, 0, 1,
@@ -137,16 +119,21 @@ void init(void) {
         1, 1, 1,
         2, 2, 1
     };
+    BoundingBox dark_bramble_bboxes[33];
     
-    loadObj("3d_models/abrolho/abrolho.obj", dark_bramble_objects, 33, objects_indexes);
+    loadObj("3d_models/abrolho/abrolho.obj", dark_bramble_objects, 33, objects_indexes, dark_bramble_bboxes);
     dark_bramble.set_portal(dark_bramble_objects[0]);
     dark_bramble.set_shell(dark_bramble_objects[1]);
     dark_bramble.set_ice(dark_bramble_objects[2]);
+    dark_bramble.set_bouding_boxes(dark_bramble_bboxes, 33);
 
     GLuint tornados_objects[1]; 
     int tor_objects_indexes[] = {1};
-    loadObj("3d_models/profundezas/tornado.obj", tornados_objects, 1, tor_objects_indexes);
+    BoundingBox giants_deep_bboxes[1];
+    loadObj("3d_models/profundezas/tornado.obj", tornados_objects, 1, tor_objects_indexes, giants_deep_bboxes);
     giants_deep.set_tornado(tornados_objects[0]);
+
+    player.set_system(&sun, &thimber_hearth, &brittle_hollow, &giants_deep, &dark_bramble, &interloper, &white_hole);
 }
 
 void hole_teleport() {
@@ -167,7 +154,7 @@ void display(void) {
     player.camera();
 
     sun.draw();
-    timber_hearth.draw();
+    thimber_hearth.draw();
     brittle_hollow.draw();
     giants_deep.draw();
     dark_bramble.draw();
@@ -279,7 +266,7 @@ void idle(void) {
     if (!animating) return;
 
     sun.update_position(0.3f);
-    timber_hearth.update_position(0.2f, 0.3f);
+    thimber_hearth.update_position(0.2f, 0.3f);
     brittle_hollow.update_position(0.16f, 0.3f);
     giants_deep.update_position(0.12f, 0.3f);
     dark_bramble.update_position(0.08f, 0.3f);

@@ -8,37 +8,59 @@ camX(camX0), camY(camY0), camZ(camZ0),
 pitch(pitch0), yaw(yaw0)
 {}
 
+
+// depois adicionar o resto das colisões
+bool Player::check_collision(float deltaX, float deltaY, float deltaZ) {
+    return dark_bramble->check_colision(camX + deltaX, camY + deltaY, camZ + deltaZ);
+}
+
+
 void Player::camera() {
+    float deltaX, deltaY, deltaZ;
     if(motion.Forward) {
-        camX += cos((yaw+90)*TO_RADIANS); // /5.0;
-        camZ -= sin((yaw+90)*TO_RADIANS); // /5.0;
+        deltaX = cos((yaw+90)*TO_RADIANS);
+        deltaY = 0.0f;
+        deltaZ = -sin((yaw+90)*TO_RADIANS);
+        if(!check_collision(deltaX, deltaY, deltaZ)) {
+            camX += deltaX;
+            camZ += deltaZ;
+        }
     }
     if(motion.Backward) {
-        camX += cos((yaw+90+180)*TO_RADIANS); // /5.0;
-        camZ -= sin((yaw+90+180)*TO_RADIANS); // /5.0;
+        deltaX = cos((yaw+90+180)*TO_RADIANS);
+        deltaY = 0.0f;
+        deltaZ = -sin((yaw+90+180)*TO_RADIANS);
+        if(!check_collision(deltaX, deltaY, deltaZ)) {
+            camX += deltaX;
+            camZ += deltaZ;
+        }
     }
     if(motion.Left) {
-        camX += cos((yaw+90+90)*TO_RADIANS); // /5.0;
-        camZ -= sin((yaw+90+90)*TO_RADIANS); // /5.0;
+        deltaX = cos((yaw+90+90)*TO_RADIANS);
+        deltaY = 0.0f;
+        deltaZ = -sin((yaw+90+90)*TO_RADIANS);
+        if(!check_collision(deltaX, deltaY, deltaZ)) {
+            camX += deltaX;
+            camZ += deltaZ;
+        }
     }
     if(motion.Right) {
-        camX += cos((yaw+90-90)*TO_RADIANS); // /5.0;
-        camZ -= sin((yaw+90-90)*TO_RADIANS); // /5.0;
+        deltaX = cos((yaw+90-90)*TO_RADIANS);
+        deltaY = 0.0f;
+        deltaZ = -sin((yaw+90-90)*TO_RADIANS);
+        if(!check_collision(deltaX, deltaY, deltaZ)) {
+            camX += deltaX;
+            camZ += deltaZ;
+        }
     }
     if(motion.Up) {
-        camY += 1.0;
+        if(!check_collision(0.0f, 1.0f, 0.0f)) 
+            camY += 1.0;
     }
     if(motion.Down) {
-        camY -= 1.0;
+        if(!check_collision(0.0f, -1.0f, 0.0f))
+            camY -= 1.0;
     }
-
-    /*limit the values of pitch
-    between -60 and 70
-    */
-    // if(pitch>=70)
-    //     pitch = 70;
-    // if(pitch<=-60)
-    //     pitch=-60;
 
     glRotatef(-pitch,1.0,0.0,0.0); // Along X axis
     glRotatef(-yaw,0.0,1.0,0.0);    //Along Y axis

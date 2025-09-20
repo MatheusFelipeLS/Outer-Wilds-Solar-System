@@ -138,13 +138,13 @@ void init(void) {
         2, 2, 1
     };
     
-    loadObj2("3d_models/abrolho/abrolho.obj", dark_bramble_objects, 33, objects_indexes);
+    loadObj("3d_models/abrolho/abrolho.obj", dark_bramble_objects, 33, objects_indexes);
     dark_bramble.set_portal(dark_bramble_objects[0]);
     dark_bramble.set_shell(dark_bramble_objects[1]);
     dark_bramble.set_ice(dark_bramble_objects[2]);
 
-    GLuint tornados_objects[2]; 
-    int tor_objects_indexes[] = {1, 1};
+    GLuint tornados_objects[1]; 
+    int tor_objects_indexes[] = {1};
     loadObj("3d_models/profundezas/tornado.obj", tornados_objects, 1, tor_objects_indexes);
     giants_deep.set_tornado(tornados_objects[0]);
 }

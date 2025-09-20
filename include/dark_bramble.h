@@ -22,6 +22,8 @@ class DarkBramble {
         // false se não teve colisão
         bool check_colision(float camX, float camY, float camZ);
 
+        bool inside(float camX, float camY, float camZ);
+
         void set_bouding_boxes(BoundingBox bb[], int qt_bb) {
             for(int i = 0; i < qt_bb; i++) {
                 bboxes[i] = bb[i];

@@ -84,3 +84,16 @@ bool DarkBramble::check_colision(float camX, float camY, float camZ) {
     }
     return false;
 }
+
+bool DarkBramble::inside(float camX, float camY, float camZ) {
+    double x = distance * cos(translation*RAD);
+    double z = distance * sin(translation*RAD);
+    for (size_t i = 0; i < 2; i++) {
+        printf("i = %ld\n", i);
+        if (bboxes[i].contains(Vertex((camX-x), camY, (camZ+z)))) {
+            std::cout << "Colisão detectada com objeto " << i << std::endl;
+            return true;
+        }
+    }
+    return false;
+}

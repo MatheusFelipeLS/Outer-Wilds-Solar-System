@@ -71,6 +71,7 @@ const int height = 9*50;
 bool animating = false; // indica se a animação deve ocorrer ou não
 int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
 float dt = 1.0f;  // velocidade da animação
+static GLint fogMode;
 
 // x, y, z, pitch, yaw iniciais
 #define PLAYER_PARAMS DARK_BRAMBLE_DISTANCE, 0, -200, 0.0f, 0.0f
@@ -99,9 +100,10 @@ void init(void) {
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING); 
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
-    GLfloat global_ambient[] = {0.3f, 0.3f, 0.3f, 1.0f};
+    glEnable(GL_LIGHT0); // Sun
+    glEnable(GL_LIGHT1); // White hole (acho q vou tirar a luz dele)
+    glEnable(GL_LIGHT2); // Player
+    GLfloat global_ambient[] = {0.5f, 0.5f, 0.5f, 0.5f};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
     glutWarpPointer(width/2,height/2);
 
@@ -146,24 +148,94 @@ void hole_teleport() {
     }
 }
 
+static void renderSphere (GLfloat x, GLfloat y, GLfloat z)
+{
+   glPushMatrix();
+   glTranslatef (x, y, z);
+   glutSolidSphere(0.4, 16, 16);
+   glPopMatrix();
+}
+
+int sla = 0;
 void display(void) {
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    glLoadIdentity();
-    
-    player.camera();
+    if(dark_bramble.inside(player.camX, player.camY, player.camZ)) {
+        if(sla == 0) {
+            glViewport(0, 0, (GLsizei) width, (GLsizei) height);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            if (width <= height)
+                glOrtho (-2.5, 2.5, -2.5*(GLfloat)height/(GLfloat)width,
+                    2.5*(GLfloat)height/(GLfloat)width, -10.0, 10.0);
+            else
+                glOrtho (-2.5*(GLfloat)width/(GLfloat)height,
+                    2.5*(GLfloat)width/(GLfloat)height, -2.5, 2.5, -10.0, 10.0);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity ();
+            glDisable(GL_LIGHT0); // Sun
+            glDisable(GL_LIGHT1); // White hole (acho q vou tirar a luz dele)
+            glDisable(GL_LIGHT2); // Player
+            
+            glClearColor(0.5, 0.5, 0.5, 1.0);  /* fog color */
+            
+            glLoadIdentity();
+            GLfloat position[] = { 0.5, 0.5, 3.0, 0.0 };
+            
+            glLightfv(GL_LIGHT5, GL_POSITION, position);
+            glEnable(GL_LIGHT5);
+            {
+                GLfloat mat[3] = {0.1745, 0.01175, 0.01175};	
+                glMaterialfv (GL_FRONT, GL_AMBIENT, mat);
+                mat[0] = 0.61424; mat[1] = 0.04136; mat[2] = 0.04136;	
+                glMaterialfv (GL_FRONT, GL_DIFFUSE, mat);
+                mat[0] = 0.727811; mat[1] = 0.626959; mat[2] = 0.626959;
+                glMaterialfv (GL_FRONT, GL_SPECULAR, mat);
+                glMaterialf (GL_FRONT, GL_SHININESS, 0.6*128.0);
+            }
+            
+            glEnable(GL_FOG);
+            {
+                GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
+                
+                fogMode = GL_LINEAR;
+                glFogi (GL_FOG_MODE, fogMode);
+                glFogfv (GL_FOG_COLOR, fogColor);
+                glFogf (GL_FOG_DENSITY, 0.35);
+                glHint (GL_FOG_HINT, GL_DONT_CARE);
+                glFogf (GL_FOG_START, 1.0);
+                glFogf (GL_FOG_END, 5.0);
+            }
+            sla++;
+            printf("aqui\n");
+        }
 
-    sun.draw();
-    thimber_hearth.draw();
-    brittle_hollow.draw();
-    giants_deep.draw();
-    dark_bramble.draw();
-    interloper.draw();   
-    white_hole.draw();
+        glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glLoadIdentity();
+        renderSphere (-2., -0.5, -1.0);
+        renderSphere (-1., -0.5, -2.0);
+        renderSphere (0., -0.5, -3.0);
+        renderSphere (1., -0.5, -4.0);
+        renderSphere (2., -0.5, -5.0);
+        printf("renderizando\n");
+    } else {   
+        sla = 0;
+        glDisable(GL_FOG);
+        glClearColor(0.0, 0.0, 0.0, 0.0);
+        glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    hole_teleport();
-
+        glLoadIdentity();
+        player.camera();
+        sun.draw();
+        thimber_hearth.draw();
+        brittle_hollow.draw();
+        giants_deep.draw();
+        dark_bramble.draw();
+        interloper.draw();   
+        white_hole.draw();
+        
+        hole_teleport();
+    }
     glutSwapBuffers();
+
 }
 
 void reshape (int w, int h) {
@@ -263,7 +335,10 @@ void keyboard_up(unsigned char key,int x,int y) {
 
 void idle(void) {
     giants_deep.rotate_tornado();
-    if (!animating) return;
+    if (!animating) {
+        glutPostRedisplay();
+        return;
+    }
 
     sun.update_position(0.3f);
     thimber_hearth.update_position(0.2f, 0.3f);

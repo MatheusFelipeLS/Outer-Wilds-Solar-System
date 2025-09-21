@@ -16,8 +16,6 @@ class Void {
                 core[i] = c[i]; 
             }
         }
-
-        void set_conector(GLuint c) { conector = c; }
         
         void set_portal(GLuint p[]) { 
             for(int i = 0; i < 2; i++) {
@@ -33,7 +31,6 @@ class Void {
     private:
         GLuint shell;
         GLuint core[3];
-        GLuint conector;
         GLuint portal[2];
         GLfloat t;
         int rot = 400;

@@ -98,9 +98,6 @@ void keyboard_up(unsigned char key,int x,int y);
 
 void set_system() {
     glClearColor (0.0, 0.0, 0.0, 0.0);
-    glShadeModel (GL_SMOOTH);
-    glutSetCursor(GLUT_CURSOR_NONE);
-    glDepthFunc(GL_LEQUAL);
     glEnable(GL_LIGHT0); // Sun
     glEnable(GL_LIGHT1); // White hole (acho q vou tirar a luz dele)
     glEnable(GL_LIGHT2); // Player
@@ -113,17 +110,20 @@ void set_system() {
 }
 
 void set_void() {
-//    glEnable(GL_FOG);
-//    {
-//       GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
-//       glFogi (GL_FOG_MODE, fogMode);
-//       glFogfv (GL_FOG_COLOR, fogColor);
-//       glFogf (GL_FOG_DENSITY, 0.35);
-//       glHint (GL_FOG_HINT, GL_DONT_CARE);
-//       glFogf (GL_FOG_START, 100.0);
-//       glFogf (GL_FOG_END, 500.0);
-//    }
-//    glClearColor(0.5, 0.5, 0.5, 1.0);  /* fog color */
+    glDisable(GL_LIGHT0); // Sun
+    glDisable(GL_LIGHT1); // White hole (acho q vou tirar a luz dele)
+    glDisable(GL_LIGHT2); // Player
+    glEnable(GL_FOG);
+    {
+        GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
+        glFogi (GL_FOG_MODE, fogMode);
+        glFogfv (GL_FOG_COLOR, fogColor);
+        glFogf (GL_FOG_DENSITY, 0.35);
+        glHint (GL_FOG_HINT, GL_DONT_CARE);
+        glFogf (GL_FOG_START, 100.0);
+        glFogf (GL_FOG_END, 500.0);
+    }
+   glClearColor(0.5, 0.5, 0.5, 1.0);  /* fog color */
 
    player.camX = -99.064293;
    player.camY = 40.000000;
@@ -132,6 +132,9 @@ void set_void() {
 
 void init(void) {
     set_system();
+    glShadeModel (GL_SMOOTH);
+    glutSetCursor(GLUT_CURSOR_NONE);
+    glDepthFunc(GL_LEQUAL);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING); 
 
@@ -176,15 +179,17 @@ void init(void) {
     BoundingBox void_shell_bboxes[1];
     loadObj("3d_models/void/void_shell.obj", void_shell, 1, void_shell_objects_indexes, void_shell_bboxes, 50.0);
 
-    GLuint void_core[3]; 
-    int void_core_objects_indexes[] = {0, 0, 1};
-    BoundingBox void_core_bboxes[3];
-    loadObj("3d_models/void/void_core.obj", void_core, 3, void_core_objects_indexes, void_core_bboxes, 10.0);
-
-    GLuint void_conector[1]; 
-    int void_conector_objects_indexes[] = {0};
-    BoundingBox void_conector_bboxes[1];
-    loadObj("3d_models/void/void_core_conector.obj", void_conector, 1, void_conector_objects_indexes, void_conector_bboxes, 10.0);
+    GLuint void_core[18]; 
+    int void_core_objects_indexes[] = {
+        0, 0, 1,
+        0, 0, 0,
+        0, 1, 0,
+        0, 1, 1,
+        1, 1, 1,
+        1, 1, 1
+    };
+    BoundingBox void_core_bboxes[18];
+    loadObj("3d_models/void/void_core.obj", void_core, 18, void_core_objects_indexes, void_core_bboxes, 10.0);
 
     GLuint void_portal[2]; 
     int void_portal_objects_indexes[] = {0, 1};
@@ -194,7 +199,6 @@ void init(void) {
 
     infinity_void.set_shell(void_shell[0]);
     infinity_void.set_core(void_core);
-    infinity_void.set_conector(void_conector[0]);
     infinity_void.set_portal(void_portal);
 }
 

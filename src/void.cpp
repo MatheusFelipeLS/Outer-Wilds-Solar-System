@@ -43,7 +43,6 @@ void Void::draw() {
         glTranslatef(30, 30, 30);
         glCallList(core[1]);
         glTranslatef(-30, -30, -30);
-        // glCallList(conector);
         glRotatef(rot, 0.0, 1.0, 0.0);
         glTranslatef(787.500000, 0.0, 0.0f);
         glCallList(portal[0]);

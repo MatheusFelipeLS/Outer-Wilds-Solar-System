@@ -12,6 +12,7 @@
 #include "dark_bramble.h"
 #include "interloper.h"
 #include "white_hole.h"
+#include "void.h"
 
 #define TO_RADIANS 3.14159/180
 
@@ -25,7 +26,7 @@ class Player {
         
         void camera(bool map);
         
-        bool check_collision(bool map, float deltaX, float deltaY, float deltaZ);
+        Collision check_collision(bool map, float deltaX, float deltaY, float deltaZ);
         void teleport(float x, float y, float z, float delta_min);
 
         void update_pitch_yall(int dev_x, int dev_y);
@@ -55,7 +56,8 @@ class Player {
             GiantsDeep *giants_deep,
             DarkBramble *dark_bramble,
             Interloper *interloper,
-            WhiteHole *white_hole
+            WhiteHole *white_hole,
+            Void *v
         ) {
             this->sun = sun;
             this->thimber_hearth = thimber_hearth;
@@ -64,6 +66,7 @@ class Player {
             this->dark_bramble = dark_bramble;
             this->interloper = interloper;
             this->white_hole = white_hole;
+            this->void_map = v;
         }
 
         float camX = 50.0; 
@@ -83,6 +86,7 @@ class Player {
         DarkBramble *dark_bramble;
         Interloper *interloper;
         WhiteHole *white_hole;
+        Void *void_map;
 };
 
 #endif

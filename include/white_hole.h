@@ -3,6 +3,7 @@
 
 #include <GL/glut.h>
 #include <iostream>
+#include "utils.h"
 
 class WhiteHole {
     public:

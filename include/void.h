@@ -3,12 +3,14 @@
 
 #include <GL/glut.h>
 #include <iostream>
+#include "utils.h"
 
 class Void {
     public:
         Void() {};
 
         void draw();
+        bool check_colision(float camX, float camY, float camZ);
 
         void set_shell(GLuint s) { shell = s; }
         void set_core(GLuint c[]) { 
@@ -24,8 +26,10 @@ class Void {
             }
         }
 
-        void desloc();
+        void set_bounding_boxes(BoundingBox bb[], int qt_bb, int void_core_objects_indexes[]);
 
+        // foi usado só para debug
+        void desloc() { t += 1.5; }
         void cdesloc() { t -= 1.5; }
         
     private:
@@ -34,6 +38,8 @@ class Void {
         GLuint portal[2];
         GLfloat t;
         int rot = 400;
+        BoundingBox bboxes[18];
+        BoundingSphere bspheres[8];
 };
 
 #endif

@@ -4,6 +4,7 @@
 #include <GL/glut.h>
 #include <iostream>
 #include <vector>
+#include "utils.h"
 
 #define INTERLOPER_COLOR 26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f, 1.0f
 

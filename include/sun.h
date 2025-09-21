@@ -3,6 +3,7 @@
 
 #include <GL/glut.h>
 #include <iostream>
+#include "utils.h"
 
 #define SUN_LIGHT_COLOR 1.0f, 1.0f, 1.0f, 1.0f
 

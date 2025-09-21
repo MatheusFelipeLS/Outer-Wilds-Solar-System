@@ -18,10 +18,8 @@ void Void::draw() {
     printf("rot %d", rot);
 
     glPushMatrix();
-    glTranslatef(30, 30, 30);
         glCallList(core[0]);
         glCallList(core[2]);
-        glTranslatef(-30, -30, -30);
         // colocando o portal numa posição random
         glRotatef(rot, 0.0, 1.0, 0.0); 
         glTranslatef(787.500000, 0.0, 0.0f); /// parametrizar melhor isso depois
@@ -40,15 +38,44 @@ void Void::draw() {
 
     glPushMatrix();
         glCallList(shell);
-        glTranslatef(30, 30, 30);
         glCallList(core[1]);
-        glTranslatef(-30, -30, -30);
         glRotatef(rot, 0.0, 1.0, 0.0);
         glTranslatef(787.500000, 0.0, 0.0f);
         glCallList(portal[0]);
     glPopMatrix();
 }
 
-void Void::desloc() {
-    t += 1.5;
+void Void::set_bounding_boxes(BoundingBox bb[], int qt_bb, int void_core_objects_indexes[]) {
+    int k = 0;
+    for(int i = 0; i < qt_bb; i++) {
+        bboxes[i] = bb[i];
+        if(void_core_objects_indexes[i] == 0) {
+            bspheres[k] = BoundingSphere(bb[i]);
+            k++;
+        }
+    }  
+}
+
+bool Void::check_colision(float camX, float camY, float camZ) {
+    // começando de dois para ignorar as entradas do portal
+    double x = 0;
+    double z = 0;
+    printf("x e z do planeta: %f %f\n", x, z);
+    printf("meu x, y, z: %f %f %f\n", camX-x, camY, camZ+z);
+    for (size_t i = 0; i < 2; i++) {
+        printf("i = %ld\n", i);
+        if (bspheres[i].contains(Vertex((camX-x), camY, (camZ+z)))) {
+            std::cout << "Colisão detectada com objeto " << i << std::endl;
+            return false;
+        }
+    }
+    
+    for (size_t i = 2; i < sizeof(bboxes) / sizeof(bboxes[0]); i++) {
+        printf("i = %ld\n", i); 
+        if (bboxes[i].contains(Vertex(camX-x, camY, camZ+z))) {
+            std::cout << "Colisão detectada com objeto " << i << std::endl;
+            return true;
+        }
+    }
+    return false;
 }

@@ -172,7 +172,7 @@ void init(void) {
     loadObj("3d_models/profundezas/tornado.obj", tornados_objects, 1, tor_objects_indexes, giants_deep_bboxes, 1.0);
     giants_deep.set_tornado(tornados_objects[0]);
 
-    player.set_solar_system(&sun, &thimber_hearth, &brittle_hollow, &giants_deep, &dark_bramble, &interloper, &white_hole);
+    player.set_solar_system(&sun, &thimber_hearth, &brittle_hollow, &giants_deep, &dark_bramble, &interloper, &white_hole, &infinity_void);
 
     GLuint void_shell[1]; 
     int void_shell_objects_indexes[] = {0};
@@ -200,6 +200,8 @@ void init(void) {
     infinity_void.set_shell(void_shell[0]);
     infinity_void.set_core(void_core);
     infinity_void.set_portal(void_portal);
+    infinity_void.set_bounding_boxes(void_core_bboxes, 18, void_core_objects_indexes);
+
 }
 
 void display(void) {

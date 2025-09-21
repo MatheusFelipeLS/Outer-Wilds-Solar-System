@@ -78,6 +78,22 @@ struct BoundingSphere {
     }
 };
 
+enum class Collision {
+    NOT, // sem colisão
+    SUN = 100,
+    THIMBER_HEARTH,
+    BRITTLE_HOLLOW,
+    GIANTS_DEEP,
+    GIANTS_DEEP_TORNADO,
+    DARK_BRAMBLE,
+    DARK_BRAMBLE_PORTAL,
+    DARK_HOLE,
+    WHITE_HOLE,
+    VOID_PORTAL,
+    VOID_CORE,
+    VOID_CORE_PORTAL,
+    VOID_SHELL
+};
 
 // ==================== OBJ LOADER ====================
 void loadObj(const char *fname, GLuint *objects, int qt_objects, int object_indexes[], BoundingBox bboxes[], float scale);

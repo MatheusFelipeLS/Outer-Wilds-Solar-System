@@ -3,6 +3,7 @@
 
 #include <GL/glut.h>
 #include <iostream>
+#include "utils.h"
 
 #define THIMBER_HEARTH_COLOR 0.0f, 0.0f, 200.0f/255.0f
 

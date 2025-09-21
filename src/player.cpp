@@ -10,23 +10,26 @@ pitch(pitch0), yaw(yaw0)
 
 
 // depois adicionar o resto das colisões
-bool Player::check_collision(bool map, float deltaX, float deltaY, float deltaZ) {
+Collision Player::check_collision(bool map, float deltaX, float deltaY, float deltaZ) {
     if(map) {
-        return false;
+        return Collision::NOT;
     } else {
-        // tem que implementar a colisão
-        return dark_bramble->check_colision(camX + deltaX, camY + deltaY, camZ + deltaZ);
+        if(dark_bramble->check_colision(camX + deltaX, camY + deltaY, camZ + deltaZ))
+            return Collision::DARK_BRAMBLE;
     }
 }
 
 
 void Player::camera(bool map) {
     float deltaX, deltaY, deltaZ;
+    Collision collision_checker;
+
     if(motion.Forward) {
         deltaX = cos((yaw+90)*TO_RADIANS);
         deltaY = 0.0f;
         deltaZ = -sin((yaw+90)*TO_RADIANS);
-        if(!check_collision(map, deltaX, deltaY, deltaZ)) {
+        collision_checker = check_collision(map, deltaX, deltaY, deltaZ);
+        if(collision_checker == Collision::NOT) {
             camX += deltaX;
             camZ += deltaZ;
         }
@@ -35,7 +38,8 @@ void Player::camera(bool map) {
         deltaX = cos((yaw+90+180)*TO_RADIANS);
         deltaY = 0.0f;
         deltaZ = -sin((yaw+90+180)*TO_RADIANS);
-        if(!check_collision(map, deltaX, deltaY, deltaZ)) {
+        collision_checker = check_collision(map, deltaX, deltaY, deltaZ);
+        if(collision_checker == Collision::NOT) {
             camX += deltaX;
             camZ += deltaZ;
         }
@@ -44,7 +48,8 @@ void Player::camera(bool map) {
         deltaX = cos((yaw+90+90)*TO_RADIANS);
         deltaY = 0.0f;
         deltaZ = -sin((yaw+90+90)*TO_RADIANS);
-        if(!check_collision(map, deltaX, deltaY, deltaZ)) {
+        collision_checker = check_collision(map, deltaX, deltaY, deltaZ);
+        if(collision_checker == Collision::NOT) {
             camX += deltaX;
             camZ += deltaZ;
         }
@@ -53,17 +58,20 @@ void Player::camera(bool map) {
         deltaX = cos((yaw+90-90)*TO_RADIANS);
         deltaY = 0.0f;
         deltaZ = -sin((yaw+90-90)*TO_RADIANS);
-        if(!check_collision(map, deltaX, deltaY, deltaZ)) {
+        collision_checker = check_collision(map, deltaX, deltaY, deltaZ);
+        if(collision_checker == Collision::NOT) {
             camX += deltaX;
             camZ += deltaZ;
         }
     }
     if(motion.Up) {
-        if(!check_collision(map, 0.0f, 1.0f, 0.0f)) 
+        collision_checker = check_collision(map, 0.0f, 1.0f, 0.0f);
+        if(collision_checker == Collision::NOT) 
             camY += 1.0;
     }
     if(motion.Down) {
-        if(!check_collision(map, 0.0f, -1.0f, 0.0f))
+        collision_checker = check_collision(map, 0.0f, -1.0f, 0.0f);
+        if(collision_checker == Collision::NOT)
             camY -= 1.0;
     }
 

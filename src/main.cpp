@@ -59,7 +59,7 @@
 #include "dark_bramble.h"
 #include "interloper.h"
 #include "white_hole.h"
-
+#include "void.h"
 #define DEBUG false
 #define SPACE 32
 #define EPSILON 1e-6 // talvez inutil
@@ -68,10 +68,12 @@
 
 const int width = 16*50;
 const int height = 9*50;
-bool animating = false; // indica se a animação deve ocorrer ou não
-int forward = 1;   // indica se a animação vai do início ao fim ou ao contrário   
-float dt = 1.0f;  // velocidade da animação
-static GLint fogMode;
+bool animating = false; 
+int forward = 1;   
+float dt = 1.0f;  
+bool reset = false;
+static GLint fogMode = GL_LINEAR;
+bool map = false;
 
 // x, y, z, pitch, yaw iniciais
 #define PLAYER_PARAMS DARK_BRAMBLE_DISTANCE, 0, -200, 0.0f, 0.0f
@@ -84,6 +86,7 @@ static GiantsDeep giants_deep(GIANTS_DEEP_PARAMS);
 static DarkBramble dark_bramble(DARK_BRAMBLE_PARAMS);
 static Interloper interloper(INTERLOPER_PARAMS);
 static WhiteHole white_hole(WHITE_HOLE_PARAMS);
+static Void infinity_void;
 
 void display();
 void reshape(int w,int h);
@@ -92,22 +95,50 @@ void passive_motion(int,int);
 void keyboard(unsigned char key,int x,int y);
 void keyboard_up(unsigned char key,int x,int y);
 
-
-void init(void) {
+void set_system() {
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glShadeModel (GL_SMOOTH);
     glutSetCursor(GLUT_CURSOR_NONE);
     glDepthFunc(GL_LEQUAL);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING); 
     glEnable(GL_LIGHT0); // Sun
     glEnable(GL_LIGHT1); // White hole (acho q vou tirar a luz dele)
     glEnable(GL_LIGHT2); // Player
+    glDisable(GL_LIGHT3);
+    glDisable(GL_LIGHT4);
+    glDisable(GL_LIGHT5);
+    glDisable(GL_LIGHT6);
+    glDisable(GL_LIGHT7);
+    glDisable(GL_FOG);
+}
+
+void set_void() {
+   glEnable(GL_FOG);
+   {
+      GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
+      glFogi (GL_FOG_MODE, fogMode);
+      glFogfv (GL_FOG_COLOR, fogColor);
+      glFogf (GL_FOG_DENSITY, 0.35);
+      glHint (GL_FOG_HINT, GL_DONT_CARE);
+      glFogf (GL_FOG_START, 1.0);
+      glFogf (GL_FOG_END, 5.0);
+   }
+   glClearColor(0.5, 0.5, 0.5, 1.0);  /* fog color */
+
+   player.camX = player.camY = 0.0f;
+   player.camZ = -50.0f;
+}
+
+void init(void) {
+    set_system();
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING); 
+
     GLfloat global_ambient[] = {0.5f, 0.5f, 0.5f, 0.5f};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
     glutWarpPointer(width/2,height/2);
 
     GLuint dark_bramble_objects[33]; 
+    // talvez tivesse como fazer isso sem ser hard code, mas teria que usar strings e eu to com preguiça
     int objects_indexes[] = {
         0, 0, 1,
         1, 1, 1,
@@ -135,7 +166,24 @@ void init(void) {
     loadObj("3d_models/profundezas/tornado.obj", tornados_objects, 1, tor_objects_indexes, giants_deep_bboxes, 1.0);
     giants_deep.set_tornado(tornados_objects[0]);
 
-    player.set_system(&sun, &thimber_hearth, &brittle_hollow, &giants_deep, &dark_bramble, &interloper, &white_hole);
+    player.set_solar_system(&sun, &thimber_hearth, &brittle_hollow, &giants_deep, &dark_bramble, &interloper, &white_hole);
+
+    GLuint void_core[1]; 
+    int tor_objects_indexes[] = {0};
+    BoundingBox void_bboxes[1];
+    loadObj("3d_models/void/void_shell.obj", void_core, 1, tor_objects_indexes, void_bboxes, 100.0);
+
+    GLuint void_core[3]; 
+    int tor_objects_indexes[] = {0, 0, 1};
+    BoundingBox void_bboxes[3];
+    loadObj("3d_models/void/void_core.obj", void_core, 3, tor_objects_indexes, void_bboxes, 10.0);
+
+    GLuint void_core[1]; 
+    int tor_objects_indexes[] = {0};
+    BoundingBox void_bboxes[1];
+    loadObj("3d_models/void/void_core_conector.obj", void_core, 1, tor_objects_indexes, void_bboxes, 10.0);
+
+    
 }
 
 void hole_teleport() {
@@ -148,82 +196,24 @@ void hole_teleport() {
     }
 }
 
-static void renderSphere (GLfloat x, GLfloat y, GLfloat z)
-{
-   glPushMatrix();
-   glTranslatef (x, y, z);
-   glutSolidSphere(0.4, 16, 16);
-   glPopMatrix();
-}
-
-int sla = 0;
 void display(void) {
-    if(dark_bramble.inside(player.camX, player.camY, player.camZ)) {
-        if(sla == 0) {
-            glViewport(0, 0, (GLsizei) width, (GLsizei) height);
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            if (width <= height)
-                glOrtho (-2.5, 2.5, -2.5*(GLfloat)height/(GLfloat)width,
-                    2.5*(GLfloat)height/(GLfloat)width, -10.0, 10.0);
-            else
-                glOrtho (-2.5*(GLfloat)width/(GLfloat)height,
-                    2.5*(GLfloat)width/(GLfloat)height, -2.5, 2.5, -10.0, 10.0);
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity ();
-            glDisable(GL_LIGHT0); // Sun
-            glDisable(GL_LIGHT1); // White hole (acho q vou tirar a luz dele)
-            glDisable(GL_LIGHT2); // Player
-            
-            glClearColor(0.5, 0.5, 0.5, 1.0);  /* fog color */
-            
-            glLoadIdentity();
-            GLfloat position[] = { 0.5, 0.5, 3.0, 0.0 };
-            
-            glLightfv(GL_LIGHT5, GL_POSITION, position);
-            glEnable(GL_LIGHT5);
-            {
-                GLfloat mat[3] = {0.1745, 0.01175, 0.01175};	
-                glMaterialfv (GL_FRONT, GL_AMBIENT, mat);
-                mat[0] = 0.61424; mat[1] = 0.04136; mat[2] = 0.04136;	
-                glMaterialfv (GL_FRONT, GL_DIFFUSE, mat);
-                mat[0] = 0.727811; mat[1] = 0.626959; mat[2] = 0.626959;
-                glMaterialfv (GL_FRONT, GL_SPECULAR, mat);
-                glMaterialf (GL_FRONT, GL_SHININESS, 0.6*128.0);
-            }
-            
-            glEnable(GL_FOG);
-            {
-                GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
-                
-                fogMode = GL_LINEAR;
-                glFogi (GL_FOG_MODE, fogMode);
-                glFogfv (GL_FOG_COLOR, fogColor);
-                glFogf (GL_FOG_DENSITY, 0.35);
-                glHint (GL_FOG_HINT, GL_DONT_CARE);
-                glFogf (GL_FOG_START, 1.0);
-                glFogf (GL_FOG_END, 5.0);
-            }
-            sla++;
-            printf("aqui\n");
+    glLoadIdentity();
+    player.camera();
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if(map) {
+        if(!reset) {
+            set_void();
+            reset = true;
         }
-
-        glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glLoadIdentity();
-        renderSphere (-2., -0.5, -1.0);
-        renderSphere (-1., -0.5, -2.0);
-        renderSphere (0., -0.5, -3.0);
-        renderSphere (1., -0.5, -4.0);
-        renderSphere (2., -0.5, -5.0);
-        printf("renderizando\n");
     } else {   
-        sla = 0;
+        map = dark_bramble.inside(player.camX, player.camY, player.camZ);
+        if(reset) {
+            set_system();
+            reset = false;
+        }
         glDisable(GL_FOG);
         glClearColor(0.0, 0.0, 0.0, 0.0);
-        glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glLoadIdentity();
-        player.camera();
         sun.draw();
         thimber_hearth.draw();
         brittle_hollow.draw();

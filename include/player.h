@@ -30,7 +30,6 @@ class Player {
 
         void update_pitch_yall(int dev_x, int dev_y);
         
-        // tqv isso aqui. A ideia é o player poder ligar uma luz
         void turn_on_off_light() { light_on = !light_on; }
 
         void move_forward() { motion.Forward = true; }
@@ -47,7 +46,7 @@ class Player {
         void stop_up() { motion.Up = false; }
         void stop_down() { motion.Down = false; }
 
-        void set_system(
+        void set_solar_system(
             Sun *sun,
             ThimberHearth *thimber_hearth,
             BrittleHollow *brittle_hollow,
@@ -63,8 +62,6 @@ class Player {
             this->dark_bramble = dark_bramble;
             this->interloper = interloper;
             this->white_hole = white_hole;
-
-            printf("sol size %ld", sizeof(this->sun));
         }
 
         float camX = 50.0; 

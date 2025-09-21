@@ -69,7 +69,7 @@ bool DarkBramble::check_colision(float camX, float camY, float camZ) {
     printf("meu x, y, z: %f %f %f\n", camX-x, camY, camZ+z);
     for (size_t i = 0; i < 2; i++) {
         printf("i = %ld\n", i);
-        if (bboxes[i].contains(Vertex((camX-x), camY, (camZ+z)))) {
+        if (bspheres[i].contains(Vertex((camX-x), camY, (camZ+z)))) {
             std::cout << "Colisão detectada com objeto " << i << std::endl;
             return false;
         }

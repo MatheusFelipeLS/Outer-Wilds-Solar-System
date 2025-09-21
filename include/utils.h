@@ -47,6 +47,38 @@ struct BoundingBox {
     }
 };
 
+struct BoundingSphere {
+    Vertex center;
+    float radius;
+
+    BoundingSphere() : center(0,0,0), radius(0) {}
+
+    // constrói a esfera a partir de uma bounding box
+    BoundingSphere(const BoundingBox& box) {
+        center = Vertex(
+            (box.min.x + box.max.x) * 0.5f,
+            (box.min.y + box.max.y) * 0.5f,
+            (box.min.z + box.max.z) * 0.5f
+        );
+
+        // raio é metade da diagonal
+        float dx = box.max.x - box.min.x;
+        float dy = box.max.y - box.min.y;
+        float dz = box.max.z - box.min.z;
+        radius = 0.5f * sqrt(dx*dx + dy*dy + dz*dz);
+    }
+
+    // testa se um ponto está dentro da esfera
+    bool contains(const Vertex& p) const {
+        float dx = p.x - center.x;
+        float dy = p.y - center.y;
+        float dz = p.z - center.z;
+        float dist2 = dx*dx + dy*dy + dz*dz;
+        return dist2 <= radius*radius;
+    }
+};
+
+
 // ==================== OBJ LOADER ====================
 void loadObj(const char *fname, GLuint *objects, int qt_objects, int object_indexes[], BoundingBox bboxes[], float scale);
 

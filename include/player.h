@@ -23,15 +23,17 @@ class Player {
     public:
         Player(float camX0, float camY0, float camZ0, float pitch0, float yaw0);
         
-        void camera();
+        void camera(bool map);
         
-        bool check_collision(float deltaX, float deltaY, float deltaZ);
+        bool check_collision(bool map, float deltaX, float deltaY, float deltaZ);
         void teleport(float x, float y, float z, float delta_min);
 
         void update_pitch_yall(int dev_x, int dev_y);
         
         void turn_on_off_light() { light_on = !light_on; }
 
+        void hole_teleport();
+        
         void move_forward() { motion.Forward = true; }
         void move_backward() { motion.Backward = true; }
         void move_right() { motion.Right = true; }
@@ -67,10 +69,10 @@ class Player {
         float camX = 50.0; 
         float camY = 0.0; 
         float camZ = -30.0;
-
-    private:
         float pitch = 0.0; 
         float yaw = 0.0;
+
+    private:
         Motion motion = {false,false,false,false,false,false};
         bool light_on = false;
 

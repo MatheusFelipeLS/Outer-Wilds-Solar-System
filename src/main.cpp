@@ -60,6 +60,7 @@
 #include "interloper.h"
 #include "white_hole.h"
 #include "void.h"
+
 #define DEBUG false
 #define SPACE 32
 #define EPSILON 1e-6 // talvez inutil
@@ -71,7 +72,7 @@ const int height = 9*50;
 bool animating = false; 
 int forward = 1;   
 float dt = 1.0f;  
-bool reset = false;
+bool reset = true;
 static GLint fogMode = GL_LINEAR;
 bool map = false;
 
@@ -112,20 +113,21 @@ void set_system() {
 }
 
 void set_void() {
-   glEnable(GL_FOG);
-   {
-      GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
-      glFogi (GL_FOG_MODE, fogMode);
-      glFogfv (GL_FOG_COLOR, fogColor);
-      glFogf (GL_FOG_DENSITY, 0.35);
-      glHint (GL_FOG_HINT, GL_DONT_CARE);
-      glFogf (GL_FOG_START, 1.0);
-      glFogf (GL_FOG_END, 5.0);
-   }
-   glClearColor(0.5, 0.5, 0.5, 1.0);  /* fog color */
+//    glEnable(GL_FOG);
+//    {
+//       GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
+//       glFogi (GL_FOG_MODE, fogMode);
+//       glFogfv (GL_FOG_COLOR, fogColor);
+//       glFogf (GL_FOG_DENSITY, 0.35);
+//       glHint (GL_FOG_HINT, GL_DONT_CARE);
+//       glFogf (GL_FOG_START, 100.0);
+//       glFogf (GL_FOG_END, 500.0);
+//    }
+//    glClearColor(0.5, 0.5, 0.5, 1.0);  /* fog color */
 
-   player.camX = player.camY = 0.0f;
-   player.camZ = -50.0f;
+   player.camX = -99.064293;
+   player.camY = 40.000000;
+   player.camZ = 14.945419;
 }
 
 void init(void) {
@@ -138,7 +140,8 @@ void init(void) {
     glutWarpPointer(width/2,height/2);
 
     GLuint dark_bramble_objects[33]; 
-    // talvez tivesse como fazer isso sem ser hard code, mas teria que usar strings e eu to com preguiça
+    // talvez tivesse como fazer isso sem ser hard code, mas teria que usar strings e eu to com preguiça.
+    // A ideia seria renomear cada objeto no blender, descobrir qual objeto é o que e fazer um mapeamento
     int objects_indexes[] = {
         0, 0, 1,
         1, 1, 1,
@@ -168,43 +171,44 @@ void init(void) {
 
     player.set_solar_system(&sun, &thimber_hearth, &brittle_hollow, &giants_deep, &dark_bramble, &interloper, &white_hole);
 
-    GLuint void_core[1]; 
-    int tor_objects_indexes[] = {0};
-    BoundingBox void_bboxes[1];
-    loadObj("3d_models/void/void_shell.obj", void_core, 1, tor_objects_indexes, void_bboxes, 100.0);
+    GLuint void_shell[1]; 
+    int void_shell_objects_indexes[] = {0};
+    BoundingBox void_shell_bboxes[1];
+    loadObj("3d_models/void/void_shell.obj", void_shell, 1, void_shell_objects_indexes, void_shell_bboxes, 50.0);
 
     GLuint void_core[3]; 
-    int tor_objects_indexes[] = {0, 0, 1};
-    BoundingBox void_bboxes[3];
-    loadObj("3d_models/void/void_core.obj", void_core, 3, tor_objects_indexes, void_bboxes, 10.0);
+    int void_core_objects_indexes[] = {0, 0, 1};
+    BoundingBox void_core_bboxes[3];
+    loadObj("3d_models/void/void_core.obj", void_core, 3, void_core_objects_indexes, void_core_bboxes, 10.0);
 
-    GLuint void_core[1]; 
-    int tor_objects_indexes[] = {0};
-    BoundingBox void_bboxes[1];
-    loadObj("3d_models/void/void_core_conector.obj", void_core, 1, tor_objects_indexes, void_bboxes, 10.0);
+    GLuint void_conector[1]; 
+    int void_conector_objects_indexes[] = {0};
+    BoundingBox void_conector_bboxes[1];
+    loadObj("3d_models/void/void_core_conector.obj", void_conector, 1, void_conector_objects_indexes, void_conector_bboxes, 10.0);
 
-    
-}
+    GLuint void_portal[2]; 
+    int void_portal_objects_indexes[] = {0, 1};
+    BoundingBox void_portal_bboxes[2];
+    loadObj("3d_models/void/void_portal.obj", void_portal, 2, void_portal_objects_indexes, void_portal_bboxes, 10.0);
 
-void hole_teleport() {
-    if(brittle_hollow.inside_dark_hole(player.camX, player.camY, player.camZ)) {
-        //teleportando para o buraco branco
-        player.teleport(WHITE_HOLE_TX, WHITE_HOLE_TY, WHITE_HOLE_TZ, WHITE_HOLE_RADIUS);
-    } else if(white_hole.inside(player.camX, player.camY, player.camZ)) {
-        auto [x, z] = brittle_hollow.get_black_hole_position();
-        player.teleport(x, 0.0f, z, WHITE_HOLE_RADIUS); // acho q o gap (white hole radius) tá muito grande
-    }
+
+    infinity_void.set_shell(void_shell[0]);
+    infinity_void.set_core(void_core);
+    infinity_void.set_conector(void_conector[0]);
+    infinity_void.set_portal(void_portal);
 }
 
 void display(void) {
     glLoadIdentity();
-    player.camera();
+    player.camera(map);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if(map) {
         if(!reset) {
             set_void();
             reset = true;
         }
+
+        infinity_void.draw();
     } else {   
         map = dark_bramble.inside(player.camX, player.camY, player.camZ);
         if(reset) {
@@ -222,7 +226,7 @@ void display(void) {
         interloper.draw();   
         white_hole.draw();
         
-        hole_teleport();
+        player.hole_teleport();
     }
     glutSwapBuffers();
 
@@ -289,6 +293,12 @@ void keyboard(unsigned char key,int x,int y) {
         case 'L':
             player.turn_on_off_light();
             break;
+        case 'g':
+            infinity_void.desloc();
+            break;
+        case 'G':
+            infinity_void.cdesloc();
+            break;
         case 27:
             exit(0);
             break;
@@ -341,7 +351,7 @@ void idle(void) {
 }
 
 int main(int argc, char** argv) {
-    srand(25);
+    srand(time(NULL));
 
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);

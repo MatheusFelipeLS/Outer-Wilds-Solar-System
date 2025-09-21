@@ -10,18 +10,23 @@ pitch(pitch0), yaw(yaw0)
 
 
 // depois adicionar o resto das colisões
-bool Player::check_collision(float deltaX, float deltaY, float deltaZ) {
-    return dark_bramble->check_colision(camX + deltaX, camY + deltaY, camZ + deltaZ);
+bool Player::check_collision(bool map, float deltaX, float deltaY, float deltaZ) {
+    if(map) {
+        return false;
+    } else {
+        // tem que implementar a colisão
+        return dark_bramble->check_colision(camX + deltaX, camY + deltaY, camZ + deltaZ);
+    }
 }
 
 
-void Player::camera() {
+void Player::camera(bool map) {
     float deltaX, deltaY, deltaZ;
     if(motion.Forward) {
         deltaX = cos((yaw+90)*TO_RADIANS);
         deltaY = 0.0f;
         deltaZ = -sin((yaw+90)*TO_RADIANS);
-        if(!check_collision(deltaX, deltaY, deltaZ)) {
+        if(!check_collision(map, deltaX, deltaY, deltaZ)) {
             camX += deltaX;
             camZ += deltaZ;
         }
@@ -30,7 +35,7 @@ void Player::camera() {
         deltaX = cos((yaw+90+180)*TO_RADIANS);
         deltaY = 0.0f;
         deltaZ = -sin((yaw+90+180)*TO_RADIANS);
-        if(!check_collision(deltaX, deltaY, deltaZ)) {
+        if(!check_collision(map, deltaX, deltaY, deltaZ)) {
             camX += deltaX;
             camZ += deltaZ;
         }
@@ -39,7 +44,7 @@ void Player::camera() {
         deltaX = cos((yaw+90+90)*TO_RADIANS);
         deltaY = 0.0f;
         deltaZ = -sin((yaw+90+90)*TO_RADIANS);
-        if(!check_collision(deltaX, deltaY, deltaZ)) {
+        if(!check_collision(map, deltaX, deltaY, deltaZ)) {
             camX += deltaX;
             camZ += deltaZ;
         }
@@ -48,20 +53,21 @@ void Player::camera() {
         deltaX = cos((yaw+90-90)*TO_RADIANS);
         deltaY = 0.0f;
         deltaZ = -sin((yaw+90-90)*TO_RADIANS);
-        if(!check_collision(deltaX, deltaY, deltaZ)) {
+        if(!check_collision(map, deltaX, deltaY, deltaZ)) {
             camX += deltaX;
             camZ += deltaZ;
         }
     }
     if(motion.Up) {
-        if(!check_collision(0.0f, 1.0f, 0.0f)) 
+        if(!check_collision(map, 0.0f, 1.0f, 0.0f)) 
             camY += 1.0;
     }
     if(motion.Down) {
-        if(!check_collision(0.0f, -1.0f, 0.0f))
+        if(!check_collision(map, 0.0f, -1.0f, 0.0f))
             camY -= 1.0;
     }
 
+    printf("x, y, z, pitch, yaw: %f %f %f %f %f\n", camX, camY, camZ, pitch, yaw);
     glRotatef(-pitch,1.0,0.0,0.0); // Along X axis
     glRotatef(-yaw,0.0,1.0,0.0);    //Along Y axis
 
@@ -95,4 +101,14 @@ void Player::teleport(float x, float y, float z, float delta_min) {
 void Player::update_pitch_yall(int dev_x, int dev_y) {
     yaw += (float)dev_x/10.0;
     pitch += (float)dev_y/10.0;
+}
+
+void Player::hole_teleport() {
+    if(brittle_hollow->inside_dark_hole(camX, camY, camZ)) {
+        //teleportando para o buraco branco
+        teleport(white_hole->x, white_hole->y, white_hole->z, white_hole->radius);
+    } else if(white_hole->inside(camX, camY, camZ)) {
+        auto [x, z] = brittle_hollow->get_black_hole_position();
+        teleport(x, 0.0f, z, white_hole->radius); // acho q o gap (white hole radius) tá muito grande
+    }
 }

@@ -29,8 +29,10 @@ class DarkBramble {
                 bboxes[i] = bb[i];
             }
 
-            bboxes[0].expand(Vertex(bboxes[32].min.x - 1, bboxes[0].min.y, bboxes[0].min.z));
-            bboxes[1].expand(Vertex(bboxes[0].min.x, bboxes[32].min.y-1, bboxes[0].min.z));
+            // bboxes[0].expand(Vertex(bboxes[32].min.x - 1, bboxes[0].min.y, bboxes[0].min.z));
+            // bboxes[1].expand(Vertex(bboxes[0].min.x, bboxes[32].min.y-1, bboxes[0].min.z));
+            bspheres[0] = BoundingSphere(bboxes[0]);
+            bspheres[1] = BoundingSphere(bboxes[1]);
         }
 
         void update_position(GLfloat t, GLfloat r) {
@@ -58,6 +60,7 @@ class DarkBramble {
         GLuint ice;
 
         BoundingBox bboxes[33];
+        BoundingSphere bspheres[2];
 
         bool d;
 };

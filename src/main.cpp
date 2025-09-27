@@ -46,6 +46,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <cstdlib>
+#include <math.h>
 
 #include "utils.h"
 #include "params.cpp"
@@ -86,6 +87,13 @@ float player_speed = 1.0f;
 float speed_increment = 0.1f;
 float min_speed = 0.1f;
 float max_speed = 5.0f;
+
+// Starfield
+#define NUM_STARS 1500
+#define STARFIELD_RADIUS 2000.0f
+static float stars[NUM_STARS][3];
+void init_stars();
+void draw_stars();
 
 // x, y, z, pitch, yaw iniciais
 #define PLAYER_PARAMS DARK_BRAMBLE_DISTANCE, 0, -200, 0.0f, 0.0f
@@ -155,6 +163,37 @@ void set_void() {
    player.camX = -99.064293;
    player.camY = 40.000000;
    player.camZ = 14.945419;
+}
+
+void init_stars() {
+	for (int i = 0; i < NUM_STARS; ++i) {
+		float x = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+		float y = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+		float z = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+		float len = sqrtf(x * x + y * y + z * z);
+		if (len < 1e-3f) {
+			x = 1.0f; y = 0.0f; z = 0.0f; len = 1.0f;
+		}
+		stars[i][0] = (x / len) * STARFIELD_RADIUS;
+		stars[i][1] = (y / len) * STARFIELD_RADIUS;
+		stars[i][2] = (z / len) * STARFIELD_RADIUS;
+	}
+}
+
+void draw_stars() {
+	// Render simple white points as distant stars, locked to camera translation
+	glPushAttrib(GL_ENABLE_BIT | GL_POINT_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_FOG);
+	glPointSize(1.5f);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glBegin(GL_POINTS);
+	for (int i = 0; i < NUM_STARS; ++i) {
+		glVertex3f(player.camX + stars[i][0], player.camY + stars[i][1], player.camZ + stars[i][2]);
+	}
+	glEnd();
+	glPopAttrib();
 }
 
 void toggle_menu() {
@@ -369,6 +408,9 @@ void init(void) {
     // Debug desabilitado para produção
     // quantum_moon.debug();
 
+	// Inicializa as estrelas de fundo
+	init_stars();
+
 }
 
 void display(void) {
@@ -376,6 +418,9 @@ void display(void) {
     player.set_speed(player_speed);
     player.camera(map);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Estrelas de fundo
+	draw_stars();
 
     if(map) {
         if(!reset) {

@@ -20,17 +20,18 @@ class DarkBramble {
         void draw();
 
         // false se não teve colisão
-        bool check_colision(float camX, float camY, float camZ);
+        Collision check_colision(float camX, float camY, float camZ);
 
         bool inside(float camX, float camY, float camZ);
 
         void set_bouding_boxes(BoundingBox bb[], int qt_bb) {
+            float radius_factor = 0.5;
             for(int i = 0; i < qt_bb; i++) {
                 bboxes[i] = bb[i];
+                bspheres[i] = BoundingSphere(bboxes[i], radius_factor);
+                if(i >= 2) radius_factor = 0.33;
             }
 
-            bspheres[0] = BoundingSphere(bboxes[0]);
-            bspheres[1] = BoundingSphere(bboxes[1]);
         }
 
         void update_position(GLfloat t, GLfloat r) {
@@ -58,7 +59,7 @@ class DarkBramble {
         GLuint ice;
 
         BoundingBox bboxes[33];
-        BoundingSphere bspheres[2];
+        BoundingSphere bspheres[33];
 
         bool d;
 };

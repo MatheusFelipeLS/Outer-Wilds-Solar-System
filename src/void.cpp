@@ -15,11 +15,25 @@ void Void::draw() {
     if(rot == 400) {
         rot = rand() % 360;
     }
-    printf("rot %d", rot);
+
+    for(int i = 0; i < 18; i++) {
+        if(i != right_portal.back()) {
+            continue;
+        }
+        glPushMatrix();
+            // leva o sistema de coordenadas até o centro
+            glTranslatef(core_bspheres[i].center.x, core_bspheres[i].center.y, core_bspheres[i].center.z);
+
+            // define cor (vermelho, por exemplo)
+            glColor3f(1.0f, 0.0f, 0.0f);
+
+            // desenha esfera em modo wireframe
+            glutWireSphere(core_bspheres[i].radius, 16, 16);
+        glPopMatrix();
+    }
 
     glPushMatrix();
         glCallList(core[0]);
-        glCallList(core[2]);
         // colocando o portal numa posição random
         glRotatef(rot, 0.0, 1.0, 0.0); 
         glTranslatef(787.500000, 0.0, 0.0f); /// parametrizar melhor isso depois
@@ -45,37 +59,61 @@ void Void::draw() {
     glPopMatrix();
 }
 
-void Void::set_bounding_boxes(BoundingBox bb[], int qt_bb, int void_core_objects_indexes[]) {
-    int k = 0;
+void Void::set_core_bounding_boxes(BoundingBox bb[], int qt_bb, int void_core_objects_indexes[]) {
     for(int i = 0; i < qt_bb; i++) {
-        bboxes[i] = bb[i];
+        core_bboxes[i] = bb[i];
+        this->void_core_objects_indexes[i] = void_core_objects_indexes[i];
         if(void_core_objects_indexes[i] == 0) {
-            bspheres[k] = BoundingSphere(bb[i]);
-            k++;
+            core_bspheres[i] = BoundingSphere(bb[i], 0.5);
+        } else {
+            core_bspheres[i] = BoundingSphere(bb[i], 0.35);
         }
     }  
 }
 
-bool Void::check_colision(float camX, float camY, float camZ) {
-    // começando de dois para ignorar as entradas do portal
-    double x = 0;
-    double z = 0;
-    printf("x e z do planeta: %f %f\n", x, z);
-    printf("meu x, y, z: %f %f %f\n", camX-x, camY, camZ+z);
-    for (size_t i = 0; i < 2; i++) {
-        printf("i = %ld\n", i);
-        if (bspheres[i].contains(Vertex((camX-x), camY, (camZ+z)))) {
-            std::cout << "Colisão detectada com objeto " << i << std::endl;
-            return false;
+void Void::set_shell_bounding_boxes(BoundingBox bb) {
+    shell_bbox = bb; 
+    shell_bsphere = BoundingSphere(bb, 0.5);
+}
+
+void Void::set_portal_bounding_boxes(BoundingBox bb[]) {
+    portal_bboxes[0] = bb[0]; 
+    portal_bspheres[0] = BoundingSphere(bb[0], 0.5);
+    portal_bboxes[1] = bb[1]; 
+    portal_bspheres[1] = BoundingSphere(bb[1], 0.5);    
+}
+
+Collision Void::check_colision(float camX, float camY, float camZ) {
+    if(!shell_bsphere.contains(Vertex(camX, camY, camZ))) {
+        return Collision::VOID_SHELL;
+    }
+
+    for(int i = 0; i < 18; i++) {
+        if(void_core_objects_indexes[i] == 1 && core_bspheres[i].contains(Vertex(camX, camY, camZ))) {
+            return Collision::VOID_CORE;
+        } else if(void_core_objects_indexes[i] == 0 && core_bspheres[i].contains(Vertex(camX, camY, camZ))) {
+            return Collision::NOT;
+        }
+    }   
+
+    return Collision::NOT;
+}
+
+
+Portal Void::inside(float camX, float camY, float camZ) {
+    for (int i = 0; i < 18; i++) {
+        if(void_core_objects_indexes[i] == 0 && core_bspheres[i].contains(Vertex(camX, camY, camZ)) && i == right_portal.back()) {
+            std::cout << "RIGHT" << i << std::endl;
+            return Portal::RIGHT;
+        } else if(void_core_objects_indexes[i] == 0 && core_bspheres[i].contains(Vertex(camX, camY, camZ)) && i != right_portal.back()) {
+            std::cout << "WRONG" << i << std::endl;
+            return Portal::WRONG;
         }
     }
-    
-    for (size_t i = 2; i < sizeof(bboxes) / sizeof(bboxes[0]); i++) {
-        printf("i = %ld\n", i); 
-        if (bboxes[i].contains(Vertex(camX-x, camY, camZ+z))) {
-            std::cout << "Colisão detectada com objeto " << i << std::endl;
-            return true;
-        }
-    }
-    return false;
+  
+    return Portal::NOTHING;
+    // 108.300247 24.000000 23.705524 esquerda 
+    // 61.474453 62.000000 226.668900 direita
+    // 175.063477 213.000000 157.644516 bola alta
+    // 345.037750 40.000000 125.442276 bola de trás
 }

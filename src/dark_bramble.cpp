@@ -9,6 +9,21 @@ void DarkBramble::draw() {
         << std::endl;
     }
 
+    
+    for(int i = 0; i < 33; i++) {
+        glPushMatrix();
+        glTranslatef (distance, 0.0, 0.0);
+            // leva o sistema de coordenadas até o centro
+            glTranslatef(bspheres[i].center.x, bspheres[i].center.y, bspheres[i].center.z);
+
+            // define cor (vermelho, por exemplo)
+            glColor3f(1.0f, 0.0f, 0.0f);
+
+            // desenha esfera em modo wireframe
+            glutWireSphere(bspheres[i].radius, 16, 16);
+        glPopMatrix();
+    }
+
     GLfloat portal_diffuse[] = {DARK_BRAMBLE_COLOR};
     GLfloat portal_specular[] = {DARK_BRAMBLE_COLOR};
     GLfloat portal_ambient[] = {DARK_BRAMBLE_COLOR};
@@ -61,35 +76,35 @@ void DarkBramble::draw() {
 
 
 // false se não teve colisão
-bool DarkBramble::check_colision(float camX, float camY, float camZ) {
+Collision DarkBramble::check_colision(float camX, float camY, float camZ) {
     // começando de dois para ignorar as entradas do portal
     double x = distance * cos(translation*RAD);
     double z = distance * sin(translation*RAD);
-    printf("x e z do planeta: %f %f\n", x, z);
-    printf("meu x, y, z: %f %f %f\n", camX-x, camY, camZ+z);
+    // printf("x e z do planeta: %f %f\n", x, z);
+    // printf("meu x, y, z: %f %f %f\n", camX-x, camY, camZ+z);
     for (size_t i = 0; i < 2; i++) {
-        printf("i = %ld\n", i);
+        // printf("i = %ld\n", i);
         if (bspheres[i].contains(Vertex((camX-x), camY, (camZ+z)))) {
-            std::cout << "Colisão detectada com objeto " << i << std::endl;
-            return false;
+            // std::cout << "Colisão detectada com objeto " << i << std::endl;
+            return Collision::DARK_BRAMBLE_PORTAL;
         }
     }
     
     for (size_t i = 2; i < sizeof(bboxes) / sizeof(bboxes[0]); i++) {
-        printf("i = %ld\n", i); 
-        if (bboxes[i].contains(Vertex(camX-x, camY, camZ+z))) {
-            std::cout << "Colisão detectada com objeto " << i << std::endl;
-            return true;
+        // printf("i = %ld\n", i); 
+        if (bspheres[i].contains(Vertex(camX-x, camY, camZ+z))) {
+            // std::cout << "Colisão detectada com objeto " << i << std::endl;
+            return Collision::DARK_BRAMBLE;
         }
     }
-    return false;
+    return Collision::NOT;
 }
 
 bool DarkBramble::inside(float camX, float camY, float camZ) {
     double x = distance * cos(translation*RAD);
     double z = distance * sin(translation*RAD);
     for (size_t i = 0; i < 2; i++) {
-        printf("i = %ld\n", i);
+        // printf("i = %ld\n", i);
         if (bboxes[i].contains(Vertex((camX-x), camY, (camZ+z)))) {
             std::cout << "Colisão detectada com objeto " << i << std::endl;
             return true;

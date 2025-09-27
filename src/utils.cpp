@@ -52,11 +52,9 @@ void loadObj(const char *fname, GLuint *objects, int qt_objects, int object_inde
         }
     }
 
-    printf("achou todos as faces\n");
     fclose(fp);
 
     indexes[count] = num_faces;
-    printf("count %d\n", count);
 
     int captured = 0;
     int idx = 0;

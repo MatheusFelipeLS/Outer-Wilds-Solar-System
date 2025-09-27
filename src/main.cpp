@@ -200,7 +200,9 @@ void init(void) {
     infinity_void.set_shell(void_shell[0]);
     infinity_void.set_core(void_core);
     infinity_void.set_portal(void_portal);
-    infinity_void.set_bounding_boxes(void_core_bboxes, 18, void_core_objects_indexes);
+    infinity_void.set_core_bounding_boxes(void_core_bboxes, 18, void_core_objects_indexes);
+    infinity_void.set_shell_bounding_boxes(void_shell_bboxes[0]);
+    infinity_void.set_portal_bounding_boxes(void_portal_bboxes);
 
 }
 
@@ -212,6 +214,24 @@ void display(void) {
         if(!reset) {
             set_void();
             reset = true;
+            infinity_void.add_portal();
+        }
+
+        Portal p = infinity_void.inside(player.camX, player.camY, player.camZ);
+        if(p == Portal::NOTHING) {
+            map = true;
+        } else if (p == Portal::RIGHT) {
+            infinity_void.remove_portal();
+            std::cout << "removeu o portal" << std::endl;
+            if(infinity_void.qt_portals() == 0) {
+                printf("FOI FOI FOI\n");
+                map = false;
+            }
+        } else if (p == Portal::WRONG) {
+            infinity_void.add_portal();
+            player.camX = -99.064293;
+            player.camY = 40.000000;
+            player.camZ = 14.945419;
         }
 
         infinity_void.draw();

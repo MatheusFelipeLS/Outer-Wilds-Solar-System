@@ -39,8 +39,8 @@ struct BoundingBox {
 
     // Testa se um ponto (ex: posição da câmera) está dentro da box
     bool contains(const Vertex& p) const {
-        printf("min objeto x, y, z: %f %f %f\n", min.x, min.y, min.z);
-        printf("max objeto x, y, z: %f %f %f\n", max.x, max.y, max.z);
+        // printf("min objeto x, y, z: %f %f %f\n", min.x, min.y, min.z);
+        // printf("max objeto x, y, z: %f %f %f\n", max.x, max.y, max.z);
         return (p.x >= min.x && p.x <= max.x &&
                 p.y >= min.y && p.y <= max.y &&
                 p.z >= min.z && p.z <= max.z);
@@ -54,7 +54,7 @@ struct BoundingSphere {
     BoundingSphere() : center(0,0,0), radius(0) {}
 
     // constrói a esfera a partir de uma bounding box
-    BoundingSphere(const BoundingBox& box) {
+    BoundingSphere(const BoundingBox& box, float radius_factor) {
         center = Vertex(
             (box.min.x + box.max.x) * 0.5f,
             (box.min.y + box.max.y) * 0.5f,
@@ -65,7 +65,7 @@ struct BoundingSphere {
         float dx = box.max.x - box.min.x;
         float dy = box.max.y - box.min.y;
         float dz = box.max.z - box.min.z;
-        radius = 0.5f * sqrt(dx*dx + dy*dy + dz*dz);
+        radius = radius_factor * sqrt(dx*dx + dy*dy + dz*dz);
     }
 
     // testa se um ponto está dentro da esfera
@@ -89,9 +89,9 @@ enum class Collision {
     DARK_BRAMBLE_PORTAL,
     DARK_HOLE,
     WHITE_HOLE,
-    VOID_PORTAL,
+    VOID_WRONG_PORTAL,
+    VOID_RIGHT_PORTAL,
     VOID_CORE,
-    VOID_CORE_PORTAL,
     VOID_SHELL
 };
 

@@ -11,11 +11,19 @@ pitch(pitch0), yaw(yaw0)
 
 // depois adicionar o resto das colisões
 Collision Player::check_collision(bool map, float deltaX, float deltaY, float deltaZ) {
+    std::cout << "map " << map << std::endl;
     if(map) {
+        Collision type = void_map->check_colision(camX + deltaX, camY + deltaY, camZ + deltaZ);
+        if(type != Collision::NOT) {
+            return type;
+        } 
         return Collision::NOT;
     } else {
-        if(dark_bramble->check_colision(camX + deltaX, camY + deltaY, camZ + deltaZ))
-            return Collision::DARK_BRAMBLE;
+        Collision type = dark_bramble->check_colision(camX + deltaX, camY + deltaY, camZ + deltaZ);
+        if(type != Collision::NOT) {
+            return type;
+        }
+          
     }
 }
 
@@ -29,7 +37,7 @@ void Player::camera(bool map) {
         deltaY = 0.0f;
         deltaZ = -sin((yaw+90)*TO_RADIANS);
         collision_checker = check_collision(map, deltaX, deltaY, deltaZ);
-        if(collision_checker == Collision::NOT) {
+        if(collision_checker == Collision::NOT || collision_checker == Collision::DARK_BRAMBLE_PORTAL) {
             camX += deltaX;
             camZ += deltaZ;
         }
@@ -39,7 +47,7 @@ void Player::camera(bool map) {
         deltaY = 0.0f;
         deltaZ = -sin((yaw+90+180)*TO_RADIANS);
         collision_checker = check_collision(map, deltaX, deltaY, deltaZ);
-        if(collision_checker == Collision::NOT) {
+        if(collision_checker == Collision::NOT || collision_checker == Collision::DARK_BRAMBLE_PORTAL) {
             camX += deltaX;
             camZ += deltaZ;
         }
@@ -49,7 +57,7 @@ void Player::camera(bool map) {
         deltaY = 0.0f;
         deltaZ = -sin((yaw+90+90)*TO_RADIANS);
         collision_checker = check_collision(map, deltaX, deltaY, deltaZ);
-        if(collision_checker == Collision::NOT) {
+        if(collision_checker == Collision::NOT || collision_checker == Collision::DARK_BRAMBLE_PORTAL) {
             camX += deltaX;
             camZ += deltaZ;
         }
@@ -59,19 +67,19 @@ void Player::camera(bool map) {
         deltaY = 0.0f;
         deltaZ = -sin((yaw+90-90)*TO_RADIANS);
         collision_checker = check_collision(map, deltaX, deltaY, deltaZ);
-        if(collision_checker == Collision::NOT) {
+        if(collision_checker == Collision::NOT || collision_checker == Collision::DARK_BRAMBLE_PORTAL) {
             camX += deltaX;
             camZ += deltaZ;
         }
     }
     if(motion.Up) {
         collision_checker = check_collision(map, 0.0f, 1.0f, 0.0f);
-        if(collision_checker == Collision::NOT) 
+        if(collision_checker == Collision::NOT || collision_checker == Collision::DARK_BRAMBLE_PORTAL) 
             camY += 1.0;
     }
     if(motion.Down) {
         collision_checker = check_collision(map, 0.0f, -1.0f, 0.0f);
-        if(collision_checker == Collision::NOT)
+        if(collision_checker == Collision::NOT || collision_checker == Collision::DARK_BRAMBLE_PORTAL)
             camY -= 1.0;
     }
 

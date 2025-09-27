@@ -20,14 +20,20 @@ class Void {
         void add_portal() {
             int i = rand() % 9;
             right_portal.push_back(possible_indexes[i]);
+            rotations.push_back(rand() % 360);
         }
 
         void remove_portal() {
             right_portal.pop_back();
+            rotations.pop_back();
         }
 
         int qt_portals() {
             return right_portal.size();
+        }
+
+        std::pair<int, float> last_rotation() {
+            return std::make_pair(rotations.back(), portal_distance);
         }
 
         void set_shell(GLuint s) { shell = s; }
@@ -61,7 +67,7 @@ class Void {
 
         GLfloat t;
 
-        int rot = 400;
+        std::vector<int> rotations;
 
         BoundingBox core_bboxes[18];
         BoundingSphere core_bspheres[18];
@@ -72,7 +78,9 @@ class Void {
         BoundingBox portal_bboxes[2];
         BoundingSphere portal_bspheres[2];
         std::vector<int> right_portal;
-        int possible_indexes[9] = {0, 1, 3, 4, 5, 6, 8, 9, 11};
+        int possible_indexes[8] = {0, 1, 3, 4, 5, 6, 8, 9};
+
+        float portal_distance = 823.50;
 };
 
 #endif

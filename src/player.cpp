@@ -11,19 +11,13 @@ pitch(pitch0), yaw(yaw0)
 
 // depois adicionar o resto das colisões
 Collision Player::check_collision(bool map, float deltaX, float deltaY, float deltaZ) {
-    std::cout << "map " << map << std::endl;
+    // std::cout << "map " << map << std::endl;
     if(map) {
         Collision type = void_map->check_colision(camX + deltaX, camY + deltaY, camZ + deltaZ);
-        if(type != Collision::NOT) {
-            return type;
-        } 
-        return Collision::NOT;
+        return type;  
     } else {
         Collision type = dark_bramble->check_colision(camX + deltaX, camY + deltaY, camZ + deltaZ);
-        if(type != Collision::NOT) {
-            return type;
-        }
-          
+        return type;
     }
 }
 
@@ -83,7 +77,8 @@ void Player::camera(bool map) {
             camY -= 1.0;
     }
 
-    printf("x, y, z, pitch, yaw: %f %f %f %f %f\n", camX, camY, camZ, pitch, yaw);
+    // printf("tipo de colisão: %d\n", collision_checker);
+    // printf("x, y, z, pitch, yaw: %f %f %f %f %f\n", camX, camY, camZ, pitch, yaw);
     glRotatef(-pitch,1.0,0.0,0.0); // Along X axis
     glRotatef(-yaw,0.0,1.0,0.0);    //Along Y axis
 
@@ -128,3 +123,9 @@ void Player::hole_teleport() {
         teleport(x, 0.0f, z, white_hole->radius); // acho q o gap (white hole radius) tá muito grande
     }
 }
+
+// void Player::set_position(float x, float y, float z) {
+//     camX = x;
+//     camY = y;
+//     camZ = z;
+// }

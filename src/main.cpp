@@ -215,6 +215,8 @@ void display(void) {
             set_void();
             reset = true;
             infinity_void.add_portal();
+            auto [rotation, distance] = infinity_void.last_rotation();
+            player.move_to_portal(rotation, distance-30);
         }
 
         Portal p = infinity_void.inside(player.camX, player.camY, player.camZ);
@@ -222,16 +224,15 @@ void display(void) {
             map = true;
         } else if (p == Portal::RIGHT) {
             infinity_void.remove_portal();
-            std::cout << "removeu o portal" << std::endl;
             if(infinity_void.qt_portals() == 0) {
-                printf("FOI FOI FOI\n");
+                auto [rotation, distance] = dark_bramble.current_position();
+                player.move_to_solar_system(rotation, distance);
                 map = false;
             }
         } else if (p == Portal::WRONG) {
             infinity_void.add_portal();
-            player.camX = -99.064293;
-            player.camY = 40.000000;
-            player.camZ = 14.945419;
+            auto [rotation, distance] = infinity_void.last_rotation();
+            player.move_to_portal(rotation, distance-30);
         }
 
         infinity_void.draw();

@@ -1,7 +1,6 @@
 #include "void.h"
 
 void Void::draw() {
-
     GLfloat portal_diffuse[] = {128.0f/255.0f, 128.0f/255.0f, 128.0f/255.0f, 0.3f};
     GLfloat portal_specular[] = {128.0f/255.0f, 128.0f/255.0f, 128.0f/255.0f, 0.3f};
     GLfloat portal_ambient[] = {128.0f/255.0f, 128.0f/255.0f, 128.0f/255.0f, 0.3f};
@@ -11,11 +10,13 @@ void Void::draw() {
     glMaterialfv(GL_FRONT, GL_AMBIENT, portal_ambient);
     glMaterialfv(GL_FRONT, GL_SHININESS, portal_shininess);
 
-    printf("t %f\n", t);
-    if(rot == 400) {
-        rot = rand() % 360;
-    }
+    // printf("rotations.back() %f\n", rotations.back());
 
+    for(size_t i = 0; i < rotations.size(); i++) {
+        std::cout << rotations[i] << " ";
+    }
+    std::cout << std::endl;
+    
     for(int i = 0; i < 18; i++) {
         if(i != right_portal.back()) {
             continue;
@@ -32,11 +33,22 @@ void Void::draw() {
         glPopMatrix();
     }
 
+    // portal
+    glPushMatrix();
+        // leva o sistema de coordenadas até o centro
+        glTranslatef(portal_bspheres[1].center.x + (portal_distance + 21) * cos(rotations.back()*RAD), portal_bspheres[1].center.y, portal_bspheres[1].center.z - (portal_distance + 21) * sin(rotations.back()*RAD));
+        glColor3f(0.0f, 1.0f, 0.0f);
+
+        // desenha esfera em modo wireframe
+        glutWireSphere(portal_bspheres[1].radius, 16, 16);
+    glPopMatrix();
+
+
     glPushMatrix();
         glCallList(core[0]);
         // colocando o portal numa posição random
-        glRotatef(rot, 0.0, 1.0, 0.0); 
-        glTranslatef(787.500000, 0.0, 0.0f); /// parametrizar melhor isso depois
+        glRotatef(rotations.back(), 0.0, 1.0, 0.0); 
+        glTranslatef(portal_distance, 0.0f, 0.0f); // parametrizar melhor isso depois
         glCallList(portal[1]);
     glPopMatrix();
 
@@ -53,8 +65,8 @@ void Void::draw() {
     glPushMatrix();
         glCallList(shell);
         glCallList(core[1]);
-        glRotatef(rot, 0.0, 1.0, 0.0);
-        glTranslatef(787.500000, 0.0, 0.0f);
+        glRotatef(rotations.back(), 0.0f, 1.0f, 0.0f);
+        glTranslatef(portal_distance, 0.0f, 0.0f);
         glCallList(portal[0]);
     glPopMatrix();
 }
@@ -73,7 +85,7 @@ void Void::set_core_bounding_boxes(BoundingBox bb[], int qt_bb, int void_core_ob
 
 void Void::set_shell_bounding_boxes(BoundingBox bb) {
     shell_bbox = bb; 
-    shell_bsphere = BoundingSphere(bb, 0.5);
+    shell_bsphere = BoundingSphere(bb, 0.28);
 }
 
 void Void::set_portal_bounding_boxes(BoundingBox bb[]) {
@@ -81,12 +93,17 @@ void Void::set_portal_bounding_boxes(BoundingBox bb[]) {
     portal_bspheres[0] = BoundingSphere(bb[0], 0.5);
     portal_bboxes[1] = bb[1]; 
     portal_bspheres[1] = BoundingSphere(bb[1], 0.5);    
+
 }
 
 Collision Void::check_colision(float camX, float camY, float camZ) {
     if(!shell_bsphere.contains(Vertex(camX, camY, camZ))) {
         return Collision::VOID_SHELL;
     }
+    
+    if(portal_bspheres[1].contains(Vertex(camX, camY, camZ))) {
+        return Collision::NOT;
+    }    
 
     for(int i = 0; i < 18; i++) {
         if(void_core_objects_indexes[i] == 1 && core_bspheres[i].contains(Vertex(camX, camY, camZ))) {
@@ -103,17 +120,17 @@ Collision Void::check_colision(float camX, float camY, float camZ) {
 Portal Void::inside(float camX, float camY, float camZ) {
     for (int i = 0; i < 18; i++) {
         if(void_core_objects_indexes[i] == 0 && core_bspheres[i].contains(Vertex(camX, camY, camZ)) && i == right_portal.back()) {
-            std::cout << "RIGHT" << i << std::endl;
             return Portal::RIGHT;
         } else if(void_core_objects_indexes[i] == 0 && core_bspheres[i].contains(Vertex(camX, camY, camZ)) && i != right_portal.back()) {
-            std::cout << "WRONG" << i << std::endl;
             return Portal::WRONG;
         }
     }
+
+    float x = (portal_distance + 21) * cos(rotations.back()*RAD); 
+    float z = -(portal_distance + 21) * sin(rotations.back()*RAD);
+    if(portal_bspheres[1].contains(Vertex(camX-x, camY, camZ-z))) {
+        return Portal::RIGHT;
+    }
   
     return Portal::NOTHING;
-    // 108.300247 24.000000 23.705524 esquerda 
-    // 61.474453 62.000000 226.668900 direita
-    // 175.063477 213.000000 157.644516 bola alta
-    // 345.037750 40.000000 125.442276 bola de trás
 }

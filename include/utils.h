@@ -79,8 +79,8 @@ struct BoundingSphere {
 };
 
 enum class Collision {
-    NOT, // sem colisão
-    SUN = 100,
+    NOT = 100, // sem colisão
+    SUN,
     THIMBER_HEARTH,
     BRITTLE_HOLLOW,
     GIANTS_DEEP,

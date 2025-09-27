@@ -49,6 +49,7 @@ class Player {
         void stop_up() { motion.Up = false; }
         void stop_down() { motion.Down = false; }
 
+        // void set_position(float x, float y, float z);
         void set_solar_system(
             Sun *sun,
             ThimberHearth *thimber_hearth,
@@ -67,6 +68,24 @@ class Player {
             this->interloper = interloper;
             this->white_hole = white_hole;
             this->void_map = v;
+        }
+
+        void move_to_solar_system(float rotation, float distance) {
+            float x = distance * cos(rotation*RAD);
+            float z = -distance * sin(rotation*RAD);
+            
+            camX = x;
+            camY = -150;
+            camZ = z;
+        }
+
+        void move_to_portal(int rotation, float distance) {
+            float x = distance * cos(rotation*RAD);
+            float z = -distance * sin(rotation*RAD);
+
+            camX = x;
+            camY = 50.0f;
+            camZ = z;
         }
 
         float camX = 50.0; 

@@ -34,6 +34,10 @@ class DarkBramble {
 
         }
 
+        std::pair<float, float> current_position() {
+            return std::make_pair(translation, distance);
+        }
+        
         void update_position(GLfloat t, GLfloat r) {
             translation += t;
             rotation += r;

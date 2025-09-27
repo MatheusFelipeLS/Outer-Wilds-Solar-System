@@ -10,19 +10,19 @@ void DarkBramble::draw() {
     }
 
     
-    for(int i = 0; i < 33; i++) {
-        glPushMatrix();
-        glTranslatef (distance, 0.0, 0.0);
-            // leva o sistema de coordenadas até o centro
-            glTranslatef(bspheres[i].center.x, bspheres[i].center.y, bspheres[i].center.z);
+    // for(int i = 0; i < 33; i++) {
+    //     glPushMatrix();
+    //     glTranslatef (distance, 0.0, 0.0);
+    //         // leva o sistema de coordenadas até o centro
+    //         glTranslatef(bspheres[i].center.x, bspheres[i].center.y, bspheres[i].center.z);
 
-            // define cor (vermelho, por exemplo)
-            glColor3f(1.0f, 0.0f, 0.0f);
+    //         // define cor (vermelho, por exemplo)
+    //         glColor3f(1.0f, 0.0f, 0.0f);
 
-            // desenha esfera em modo wireframe
-            glutWireSphere(bspheres[i].radius, 16, 16);
-        glPopMatrix();
-    }
+    //         // desenha esfera em modo wireframe
+    //         glutWireSphere(bspheres[i].radius, 16, 16);
+    //     glPopMatrix();
+    // }
 
     GLfloat portal_diffuse[] = {DARK_BRAMBLE_COLOR};
     GLfloat portal_specular[] = {DARK_BRAMBLE_COLOR};

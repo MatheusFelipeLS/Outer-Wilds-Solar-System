@@ -60,6 +60,7 @@
 #include "interloper.h"
 #include "white_hole.h"
 #include "void.h"
+#include "quantum_moon.h"
 
 #define DEBUG false
 #define SPACE 32
@@ -76,6 +77,16 @@ bool reset = true;
 static GLint fogMode = GL_LINEAR;
 bool map = false;
 
+// Menu system
+bool menu_open = false;
+bool camera_locked = false;
+
+// Speed configuration
+float player_speed = 1.0f;
+float speed_increment = 0.1f;
+float min_speed = 0.1f;
+float max_speed = 5.0f;
+
 // x, y, z, pitch, yaw iniciais
 #define PLAYER_PARAMS DARK_BRAMBLE_DISTANCE, 0, -200, 0.0f, 0.0f
 
@@ -89,12 +100,28 @@ static Interloper interloper(INTERLOPER_PARAMS);
 static WhiteHole white_hole(WHITE_HOLE_PARAMS);
 static Void infinity_void;
 
+// declaração única (em escopo global ou before main loop)
+static float planet_distances[] = {
+    THIMBER_HEARTH_DISTANCE,
+    BRITTLE_HOLLOW_DISTANCE,
+    GIANTS_DEEP_DISTANCE,
+    DARK_BRAMBLE_DISTANCE
+};
+
+// declarar uma única vez e passar o ponteiro pra QuantumMoon
+static float planet_rotations[] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+// inicialização
+static QuantumMoon quantum_moon(QUANTUM_MOON_PARAMS);
+
 void display();
 void reshape(int w,int h);
 void timer(int);
 void passive_motion(int,int);
 void keyboard(unsigned char key,int x,int y);
 void keyboard_up(unsigned char key,int x,int y);
+void draw_menu();
+void toggle_menu();
 
 void set_system() {
     glClearColor (0.0, 0.0, 0.0, 0.0);
@@ -128,6 +155,138 @@ void set_void() {
    player.camX = -99.064293;
    player.camY = 40.000000;
    player.camZ = 14.945419;
+}
+
+void toggle_menu() {
+    menu_open = !menu_open;
+    camera_locked = menu_open;
+    
+    if (menu_open) {
+        glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+    } else {
+        glutSetCursor(GLUT_CURSOR_NONE);
+    }
+}
+
+void draw_menu() {
+    if (!menu_open) return;
+    
+    // Salva o estado atual da matriz
+    glPushMatrix();
+    glLoadIdentity();
+    
+    // Desabilita iluminação para o menu
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    
+    // Configura projeção ortogonal para o menu
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, width, 0, height);
+    
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    
+    // Desenha fundo semi-transparente
+    glColor4f(0.0f, 0.0f, 0.0f, 0.7f);
+    glBegin(GL_QUADS);
+        glVertex2f(0, 0);
+        glVertex2f(width, 0);
+        glVertex2f(width, height);
+        glVertex2f(0, height);
+    glEnd();
+    
+    // Desenha caixa do menu
+    glColor4f(0.2f, 0.2f, 0.2f, 0.9f);
+    float menu_x = width * 0.25f;
+    float menu_y = height * 0.25f;
+    float menu_w = width * 0.5f;
+    float menu_h = height * 0.5f;
+    
+    glBegin(GL_QUADS);
+        glVertex2f(menu_x, menu_y);
+        glVertex2f(menu_x + menu_w, menu_y);
+        glVertex2f(menu_x + menu_w, menu_y + menu_h);
+        glVertex2f(menu_x, menu_y + menu_h);
+    glEnd();
+    
+    // Borda do menu
+    glColor3f(0.8f, 0.8f, 0.8f);
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+        glVertex2f(menu_x, menu_y);
+        glVertex2f(menu_x + menu_w, menu_y);
+        glVertex2f(menu_x + menu_w, menu_y + menu_h);
+        glVertex2f(menu_x, menu_y + menu_h);
+    glEnd();
+    
+    // Desenha texto do menu
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glRasterPos2f(menu_x + 20, menu_y + menu_h - 30);
+    
+    // Título do menu
+    std::string title = "MENU DE CONFIGURACAO";
+    for (char c : title) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
+    }
+    
+    // Controles de velocidade
+    glRasterPos2f(menu_x + 20, menu_y + menu_h - 60);
+    std::string speed_controls = "CONTROLES DE VELOCIDADE:";
+    for (char c : speed_controls) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
+    }
+    
+    glRasterPos2f(menu_x + 20, menu_y + menu_h - 80);
+    std::string plus_control = "+ ou = : Aumentar velocidade";
+    for (char c : plus_control) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
+    }
+    
+    glRasterPos2f(menu_x + 20, menu_y + menu_h - 100);
+    std::string minus_control = "- : Diminuir velocidade";
+    for (char c : minus_control) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
+    }
+    
+    // Velocidade atual
+    glRasterPos2f(menu_x + 20, menu_y + menu_h - 130);
+    std::string current_speed = "Velocidade atual: " + std::to_string(player_speed).substr(0, 3);
+    for (char c : current_speed) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
+    }
+    
+    // Outros controles
+    glRasterPos2f(menu_x + 20, menu_y + menu_h - 160);
+    std::string other_controls = "OUTROS CONTROLES:";
+    for (char c : other_controls) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
+    }
+    
+    glRasterPos2f(menu_x + 20, menu_y + menu_h - 180);
+    std::string esc_control = "ESC : Fechar menu";
+    for (char c : esc_control) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
+    }
+    
+    glRasterPos2f(menu_x + 20, menu_y + menu_h - 200);
+    std::string m_control = "M : Abrir/fechar menu";
+    for (char c : m_control) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
+    }
+    
+    // Restaura o estado
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    
+    // Reabilita iluminação e depth test
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void init(void) {
@@ -203,13 +362,21 @@ void init(void) {
     infinity_void.set_core_bounding_boxes(void_core_bboxes, 18, void_core_objects_indexes);
     infinity_void.set_shell_bounding_boxes(void_shell_bboxes[0]);
     infinity_void.set_portal_bounding_boxes(void_portal_bboxes);
+    
+    // Configura a lua quântica para orbitar os planetas (arrays globais)
+    quantum_moon.set_planets(planet_distances, planet_rotations, 4);
+
+    // Debug desabilitado para produção
+    // quantum_moon.debug();
 
 }
 
 void display(void) {
     glLoadIdentity();
+    player.set_speed(player_speed);
     player.camera(map);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     if(map) {
         if(!reset) {
             set_void();
@@ -251,11 +418,15 @@ void display(void) {
         dark_bramble.draw();
         interloper.draw();   
         white_hole.draw();
-        
+        quantum_moon.draw();
+
         player.hole_teleport();
     }
-    glutSwapBuffers();
 
+    // Desenha o menu se estiver aberto
+    draw_menu();
+
+    glutSwapBuffers();
 }
 
 void reshape (int w, int h) {
@@ -268,11 +439,17 @@ void reshape (int w, int h) {
 
 void timer(int) {
     glutPostRedisplay();
-    glutWarpPointer(width/2,height/2);
+    // Só reposiciona o cursor se o menu não estiver aberto
+    if (!camera_locked) {
+        glutWarpPointer(width/2,height/2);
+    }
     glutTimerFunc(1000/FPS,timer,0);
 }
 
 void passive_motion(int x,int y) {
+    // Não atualiza a câmera se o menu estiver aberto
+    if (camera_locked) return;
+    
     /* two variables to store X and Y coordinates, as observed from the center
       of the window */
     int dev_x,dev_y;
@@ -325,8 +502,27 @@ void keyboard(unsigned char key,int x,int y) {
         case 'G':
             infinity_void.cdesloc();
             break;
+        case 'm':
+        case 'M':
+            toggle_menu();
+            break;
+        case '+':
+        case '=':
+            if (player_speed < max_speed) {
+                player_speed += speed_increment;
+            }
+            break;
+        case '-':
+            if (player_speed > min_speed) {
+                player_speed -= speed_increment;
+            }
+            break;
         case 27:
-            exit(0);
+            if (menu_open) {
+                toggle_menu();
+            } else {
+                exit(0);
+            }
             break;
     }
 }
@@ -360,19 +556,45 @@ void keyboard_up(unsigned char key,int x,int y) {
 }
 
 void idle(void) {
+    static int last_time_ms = 0;
+    int now_ms = glutGet(GLUT_ELAPSED_TIME);
+    if (last_time_ms == 0) last_time_ms = now_ms;
+    float delta_time = (now_ms - last_time_ms) / 1000.0f;
+    if (delta_time > 0.1f) delta_time = 0.1f; // clamp para evitar pulos gigantes
+    last_time_ms = now_ms;
+
+    // gira tornado
     giants_deep.rotate_tornado();
+
+    // Atualiza rotações dos planetas AQUI (antes de atualizar a lua)
+    if (animating) {
+        planet_rotations[0] += 0.2f * delta_time * 60.0f; // mantém comportamento parecido com antes
+        planet_rotations[1] += 0.16f * delta_time * 60.0f;
+        planet_rotations[2] += 0.12f * delta_time * 60.0f;
+        planet_rotations[3] += 0.3f * delta_time * 60.0f;
+    }
+
+    // tempo em segundos — corrija o typo (1000.0f)
+    float current_time = now_ms / 1000.0f;
+
+    // Observação / salto quântico — agora vê rotações atualizadas
+    quantum_moon.update_observation(player.camX, player.camY, player.camZ, player.pitch, player.yaw, current_time);
+
+    // Atualiza posição com delta real
+    quantum_moon.update_position(delta_time);
+
     if (!animating) {
         glutPostRedisplay();
         return;
     }
 
-    sun.update_position(0.3f);
-    thimber_hearth.update_position(0.2f, 0.3f);
-    brittle_hollow.update_position(0.16f, 0.3f);
-    giants_deep.update_position(0.12f, 0.3f);
-    dark_bramble.update_position(0.3f, -0.3f); // a rotação precisar ser o oposto da translação 
-    interloper.update_position(0.001f, 0.3f);
-    
+    sun.update_position(0.3f * delta_time * 60.0f);
+    thimber_hearth.update_position(0.2f * delta_time * 60.0f, 0.3f);
+    brittle_hollow.update_position(0.16f * delta_time * 60.0f, 0.3f);
+    giants_deep.update_position(0.12f * delta_time * 60.0f, 0.3f);
+    dark_bramble.update_position(0.3f * delta_time * 60.0f, -0.3f);
+    interloper.update_position(0.001f * delta_time * 60.0f, 0.3f);
+
     glutPostRedisplay();
 }
 

@@ -32,6 +32,9 @@ class Player {
         void update_pitch_yall(int dev_x, int dev_y);
         
         void turn_on_off_light() { light_on = !light_on; }
+        
+        void set_speed(float speed) { this->speed = speed; }
+        float get_speed() { return speed; }
 
         void hole_teleport();
         
@@ -78,6 +81,7 @@ class Player {
     private:
         Motion motion = {false,false,false,false,false,false};
         bool light_on = false;
+        float speed = 1.0f;
 
         Sun *sun;
         ThimberHearth *thimber_hearth;

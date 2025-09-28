@@ -19,7 +19,6 @@ void BrittleHollow::draw() {
     glMaterialfv(GL_FRONT, GL_AMBIENT, surface_ambient_color);
     glMaterialfv(GL_FRONT, GL_SHININESS, surface_shininess);
 
-    printf("a %f %f %f\n", tx, ty, tz);
     
     if(
         (bspheres[available_pieces[current]].center.x < dh_radius && bspheres[available_pieces[current]].center.x > -dh_radius) &&

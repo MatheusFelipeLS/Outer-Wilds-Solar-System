@@ -440,7 +440,6 @@ void display(void) {
 	draw_stars();
     if(queda) {
         brittle_hollow.queda();
-        printf("caindo\n");
     }
 
     if(map) {

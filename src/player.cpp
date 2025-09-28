@@ -106,7 +106,7 @@ void Player::teleport(float x, float y, float z, float delta_min) {
     camY = y + delta_min + delta;
 
     delta = (rand() % ((int) (2 * delta_min)));
-    camZ = z + delta_min + delta;
+    camZ = -(z + delta_min + delta);
 }
 
 void Player::update_pitch_yall(int dev_x, int dev_y) {
@@ -120,6 +120,6 @@ void Player::hole_teleport() {
         teleport(white_hole->x, white_hole->y, white_hole->z, white_hole->radius);
     } else if(white_hole->inside(camX, camY, camZ)) {
         auto [x, z] = brittle_hollow->get_black_hole_position();
-        teleport(x, 0.0f, z, white_hole->radius); // acho q o gap (white hole radius) tá muito grande
+        teleport(x, 0.0f, z, brittle_hollow->dh_radius); // acho q o gap (white hole radius) tá muito grande
     }
 }

@@ -58,6 +58,7 @@ class BrittleHollow {
 
         void queda();
 
+        double dh_radius;
     private:
         GLfloat translation; // movimento de translação => quanto girou em torno do sol
         GLfloat rotation;    // movimento de rotação => quanto girou em torno de si mesmo
@@ -65,7 +66,7 @@ class BrittleHollow {
         GLfloat radius;      // raio do planeta
         GLint slices;
         GLint stacks;
-        double dh_radius;
+
 
         bool d;
 

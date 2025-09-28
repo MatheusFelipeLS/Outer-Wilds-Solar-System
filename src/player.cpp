@@ -123,9 +123,3 @@ void Player::hole_teleport() {
         teleport(x, 0.0f, z, white_hole->radius); // acho q o gap (white hole radius) tá muito grande
     }
 }
-
-// void Player::set_position(float x, float y, float z) {
-//     camX = x;
-//     camY = y;
-//     camZ = z;
-// }

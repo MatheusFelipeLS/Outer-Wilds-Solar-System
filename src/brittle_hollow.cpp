@@ -9,7 +9,6 @@ void BrittleHollow::draw() {
         << std::endl;
     }
     
-    current = 8;
     GLfloat surface_diffuse_color[] = {BRITTLE_HOLLOW_COLOR};
     GLfloat surface_specular_color[] = {BRITTLE_HOLLOW_COLOR};
     GLfloat surface_ambient_color[] = {BRITTLE_HOLLOW_COLOR};
@@ -20,18 +19,49 @@ void BrittleHollow::draw() {
     glMaterialfv(GL_FRONT, GL_AMBIENT, surface_ambient_color);
     glMaterialfv(GL_FRONT, GL_SHININESS, surface_shininess);
 
+    printf("a %f %f %f\n", tx, ty, tz);
+    
+    if(
+        (bspheres[available_pieces[current]].center.x < dh_radius && bspheres[available_pieces[current]].center.x > -dh_radius) &&
+        (bspheres[available_pieces[current]].center.y < dh_radius && bspheres[available_pieces[current]].center.y > -dh_radius) &&
+        (bspheres[available_pieces[current]].center.z < dh_radius && bspheres[available_pieces[current]].center.z > -dh_radius)
+    ) {
+        available_pieces.erase(available_pieces.begin()+current);
+        change_current_piece();
+    }
+
     glPushMatrix(); 
         glRotatef (translation, 0.0, 1.0, 0.0);
         glTranslatef (distance, 0.0, 0.0);
         glRotatef (rotation, 0.0, 1.0, 0.0);
 
-        for(int i = 0; i < 334; i++) {
+        GLfloat a[] = {1.0, 1.0, 1.0, 1.0};
+        for(size_t i = 0; i < available_pieces.size(); i++) {
             glPushMatrix();
-            if(i == current) {
+            if(i == available_pieces[current] && available_pieces.size() > qt_objects * 0.3) {
+                glPushMatrix();
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, a);
+                glMaterialfv(GL_FRONT, GL_SPECULAR, a);
+                glMaterialfv(GL_FRONT, GL_AMBIENT, a);
+                glMaterialfv(GL_FRONT, GL_SHININESS, a);
                 glTranslatef(-tx, -ty, -tz);
+                glCallList(surface[available_pieces[current]]);
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, surface_diffuse_color);
+                glMaterialfv(GL_FRONT, GL_SPECULAR, surface_specular_color);
+                glMaterialfv(GL_FRONT, GL_AMBIENT, surface_ambient_color);
+                glMaterialfv(GL_FRONT, GL_SHININESS, surface_shininess);
+                glPopMatrix();
+
+                glPushMatrix();
+                glTranslatef(bspheres[available_pieces[current]].center.x, bspheres[available_pieces[current]].center.y, bspheres[available_pieces[current]].center.z);
+                glColor3f(1.0, .0, .0);
+                glutWireSphere(bspheres[available_pieces[current]].radius, 16, 16);
+                glPopMatrix();
+            } else {
+                glPushMatrix();
+                glCallList(surface[available_pieces[i]]);
+                glPopMatrix();
             }
-            glCallList(surface[i]);
-            glPopMatrix();
         }
         // glutSolidSphere(radius, slices, stacks);    
 
@@ -44,7 +74,7 @@ void BrittleHollow::draw() {
         glMaterialfv(GL_FRONT, GL_AMBIENT, bh_specular);
         glMaterialfv(GL_FRONT, GL_SHININESS, bh_shininess);
         
-        glutSolidSphere(radius / 4, slices, stacks);    
+        glutSolidSphere(dh_radius, slices, stacks);    
     glPopMatrix();
 }
 
@@ -52,7 +82,6 @@ void BrittleHollow::draw() {
 bool BrittleHollow::inside_dark_hole(GLdouble camX, GLdouble camY, GLdouble camZ) {
     // encontrando a posição do buraco negro
     auto [x, z] = get_black_hole_position();
-    double dh_radius = radius / 4.0f;
 
     return (
         (camX < x+dh_radius && camX > x-dh_radius) && 
@@ -71,12 +100,17 @@ void BrittleHollow::set_surface_bouding_boxes(BoundingBox brittle_hollow_bboxes[
     for(int i = 0; i < qt; i++) {
         // this->bboxes[i] = brittle_hollow_bboxes[i];
         this->bspheres[i] = BoundingSphere(brittle_hollow_bboxes[i], 0.5);
-
     }
+    set_current();
 }
 
 void BrittleHollow::queda() {
-    tx += bspheres[current].center.x / 1000;
-    ty += bspheres[current].center.y / 1000;
-    tz += bspheres[current].center.z / 1000;
+    tx += current_x / delta;
+    ty += current_y / delta;
+    tz += current_z / delta;
+
+    bspheres[available_pieces[current]].center.x -= current_x / delta;
+    bspheres[available_pieces[current]].center.y -= current_y / delta;
+    bspheres[available_pieces[current]].center.z -= current_z / delta;
+
 }

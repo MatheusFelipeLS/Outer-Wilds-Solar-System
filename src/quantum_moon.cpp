@@ -148,7 +148,7 @@ void QuantumMoon::update_observation(float camX, float camY, float camZ, float p
             if (angle_diff_x > 180.0f) angle_diff_x = 360.0f - angle_diff_x;
 
             // se o jogador está olhando para o planeta com tolerância menor, faz jump
-            if (angle_diff_x < 15.0f && angle_diff_y < 15.0f || dwell_exceeded) {
+            if ((angle_diff_x < 15.0f && angle_diff_y < 15.0f) || dwell_exceeded) {
                 quantum_jump();
                 last_observation_time = current_time;
                 last_jump_time = current_time;

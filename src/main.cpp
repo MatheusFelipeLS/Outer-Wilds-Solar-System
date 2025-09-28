@@ -402,19 +402,20 @@ void init(void) {
     infinity_void.set_shell_bounding_boxes(void_shell_bboxes[0]);
     infinity_void.set_portal_bounding_boxes(void_portal_bboxes);
     
-    std::vector<int> aux(334);
+    std::vector<int> aux(285);
     std::iota(aux.begin(), aux.end(), 0);
-    GLuint brittle_hollow_surface[334]; 
-    int brittle_hollow_objects_indexes[334];
-    BoundingBox brittle_hollow_bboxes[334];
+    GLuint brittle_hollow_surface[285]; 
+    int brittle_hollow_objects_indexes[285];
+    BoundingBox brittle_hollow_bboxes[285];
     for(size_t i = 0; i < aux.size(); i++) {
         brittle_hollow_objects_indexes[i] = aux[i];
     }
 
-    loadObj("3d_models/vale_da_incerteza/vale.obj", brittle_hollow_surface, 334, brittle_hollow_objects_indexes, brittle_hollow_bboxes, 10.0);
+    loadObj("3d_models/vale_da_incerteza/vale.obj", brittle_hollow_surface, 285, brittle_hollow_objects_indexes, brittle_hollow_bboxes, 10.0);
 
-    brittle_hollow.set_surface(brittle_hollow_surface, 334);
-    brittle_hollow.set_surface_bouding_boxes(brittle_hollow_bboxes, 334);
+    
+    brittle_hollow.set_surface(brittle_hollow_surface, 285);
+    brittle_hollow.set_surface_bouding_boxes(brittle_hollow_bboxes, 285);
     
 
     // Configura a lua quântica para orbitar os planetas (arrays globais)
@@ -428,6 +429,7 @@ void init(void) {
 
 }
 
+bool queda = false;
 void display(void) {
     glLoadIdentity();
     player.set_speed(player_speed);
@@ -436,7 +438,10 @@ void display(void) {
 
 	// Estrelas de fundo
 	draw_stars();
-    brittle_hollow.queda();
+    if(queda) {
+        brittle_hollow.queda();
+        printf("caindo\n");
+    }
 
     if(map) {
         if(!reset) {
@@ -567,6 +572,10 @@ void keyboard(unsigned char key,int x,int y) {
         case 'm':
         case 'M':
             toggle_menu();
+            break;
+        case 'q':
+        case 'Q':
+            queda = !queda;
             break;
         case '+':
         case '=':

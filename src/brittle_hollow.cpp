@@ -9,6 +9,7 @@ void BrittleHollow::draw() {
         << std::endl;
     }
     
+    current = 8;
     GLfloat surface_diffuse_color[] = {BRITTLE_HOLLOW_COLOR};
     GLfloat surface_specular_color[] = {BRITTLE_HOLLOW_COLOR};
     GLfloat surface_ambient_color[] = {BRITTLE_HOLLOW_COLOR};
@@ -24,8 +25,15 @@ void BrittleHollow::draw() {
         glTranslatef (distance, 0.0, 0.0);
         glRotatef (rotation, 0.0, 1.0, 0.0);
 
-
-        glutSolidSphere(radius, slices, stacks);    
+        for(int i = 0; i < 334; i++) {
+            glPushMatrix();
+            if(i == current) {
+                glTranslatef(-tx, -ty, -tz);
+            }
+            glCallList(surface[i]);
+            glPopMatrix();
+        }
+        // glutSolidSphere(radius, slices, stacks);    
 
         GLfloat bh_ambient[] = {0.0f, 0.0f, 0.0f};
         GLfloat bh_diffuse[] = {1.0f, 1.0f, 1.0f};
@@ -51,4 +59,24 @@ bool BrittleHollow::inside_dark_hole(GLdouble camX, GLdouble camY, GLdouble camZ
         (camY < dh_radius && camY > -dh_radius) && 
         ((-camZ) < z+dh_radius && (-camZ) > z-dh_radius)
     );
+}
+
+void BrittleHollow::set_surface(GLuint brittle_hollow_surface[], int qt) {
+    for(int i = 0; i < qt; i++) {
+        this->surface[i] = brittle_hollow_surface[i];
+    }
+}
+
+void BrittleHollow::set_surface_bouding_boxes(BoundingBox brittle_hollow_bboxes[], int qt) {
+    for(int i = 0; i < qt; i++) {
+        // this->bboxes[i] = brittle_hollow_bboxes[i];
+        this->bspheres[i] = BoundingSphere(brittle_hollow_bboxes[i], 0.5);
+
+    }
+}
+
+void BrittleHollow::queda() {
+    tx += bspheres[current].center.x / 1000;
+    ty += bspheres[current].center.y / 1000;
+    tz += bspheres[current].center.z / 1000;
 }

@@ -47,6 +47,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <math.h>
+#include <numeric>
 
 #include "utils.h"
 #include "params.cpp"
@@ -96,7 +97,7 @@ void init_stars();
 void draw_stars();
 
 // x, y, z, pitch, yaw iniciais
-#define PLAYER_PARAMS DARK_BRAMBLE_DISTANCE, 0, -200, 0.0f, 0.0f
+#define PLAYER_PARAMS BRITTLE_HOLLOW_DISTANCE, 0, -200, 0.0f, 0.0f
 
 static Player player(PLAYER_PARAMS);
 static Sun sun(SUN_PARAMS);
@@ -357,7 +358,6 @@ void init(void) {
         2, 2, 1
     };
     BoundingBox dark_bramble_bboxes[33];
-    
     loadObj("3d_models/abrolho/abrolho.obj", dark_bramble_objects, 33, objects_indexes, dark_bramble_bboxes, 10.0);
     dark_bramble.set_portal(dark_bramble_objects[0]);
     dark_bramble.set_shell(dark_bramble_objects[1]);
@@ -402,6 +402,21 @@ void init(void) {
     infinity_void.set_shell_bounding_boxes(void_shell_bboxes[0]);
     infinity_void.set_portal_bounding_boxes(void_portal_bboxes);
     
+    std::vector<int> aux(334);
+    std::iota(aux.begin(), aux.end(), 0);
+    GLuint brittle_hollow_surface[334]; 
+    int brittle_hollow_objects_indexes[334];
+    BoundingBox brittle_hollow_bboxes[334];
+    for(size_t i = 0; i < aux.size(); i++) {
+        brittle_hollow_objects_indexes[i] = aux[i];
+    }
+
+    loadObj("3d_models/vale_da_incerteza/vale.obj", brittle_hollow_surface, 334, brittle_hollow_objects_indexes, brittle_hollow_bboxes, 10.0);
+
+    brittle_hollow.set_surface(brittle_hollow_surface, 334);
+    brittle_hollow.set_surface_bouding_boxes(brittle_hollow_bboxes, 334);
+    
+
     // Configura a lua quântica para orbitar os planetas (arrays globais)
     quantum_moon.set_planets(planet_distances, planet_rotations, 4);
 
@@ -421,6 +436,7 @@ void display(void) {
 
 	// Estrelas de fundo
 	draw_stars();
+    brittle_hollow.queda();
 
     if(map) {
         if(!reset) {

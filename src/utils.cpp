@@ -14,6 +14,7 @@ void loadObj(const char *fname, GLuint *objects, int qt_objects, int object_inde
     char line[256];
     int count = 0;
     int indexes[qt_objects];
+    
     while (fgets(line, sizeof(line), fp)) {
         // vértices
         if (line[0] == 'v' && line[1] == ' ') {
@@ -49,8 +50,13 @@ void loadObj(const char *fname, GLuint *objects, int qt_objects, int object_inde
         } else if(line[0] == 'o' && line[1] == ' ' && num_vertices > 0) {
             indexes[count] = num_faces;
             count++;
+            if (count == qt_objects) {
+                break;
+            }
         }
     }
+
+    printf("Leu todas as faces\n");
 
     fclose(fp);
 

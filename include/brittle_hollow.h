@@ -34,6 +34,11 @@ class BrittleHollow {
 
         void debug() { d = true; }
 
+        void set_surface(GLuint brittle_hollow_surface[], int qt);
+        void set_surface_bouding_boxes(BoundingBox brittle_hollow_bboxes[], int qt);
+
+        void queda();
+
     private:
         GLfloat translation; // movimento de translação => quanto girou em torno do sol
         GLfloat rotation;    // movimento de rotação => quanto girou em torno de si mesmo
@@ -43,6 +48,14 @@ class BrittleHollow {
         GLint stacks;
 
         bool d;
+
+        GLuint surface[334];
+        BoundingSphere bspheres[334];
+        int current;
+
+        float tx = 0.0f;
+        float ty = 0.0f;
+        float tz = 0.0f;
 };
 
 #endif

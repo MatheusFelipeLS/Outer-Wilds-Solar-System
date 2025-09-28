@@ -131,6 +131,176 @@ void keyboard_up(unsigned char key,int x,int y);
 void draw_menu();
 void toggle_menu();
 
+// Meteors (background streaks)
+struct Meteor {
+    float x;
+    float y;
+    float z;
+    float vx;
+    float vy;
+    float vz;
+    float life;
+    float max_life;
+    float brightness;
+};
+
+static constexpr int MAX_METEORS = 100;
+static Meteor meteors[MAX_METEORS];
+static int active_meteors = 0;
+
+// Controla frequência e variabilidade
+static float meteor_spawn_rate_per_sec = 0.2f; // meteors/sec
+static float meteor_randomness = 0.5f;         // 0..1
+static float meteor_min_speed = 200.0f;
+static float meteor_max_speed = 600.0f;
+static float meteor_spawn_radius = STARFIELD_RADIUS * 0.9f;
+static float meteor_despawn_radius = STARFIELD_RADIUS * 1.2f;
+
+static float rand01() { return rand() / (float)RAND_MAX; }
+
+static void clear_meteors() {
+    active_meteors = 0;
+}
+
+void set_meteor_randomness(float r) {
+    if (r < 0.0f) r = 0.0f;
+    if (r > 1.0f) r = 1.0f;
+    meteor_randomness = r;
+}
+
+void set_meteor_spawn_rate(float per_sec) {
+    if (per_sec < 0.0f) per_sec = 0.0f;
+    meteor_spawn_rate_per_sec = per_sec;
+}
+
+static void spawn_one_meteor() {
+    if (active_meteors >= MAX_METEORS) return;
+
+    // Vetores da câmera a partir de yaw/pitch
+    float yaw_rad = player.yaw * (float)RAD;
+    float pitch_rad = player.pitch * (float)RAD;
+    float cosPitch = cosf(pitch_rad), sinPitch = sinf(pitch_rad);
+    float cosYaw = cosf(yaw_rad), sinYaw = sinf(yaw_rad);
+    // forward (aproximado)
+    float fx = -sinYaw * cosPitch;
+    float fy = sinPitch;
+    float fz = -cosYaw * cosPitch;
+    // right (aproximado)
+    float rx = cosYaw;
+    float ry = 0.0f;
+    float rz = -sinYaw;
+    // up = right x forward
+    float ux = ry * fz - rz * fy;
+    float uy = rz * fx - rx * fz;
+    float uz = rx * fy - ry * fx;
+    float ulen = sqrtf(ux*ux + uy*uy + uz*uz);
+    if (ulen > 1e-6f) { ux/=ulen; uy/=ulen; uz/=ulen; }
+
+    float speed = meteor_min_speed + rand01() * (meteor_max_speed - meteor_min_speed);
+
+    // Spawna à frente da câmera, com offsets laterais/verticais
+    float lateral = (rand01()*2.0f - 1.0f) * meteor_spawn_radius * 0.35f;
+    float vertical = (rand01()*2.0f - 1.0f) * meteor_spawn_radius * 0.20f;
+    float forward_jitter = (0.85f + 0.15f*rand01()) * meteor_spawn_radius;
+
+    Meteor m;
+    m.x = player.camX + fx * forward_jitter + rx * lateral + ux * vertical;
+    m.y = player.camY + fy * forward_jitter + ry * lateral + uy * vertical;
+    m.z = player.camZ + fz * forward_jitter + rz * lateral + uz * vertical;
+
+    // Movimento principalmente para a direita na tela, com leve componente para frente
+    float noise_r = (rand01()*2.0f - 1.0f) * meteor_randomness;
+    float noise_u = (rand01()*2.0f - 1.0f) * meteor_randomness * 0.5f;
+    float noise_f = (rand01()*2.0f - 1.0f) * meteor_randomness * 0.3f;
+
+    float dirx = rx * (1.0f + noise_r) + ux * (0.2f * noise_u) + fx * (0.15f + 0.15f * noise_f);
+    float diry = ry * (1.0f + noise_r) + uy * (0.2f * noise_u) + fy * (0.15f + 0.15f * noise_f);
+    float dirz = rz * (1.0f + noise_r) + uz * (0.2f * noise_u) + fz * (0.15f + 0.15f * noise_f);
+    float dlen = sqrtf(dirx*dirx + diry*diry + dirz*dirz);
+    if (dlen < 1e-3f) { dirx = rx; diry = ry; dirz = rz; dlen = 1.0f; }
+    dirx/=dlen; diry/=dlen; dirz/=dlen;
+
+    m.vx = dirx * speed;
+    m.vy = diry * speed;
+    m.vz = dirz * speed;
+    m.max_life = 2.0f + rand01() * 1.5f;
+    m.life = m.max_life;
+    m.brightness = 0.9f + 0.4f * rand01();
+
+    meteors[active_meteors++] = m;
+}
+
+static void update_meteors(float dt_sec) {
+    // Probabilistic spawn baseado em taxa por segundo
+    float expected = meteor_spawn_rate_per_sec * dt_sec;
+    int to_spawn = 0;
+    // spawn ao menos floor(expected), e chance da parte fracionária
+    if (expected > 0.0f) {
+        to_spawn = (int)expected;
+        float fractional = expected - to_spawn;
+        if (rand01() < fractional) to_spawn += 1;
+    }
+    for (int i = 0; i < to_spawn; ++i) spawn_one_meteor();
+
+    // Update and compact array
+    int write = 0;
+    for (int i = 0; i < active_meteors; ++i) {
+        Meteor &m = meteors[i];
+        m.x += m.vx * dt_sec;
+        m.y += m.vy * dt_sec;
+        m.z += m.vz * dt_sec;
+        m.life -= dt_sec;
+
+        float dx = m.x - player.camX;
+        float dy = m.y - player.camY;
+        float dz = m.z - player.camZ;
+        float dist = sqrtf(dx*dx + dy*dy + dz*dz);
+
+        bool alive = (m.life > 0.0f) && (dist < meteor_despawn_radius);
+        if (alive) {
+            if (write != i) meteors[write] = m;
+            ++write;
+        }
+    }
+    active_meteors = write;
+}
+
+static void draw_meteors() {
+    if (active_meteors <= 0) return;
+    glPushAttrib(GL_ENABLE_BIT | GL_LINE_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_FOG);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glLineWidth(2.5f);
+
+    glBegin(GL_LINES);
+    for (int i = 0; i < active_meteors; ++i) {
+        const Meteor &m = meteors[i];
+        float alpha = std::max(0.0f, m.life / m.max_life);
+        float r = m.brightness;
+        float g = m.brightness * 0.9f;
+        float b = m.brightness * 0.7f;
+        glColor4f(r, g, b, alpha);
+
+        // rastro perceptível à distância do starfield
+        float inv_len = 1.0f / (sqrtf(m.vx*m.vx + m.vy*m.vy + m.vz*m.vz) + 1e-6f);
+        float nx = m.vx * inv_len;
+        float ny = m.vy * inv_len;
+        float nz = m.vz * inv_len;
+        float tail_len = 80.0f; // unidades no mundo
+        float tx = m.x - nx * tail_len;
+        float ty = m.y - ny * tail_len;
+        float tz = m.z - nz * tail_len;
+
+        glVertex3f(tx, ty, tz);
+        glVertex3f(m.x, m.y, m.z);
+    }
+    glEnd();
+    glPopAttrib();
+}
+
 void set_system() {
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glEnable(GL_LIGHT0); // Sun
@@ -411,6 +581,9 @@ void init(void) {
 	// Inicializa as estrelas de fundo
 	init_stars();
 
+	// Meteors
+	clear_meteors();
+
 }
 
 void display(void) {
@@ -421,6 +594,9 @@ void display(void) {
 
 	// Estrelas de fundo
 	draw_stars();
+
+	// Meteors de fundo
+	draw_meteors();
 
     if(map) {
         if(!reset) {
@@ -611,6 +787,9 @@ void idle(void) {
 
     // gira tornado
     giants_deep.rotate_tornado();
+
+    // Atualiza meteors com delta real (sempre, mesmo se animating estiver falso)
+    update_meteors(delta_time);
 
     // Atualiza rotações dos planetas AQUI (antes de atualizar a lua)
     if (animating) {

@@ -1,7 +1,12 @@
 # Compilador e flags
 CXX = g++
+<<<<<<< HEAD
 CXXFLAGS = -Wall -g -Iinclude -O3
 LDFLAGS = -lGL -lGLU -lglut
+=======
+CXXFLAGS = -Wall -g -Iinclude
+LDFLAGS = -lGL -lGLU -lglut -lSOIL
+>>>>>>> 236f45c ([fix]: texture)
 
 # Pastas
 SRC_DIR = src

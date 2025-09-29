@@ -341,6 +341,30 @@ void init(void) {
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
     glutWarpPointer(width/2,height/2);
 
+    loadObj("3d_models/abrolho/abrolho.obj");
+    dark_bramble.set_icosphere(icosphere);
+    dark_bramble.set_sphere(sphere);
+
+    sun.texture("src/image/2k_sun.jpg");
+    timber_hearth.texture("src/image/venus_surface.jpg");
+    brittle_hollow.texture("src/image/ceres_fictional.jpg");
+    giants_deep.texture("src/image/makemake_fictional.jpg");
+    interloper.texture("src/image/haumea_fictional.jpg");
+    white_hole.texture("src/image/neptune.jpg");
+    
+
+}
+
+void hole_teleport() {
+    if(brittle_hollow.inside_dark_hole(player.camX, player.camY, player.camZ)) {
+        //teleportando para o buraco branco
+        player.teleport(WHITE_HOLE_TX, WHITE_HOLE_TY, WHITE_HOLE_TZ, WHITE_HOLE_RADIUS);
+    } else if(white_hole.inside(player.camX, player.camY, player.camZ)) {
+        auto [x, z] = brittle_hollow.get_black_hole_position();
+        player.teleport(x, 0.0f, z, WHITE_HOLE_RADIUS); // acho q o gap (white hole radius) tá muito grande
+    }
+}
+
     GLuint dark_bramble_objects[33]; 
     // talvez tivesse como fazer isso sem ser hard code, mas teria que usar strings e eu to com preguiça.
     // A ideia seria renomear cada objeto no blender, descobrir qual objeto é o que e fazer um mapeamento

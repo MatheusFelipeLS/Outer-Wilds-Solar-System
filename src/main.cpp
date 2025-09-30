@@ -413,15 +413,13 @@ void init(void) {
 
     loadObj("3d_models/vale_da_incerteza/vale.obj", brittle_hollow_surface, 285, brittle_hollow_objects_indexes, brittle_hollow_bboxes, 10.0);
 
-    // Textura das esferas 
-    sun.loadTexture("src/image/sun.jpg");
-    thimber_hearth.loadTexture("src/image/haumea_fictional.jpg");
-    brittle_hollow.loadTexture("src/image/haumea_fictional.jpg");
-
-
-    
     brittle_hollow.set_surface(brittle_hollow_surface, 285);
     brittle_hollow.set_surface_bouding_boxes(brittle_hollow_bboxes, 285);
+    
+    // Textura das esferas 
+    // sun.loadTexture("src/image/sun.jpg");
+    // thimber_hearth.loadTexture("src/image/haumea_fictional.jpg");
+    // brittle_hollow.loadTexture("src/image/haumea_fictional.jpg");
     
 
     // Configura a lua quântica para orbitar os planetas (arrays globais)

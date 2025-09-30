@@ -38,14 +38,14 @@ void QuantumMoon::update_position(GLfloat delta_time) {
     if (!is_visible) return;
 
     // Atualiza ângulo orbital (em graus)
-    orbital_angle += 30.0f * delta_time; // velocidade em graus/seg
+    orbital_angle += 18.0f * delta_time; // suaviza para sincronizar melhor com órbitas
     if (orbital_angle >= 360.0f) orbital_angle -= 360.0f;
 
     // Calcula base do planeta atual
     if (planet_distances && planet_rotations && num_planets > 0) {
         float prot = planet_rotations[current_planet] * PI_F/180.0f;
         float planet_x = planet_distances[current_planet] * cosf(prot);
-        float planet_z = planet_distances[current_planet] * sinf(prot);
+        float planet_z = -planet_distances[current_planet] * sinf(prot);
 
         // Distância orbital relativa ao planeta (não fixa)
         orbital_distance = std::max(30.0f, planet_distances[current_planet] * 0.15f);
@@ -53,13 +53,13 @@ void QuantumMoon::update_position(GLfloat delta_time) {
         float angRad = orbital_angle * PI_F/180.0f;
         current_x = planet_x + orbital_distance * cosf(angRad);
         current_y = 0.0f;
-        current_z = planet_z + orbital_distance * sinf(angRad);
+        current_z = planet_z - orbital_distance * sinf(angRad);
     } else {
         // fallback
         float angRad = orbital_angle * PI_F/180.0f;
         current_x = orbital_distance * cosf(angRad);
         current_y = 0.0f;
-        current_z = orbital_distance * sinf(angRad);
+        current_z = -orbital_distance * sinf(angRad);
     }
 
     // efeitos visuais baseados em tempo acumulado para ficarem suaves

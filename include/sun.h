@@ -22,6 +22,8 @@ class Sun {
 
         void loadTexture(const char* filename);
 
+        float get_radius() const { return radius; }
+
     private:
         GLfloat rotation = 0.0;    // movimento de rotação => quanto girou em torno de si mesmo
         GLfloat radius;      // raio do planeta

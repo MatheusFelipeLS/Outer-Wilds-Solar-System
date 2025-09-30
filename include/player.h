@@ -25,6 +25,7 @@ class Player {
         Player(float camX0, float camY0, float camZ0, float pitch0, float yaw0);
         
         void camera(bool map);
+        void update_physics(float delta_time, bool map);
         
         Collision check_collision(bool map, float deltaX, float deltaY, float deltaZ);
         void teleport(float x, float y, float z, float delta_min);
@@ -37,6 +38,12 @@ class Player {
         float get_speed() { return speed; }
 
         void hole_teleport();
+        void set_planets(float* planet_distances, float* planet_rotations, float* planet_radii, int num_planets) {
+            this->planet_distances = planet_distances;
+            this->planet_rotations = planet_rotations;
+            this->planet_radii = planet_radii;
+            this->num_planets = num_planets;
+        }
         
         void move_forward() { motion.Forward = true; }
         void move_backward() { motion.Backward = true; }
@@ -67,6 +74,18 @@ class Player {
         Motion motion = {false,false,false,false,false,false};
         bool light_on = false;
         float speed = 1.0f;
+        
+        // Física simples
+        float velX = 0.0f, velY = 0.0f, velZ = 0.0f;
+        float gravity_strength = 2000.0f; // constante base de gravidade (bem mais forte)   
+        float linear_drag = 0.10f; // menos arrasto para sentir a atração
+        float max_phys_speed = 300.0f; // limite de velocidade mais alto
+
+        // Dados dos planetas (compartilhados com a lua quântica)
+        float* planet_distances = nullptr;
+        float* planet_rotations = nullptr; // em graus
+        float* planet_radii = nullptr;
+        int num_planets = 0;
 
         Sun *sun;
         ThimberHearth *thimber_hearth;

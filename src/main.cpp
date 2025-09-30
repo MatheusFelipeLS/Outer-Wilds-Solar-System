@@ -120,6 +120,14 @@ static float planet_distances[] = {
 // declarar uma única vez e passar o ponteiro pra QuantumMoon
 static float planet_rotations[] = {0.0f, 0.0f, 0.0f, 0.0f};
 
+// raios correspondentes para gravidade e visual
+static float planet_radii[] = {
+    THIMBER_HEARTH_RADIUS,
+    BRITTLE_HOLLOW_RADIUS,
+    GIANTS_DEEP_RADIUS,
+    DARK_BRAMBLE_RADIUS
+};
+
 // inicialização
 static QuantumMoon quantum_moon(QUANTUM_MOON_PARAMS);
 
@@ -425,6 +433,9 @@ void init(void) {
     // Configura a lua quântica para orbitar os planetas (arrays globais)
     quantum_moon.set_planets(planet_distances, planet_rotations, 4);
 
+    // Fornece dados planetários ao jogador para gravidade
+    player.set_planets(planet_distances, planet_rotations, planet_radii, 4);
+
     // Debug desabilitado para produção
     // quantum_moon.debug();
 
@@ -639,7 +650,7 @@ void idle(void) {
         planet_rotations[0] += 0.2f * delta_time * 60.0f; // mantém comportamento parecido com antes
         planet_rotations[1] += 0.16f * delta_time * 60.0f;
         planet_rotations[2] += 0.12f * delta_time * 60.0f;
-        planet_rotations[3] += 0.3f * delta_time * 60.0f;
+        planet_rotations[3] += 0.08f * delta_time * 60.0f; // alinhar com a rotação real de Dark Bramble
     }
 
     // tempo em segundos — corrija o typo (1000.0f)
@@ -650,6 +661,9 @@ void idle(void) {
 
     // Atualiza posição com delta real
     quantum_moon.update_position(delta_time);
+
+    // Atualiza física do player (gravidade, arrasto, etc.)
+    player.update_physics(delta_time, map);
 
     if (!animating) {
         glutPostRedisplay();

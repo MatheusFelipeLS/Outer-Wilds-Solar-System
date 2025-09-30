@@ -9,6 +9,119 @@ pitch(pitch0), yaw(yaw0)
 {}
 
 
+void Player::update_physics(float delta_time, bool map) {
+    // sem gravidade no mapa do void
+    if (map) return;
+    if (!planet_distances || !planet_rotations || !planet_radii || num_planets <= 0) return;
+
+    // acumula aceleração gravitacional das massas próximas
+    float accX = 0.0f, accY = 0.0f, accZ = 0.0f;
+    // fatoriza força dos planetas pelo quão perto do sol eles orbitam
+    float maxPlanetDist = 0.0f;
+    for (int i = 0; i < num_planets; ++i) {
+        if (planet_distances[i] > maxPlanetDist) maxPlanetDist = planet_distances[i];
+    }
+    if (maxPlanetDist < 1e-3f) maxPlanetDist = 1.0f;
+
+    for (int i = 0; i < num_planets; ++i) {
+        float prot = planet_rotations[i] * TO_RADIANS; // graus -> rad
+        float px = planet_distances[i] * cosf(prot);
+        float pz = -planet_distances[i] * sinf(prot);
+        float py = 0.0f; // plano XZ
+
+        float dx = px - camX;
+        float dy = py - camY;
+        float dz = pz - camZ;
+        float dist2 = dx*dx + dy*dy + dz*dz;
+        if (dist2 < 1e-3f) continue;
+
+        float dist = sqrtf(dist2);
+        // ativa gravidade quando dentro de uma "esfera de influência" proporcional ao raio
+        float influence = planet_radii[i] * 40.0f; // amplia alcance
+        if (dist > influence) continue;
+
+        // força newtoniana simplificada com clamp para evitar explosões
+        float inv = 1.0f / dist;
+        float inv2 = inv * inv;
+        // Planetas interiores puxam mais: escala por (maxDist / dist_orbital)^exp
+        float nearFactor = powf(maxPlanetDist / std::max(planet_distances[i], 1.0f), 2.5f); // planetas internos muito mais fortes
+        float accel = gravity_strength * nearFactor * inv2; // G*M efetivo
+        // amortecer quando muito perto da superfície
+        float surface = std::max(planet_radii[i], 1.0f);
+        if (dist < surface * 1.1f) {
+            accel *= (dist / (surface * 1.1f));
+        }
+
+        accX += accel * dx * inv;
+        accY += accel * dy * inv;
+        accZ += accel * dz * inv;
+    }
+
+    // Sol no centro (0,0,0) com influência forte
+    {
+        float px = 0.0f, py = 0.0f, pz = 0.0f;
+        float dx = px - camX;
+        float dy = py - camY;
+        float dz = pz - camZ;
+        float dist2 = dx*dx + dy*dy + dz*dz;
+        if (dist2 > 1e-3f) {
+            float dist = sqrtf(dist2);
+            float sun_radius = sun ? sun->get_radius() : 1.0f;
+            float influence = sun_radius * 150.0f; // alcance muito maior do sol
+            if (dist < influence) {
+                float inv = 1.0f / dist;
+                float inv2 = inv * inv;
+                float accel = gravity_strength * 150.0f * inv2; // sol puxa MUITO MUITO forte
+                if (dist < sun_radius * 1.2f) {
+                    accel *= (dist / (sun_radius * 1.2f));
+                }
+                accX += accel * dx * inv;
+                accY += accel * dy * inv;
+                accZ += accel * dz * inv;
+            }
+        }
+    }
+
+    // integra velocidade
+    velX += accX * delta_time;
+    velY += accY * delta_time;
+    velZ += accZ * delta_time;
+
+    // arrasto linear simples para estabilidade
+    float drag = std::max(0.0f, 1.0f - linear_drag * delta_time);
+    velX *= drag; velY *= drag; velZ *= drag;
+
+    // clamp de velocidade máxima
+    float v2 = velX*velX + velY*velY + velZ*velZ;
+    if (v2 > max_phys_speed*max_phys_speed) {
+        float v = sqrtf(v2);
+        float s = max_phys_speed / v;
+        velX *= s; velY *= s; velZ *= s;
+    }
+
+    // tenta mover com colisão básica (reutiliza check_collision por eixo)
+    float stepX = velX * delta_time;
+    float stepY = velY * delta_time;
+    float stepZ = velZ * delta_time;
+
+    if (check_collision(map, stepX, 0.0f, 0.0f) == Collision::NOT) {
+        camX += stepX;
+    } else {
+        velX = 0.0f;
+    }
+    if (check_collision(map, 0.0f, stepY, 0.0f) == Collision::NOT) {
+        camY += stepY;
+    } else {
+        velY = 0.0f;
+    }
+    if (check_collision(map, 0.0f, 0.0f, stepZ) == Collision::NOT) {
+        camZ += stepZ;
+    } else {
+        velZ = 0.0f;
+    }
+}
+
+
 // depois adicionar o resto das colisões
 Collision Player::check_collision(bool map, float deltaX, float deltaY, float deltaZ) {
     // std::cout << "map " << map << std::endl;

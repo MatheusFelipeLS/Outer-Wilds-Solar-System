@@ -11,20 +11,24 @@ class WhiteHole {
             GLfloat radius, GLfloat slices, GLfloat stacks,
             GLfloat x, GLfloat y, GLfloat z
         ) : 
-        radius(radius), slices(slices), stacks(stacks),
-        x(x), y(y), z(z)
-        {}
+        radius(radius), slices(slices), stacks(stacks)
+        {
+            p.x = x;
+            p.y = y;
+            p.z = z;
+        }
 
         void draw();
 
         bool inside(GLdouble camX, GLdouble camY, GLdouble camZ);
 
+        Vertex get_position();
+
         GLfloat radius;
         GLfloat slices;
         GLfloat stacks;
-        GLfloat x;
-        GLfloat y;
-        GLfloat z;
+        Vertex p;
+
     private:
         GLUquadric *quad;
 

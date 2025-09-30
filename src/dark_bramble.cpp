@@ -1,5 +1,10 @@
 #include "dark_bramble.h"
 
+DarkBramble::DarkBramble(
+    GLfloat radius, GLfloat distance, GLfloat t0, 
+    GLint slices, GLint stacks
+) : translation(t0), distance(distance), radius(radius), slices(slices), stacks(stacks) {}
+
 void DarkBramble::draw() {
     if(d) {
         std::cout << "tl = " << translation
@@ -9,20 +14,6 @@ void DarkBramble::draw() {
         << std::endl;
     }
 
-    
-    // for(int i = 0; i < 33; i++) {
-    //     glPushMatrix();
-    //     glTranslatef (distance, 0.0, 0.0);
-    //         // leva o sistema de coordenadas até o centro
-    //         glTranslatef(bspheres[i].center.x, bspheres[i].center.y, bspheres[i].center.z);
-
-    //         // define cor (vermelho, por exemplo)
-    //         glColor3f(1.0f, 0.0f, 0.0f);
-
-    //         // desenha esfera em modo wireframe
-    //         glutWireSphere(bspheres[i].radius, 16, 16);
-    //     glPopMatrix();
-    // }
 
     GLfloat portal_diffuse[] = {DARK_BRAMBLE_COLOR};
     GLfloat portal_specular[] = {DARK_BRAMBLE_COLOR};
@@ -119,4 +110,22 @@ bool DarkBramble::inside(float camX, float camY, float camZ) {
         }
     }
     return false;
+}
+
+void DarkBramble::set_bouding_boxes(BoundingBox bb[], int qt_bb) {
+    float radius_factor = 0.5;
+    for(int i = 0; i < qt_bb; i++) {
+        bboxes[i] = bb[i];
+        bspheres[i] = BoundingSphere(bboxes[i], radius_factor);
+        if(i >= 2) radius_factor = 0.33;
+    }
+}
+
+std::pair<float, float> DarkBramble::current_position() {
+    return std::make_pair(translation, distance);
+}
+
+void DarkBramble::update_position(GLfloat t, GLfloat r) {
+    translation += t;
+    rotation += r;
 }

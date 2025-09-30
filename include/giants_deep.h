@@ -13,19 +13,11 @@ class GiantsDeep {
         GiantsDeep(
             GLfloat radius, GLfloat distance, GLfloat t0, 
             GLint slices, GLint stacks
-        ) :
-        translation(t0), distance(distance), radius(radius),
-        slices(slices), stacks(stacks)
-        {
-            inner_globe_radius = radius / 3.0f;
-        }
+        );
 
         void draw();
 
-        void update_position(GLfloat t, GLfloat r) {
-            translation += t;
-            rotation += r;
-        }
+        void update_position(GLfloat t, GLfloat r);
 
         void set_tornado(GLuint t) { tornados = t; }
 

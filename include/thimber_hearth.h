@@ -12,17 +12,11 @@ class ThimberHearth {
         ThimberHearth(
             GLfloat radius, GLfloat distance, GLfloat t0, 
             GLint slices, GLint stacks
-        ) :
-        translation(t0), distance(distance), radius(radius),
-        slices(slices), stacks(stacks)
-        {}
+        );
 
         void draw();
 
-        void update_position(GLfloat t, GLfloat r) {
-            translation += t;
-            rotation += r;
-        }
+        void update_position(GLfloat t, GLfloat r);
 
         void debug() { d = true; }
 

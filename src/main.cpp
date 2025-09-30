@@ -566,12 +566,6 @@ void keyboard(unsigned char key,int x,int y) {
         case 'L':
             player.turn_on_off_light();
             break;
-        case 'g':
-            infinity_void.desloc();
-            break;
-        case 'G':
-            infinity_void.cdesloc();
-            break;
         case 'm':
         case 'M':
             toggle_menu();

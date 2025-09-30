@@ -122,9 +122,48 @@ void Player::update_pitch_yall(int dev_x, int dev_y) {
 void Player::hole_teleport() {
     if(brittle_hollow->inside_dark_hole(camX, camY, camZ)) {
         //teleportando para o buraco branco
-        teleport(white_hole->x, white_hole->y, white_hole->z, white_hole->radius);
+        Vertex p = white_hole->get_position();
+        teleport(p.x, p.y, p.z, white_hole->radius);
     } else if(white_hole->inside(camX, camY, camZ)) {
         auto [x, z] = brittle_hollow->get_black_hole_position();
         teleport(x, 0.0f, z, brittle_hollow->dh_radius); // acho q o gap (white hole radius) tá muito grande
     }
+}
+
+void Player::set_solar_system(
+    Sun *sun,
+    ThimberHearth *thimber_hearth,
+    BrittleHollow *brittle_hollow,
+    GiantsDeep *giants_deep,
+    DarkBramble *dark_bramble,
+    Interloper *interloper,
+    WhiteHole *white_hole,
+    Void *v
+) {
+    this->sun = sun;
+    this->thimber_hearth = thimber_hearth;
+    this->brittle_hollow = brittle_hollow;
+    this->giants_deep = giants_deep;
+    this->dark_bramble = dark_bramble;
+    this->interloper = interloper;
+    this->white_hole = white_hole;
+    this->void_map = v;
+}
+
+void Player::move_to_solar_system(float rotation, float distance) {
+    float x = distance * cos(rotation*RAD);
+    float z = -distance * sin(rotation*RAD);
+    
+    camX = x;
+    camY = -150;
+    camZ = z;
+}
+
+void Player::move_to_portal(int rotation, float distance) {
+    float x = distance * cos(rotation*RAD);
+    float z = -distance * sin(rotation*RAD);
+
+    camX = x;
+    camY = 50.0f;
+    camZ = z;
 }

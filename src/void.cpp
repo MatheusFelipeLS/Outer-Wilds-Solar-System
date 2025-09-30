@@ -134,3 +134,36 @@ Portal Void::inside(float camX, float camY, float camZ) {
   
     return Portal::NOTHING;
 }
+
+void Void::add_portal() {
+    int i = rand() % 9;
+    right_portal.push_back(possible_indexes[i]);
+    rotations.push_back(rand() % 360);
+}
+
+void Void::remove_portal() {
+    right_portal.pop_back();
+    rotations.pop_back();
+}
+
+int Void::qt_portals() {
+    return right_portal.size();
+}
+
+std::pair<int, float> Void::last_rotation() {
+    return std::make_pair(rotations.back(), portal_distance);
+}
+
+void Void::set_shell(GLuint s) { shell = s; }
+void Void::set_core(GLuint c[]) { 
+    for(int i = 0; i < 2; i++) {
+        core[i] = c[i]; 
+    }
+}
+
+void Void::set_portal(GLuint p[]) { 
+    for(int i = 0; i < 2; i++) {
+        portal[i] = p[i]; 
+
+    }
+}

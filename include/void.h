@@ -17,46 +17,22 @@ class Void {
         Collision check_colision(float camX, float camY, float camZ);
         Portal inside(float camX, float camY, float camZ);
         
-        void add_portal() {
-            int i = rand() % 9;
-            right_portal.push_back(possible_indexes[i]);
-            rotations.push_back(rand() % 360);
-        }
+        void add_portal();
 
-        void remove_portal() {
-            right_portal.pop_back();
-            rotations.pop_back();
-        }
+        void remove_portal();
 
-        int qt_portals() {
-            return right_portal.size();
-        }
+        int qt_portals();
 
-        std::pair<int, float> last_rotation() {
-            return std::make_pair(rotations.back(), portal_distance);
-        }
+        std::pair<int, float> last_rotation();
 
-        void set_shell(GLuint s) { shell = s; }
-        void set_core(GLuint c[]) { 
-            for(int i = 0; i < 2; i++) {
-                core[i] = c[i]; 
-            }
-        }
+        void set_shell(GLuint s);
+        void set_core(GLuint c[]);
         
-        void set_portal(GLuint p[]) { 
-            for(int i = 0; i < 2; i++) {
-                portal[i] = p[i]; 
-
-            }
-        }
+        void set_portal(GLuint p[]);
 
         void set_shell_bounding_boxes(BoundingBox bb);
         void set_portal_bounding_boxes(BoundingBox bb[]);
         void set_core_bounding_boxes(BoundingBox bb[], int qt_bb, int void_core_objects_indexes[]);
-
-        // foi usado só para debug
-        void desloc() { t += 1.5; }
-        void cdesloc() { t -= 1.5; }
         
     private:
         int void_core_objects_indexes[18];
@@ -64,8 +40,6 @@ class Void {
         GLuint shell;
         GLuint core[2];
         GLuint portal[2];
-
-        GLfloat t;
 
         std::vector<int> rotations;
 

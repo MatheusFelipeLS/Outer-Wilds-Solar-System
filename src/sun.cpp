@@ -1,6 +1,11 @@
 #include "sun.h"
 #include <SOIL/SOIL.h>
 
+Sun::Sun(
+    GLfloat radius, 
+    GLint slices, GLint stacks
+) : radius(radius), slices(slices), stacks(stacks) {}
+
 void Sun::draw() {
     if(d) {
         std::cout << "rt = " << rotation

@@ -1,6 +1,16 @@
 #include "brittle_hollow.h"
 #include <SOIL/SOIL.h>
 
+BrittleHollow::BrittleHollow(
+    GLfloat radius, GLfloat distance, GLfloat t0, 
+    GLint slices, GLint stacks
+) : translation(t0), distance(distance), radius(radius), slices(slices), stacks(stacks)
+{
+    dh_radius = radius / 3.0f;
+    available_pieces = std::vector<size_t>(285);
+    std::iota(available_pieces.begin(), available_pieces.end(), 0);
+    change_current_piece();
+}
 
 void BrittleHollow::draw() {
     if(d) {
@@ -152,4 +162,25 @@ void BrittleHollow::loadTexture(const char* filename) {
     if(textureID == 0) {
         std::cout << "Erro carregando textura: " << SOIL_last_result() << std::endl;
     }
+}
+
+void BrittleHollow::change_current_piece() {
+    current = rand() % available_pieces.size();
+    tx = ty = tz = 0.0f;
+    set_current();
+}
+
+void BrittleHollow::set_current() {
+    current_x = bspheres[available_pieces[current]].center.x;
+    current_y = bspheres[available_pieces[current]].center.y;
+    current_z = bspheres[available_pieces[current]].center.z;
+}
+
+void BrittleHollow::update_position(GLfloat t, GLfloat r) {
+    translation += t;
+    rotation += r;
+}
+
+std::pair<double, double> BrittleHollow::get_black_hole_position() {
+    return std::make_pair(distance * cos(translation*RAD), distance * sin(translation*RAD));
 }

@@ -12,10 +12,7 @@ class Sun {
         Sun(
             GLfloat radius, 
             GLint slices, GLint stacks
-        ) :
-        radius(radius),
-        slices(slices), stacks(stacks)
-        {}
+        );
 
         void draw();
 

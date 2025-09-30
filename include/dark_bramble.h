@@ -12,10 +12,7 @@ class DarkBramble {
         DarkBramble(
             GLfloat radius, GLfloat distance, GLfloat t0, 
             GLint slices, GLint stacks
-        ) :
-        translation(t0), distance(distance), radius(radius),
-        slices(slices), stacks(stacks)
-        {}
+        );
 
         void draw();
 
@@ -24,24 +21,11 @@ class DarkBramble {
 
         bool inside(float camX, float camY, float camZ);
 
-        void set_bouding_boxes(BoundingBox bb[], int qt_bb) {
-            float radius_factor = 0.5;
-            for(int i = 0; i < qt_bb; i++) {
-                bboxes[i] = bb[i];
-                bspheres[i] = BoundingSphere(bboxes[i], radius_factor);
-                if(i >= 2) radius_factor = 0.33;
-            }
+        void set_bouding_boxes(BoundingBox bb[], int qt_bb);
 
-        }
-
-        std::pair<float, float> current_position() {
-            return std::make_pair(translation, distance);
-        }
+        std::pair<float, float> current_position();
         
-        void update_position(GLfloat t, GLfloat r) {
-            translation += t;
-            rotation += r;
-        }
+        void update_position(GLfloat t, GLfloat r);
 
         void set_portal(GLuint s) { portal = s; }
         
@@ -51,7 +35,7 @@ class DarkBramble {
 
         void debug() { d = true; }
 
-        private:
+    private:
         GLfloat translation; // movimento de translação => quanto girou em torno do sol
         GLfloat rotation = 0;    // movimento de rotação => quanto girou em torno de si mesmo
         GLfloat distance;    // distancia do sol

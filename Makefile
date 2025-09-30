@@ -1,7 +1,7 @@
 # Compilador e flags
 CXX = g++
 CXXFLAGS = -Wall -g -Iinclude -O3
-LDFLAGS = -lGL -lGLU -lglut
+LDFLAGS = -lGL -lGLU -lglut -lSOIL
 
 # Pastas
 SRC_DIR = src

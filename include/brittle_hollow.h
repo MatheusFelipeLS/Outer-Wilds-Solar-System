@@ -58,6 +58,9 @@ class BrittleHollow {
 
         void queda();
 
+        void loadTexture(const char* filename);
+
+
         double dh_radius;
     private:
         GLfloat translation; // movimento de translação => quanto girou em torno do sol
@@ -66,6 +69,8 @@ class BrittleHollow {
         GLfloat radius;      // raio do planeta
         GLint slices;
         GLint stacks;
+        GLuint textureID;
+
 
 
         bool d;

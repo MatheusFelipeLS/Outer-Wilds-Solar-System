@@ -38,7 +38,23 @@ void BrittleHollow::draw() {
         (bspheres[available_pieces[current]].center.z < dh_radius && bspheres[available_pieces[current]].center.z > -dh_radius)
     ) {
         available_pieces.erase(available_pieces.begin()+current);
-        change_current_piece();
+        current = available_pieces.size();
+        int r = (int) wh->radius;
+        tx = ty = tz = 0.0f;
+        // max = 3.5 * diametro do wh
+        max_x = r + (float) (rand() % (6 * r)); 
+        if(rand() % 2 == 1) {
+            max_x *= (-1);
+        }
+        max_y = r + (float) (rand() % (6 * r));
+        if(rand() % 2 == 1) {
+            max_y *= (-1);
+        }
+        max_z = r + (float) (rand() % (6 * r));
+        if(rand() % 2 == 1) {
+            max_z *= (-1);
+        }
+        piece_position.push_back(Vertex(wh->p.x + max_x, wh->p.y + max_y, wh->p.z + max_z));
     }
 
     glPushMatrix(); 
@@ -49,7 +65,7 @@ void BrittleHollow::draw() {
         GLfloat a[] = {1.0, 1.0, 1.0, 1.0};
         for(size_t i = 0; i < available_pieces.size(); i++) {
             glPushMatrix();
-            if(i == available_pieces[current] && available_pieces.size() > qt_objects * 0.3) {
+            if(current < available_pieces.size() && i == available_pieces[current]) {
                 glPushMatrix();
                     glMaterialfv(GL_FRONT, GL_DIFFUSE, a);
                     glMaterialfv(GL_FRONT, GL_SPECULAR, a);
@@ -82,8 +98,33 @@ void BrittleHollow::draw() {
         
         glutSolidSphere(dh_radius, slices, stacks);    
     glPopMatrix();
+
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, surface_diffuse_color);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, surface_specular_color);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, surface_ambient_color);
+    glMaterialfv(GL_FRONT, GL_SHININESS, surface_shininess);
+    for(int i = 0; i < (int) teleported_pieces.size()-1; i++) {
+        glPushMatrix();
+            glTranslatef(piece_position[i].x, piece_position[i].y, piece_position[i].z);
+            glCallList(surface[teleported_pieces[i]]);
+        glPopMatrix();
+    }
+    printf("%f %f %f %f %f %f\n", tx, max_x, ty, max_y, tz, max_z);
+    if(teleported_pieces.size() > 0 && current == available_pieces.size()) {
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, a);
+        glMaterialfv(GL_FRONT, GL_SPECULAR, a);
+        glMaterialfv(GL_FRONT, GL_AMBIENT, a);
+        glMaterialfv(GL_FRONT, GL_SHININESS, a);
+        glPushMatrix();
+            glTranslatef(wh->p.x + tx, wh->p.y + ty, wh->p.z + tz);
+            glCallList(surface[teleported_pieces.back()]);
+        glPopMatrix();
+    }
 }
 
+void BrittleHollow::set_white_hole_position(Vertex p) {
+    wh_position = p;
+}
 
 Collision BrittleHollow::check_collision(float camX, float camY, float camZ) {
     float x = distance * cos(translation*RAD);
@@ -95,10 +136,9 @@ Collision BrittleHollow::check_collision(float camX, float camY, float camZ) {
         alpha *= (-1);
     } 
 
+    float x_ = dist * cos(alpha - (translation+rotation)*RAD);
+    float z_ = dist * sin(alpha - (translation+rotation)*RAD + 3.14159);
     for(size_t i = 0; i < available_pieces.size(); i++) {
-        float x_ = dist * cos(alpha - (translation+rotation)*RAD);
-        float z_ = dist * sin(alpha - (translation+rotation)*RAD + 3.14159);
-        // printf("a %f %f %f %f %f %f\n", dist, alpha * 180/3.14159, x_, z_, camX-x, camZ-z);
         if(bspheres[available_pieces[i]].contains(Vertex(x_, camY, z_))) {
             printf("Dentro do objeto %ld\n", i);
             return Collision::BRITTLE_HOLLOW;
@@ -129,18 +169,31 @@ void BrittleHollow::set_surface(GLuint brittle_hollow_surface[], int qt) {
 void BrittleHollow::set_surface_bouding_boxes(BoundingBox brittle_hollow_bboxes[], int qt) {
     for(int i = 0; i < qt; i++) {
         this->bspheres[i] = BoundingSphere(brittle_hollow_bboxes[i], 0.4);
-        this->piece_distance[i] = sqrt(
-            (bspheres[available_pieces[i]].center.x * bspheres[available_pieces[i]].center.x) + 
-            (bspheres[available_pieces[i]].center.y * bspheres[available_pieces[i]].center.y) + 
-            (bspheres[available_pieces[i]].center.z * bspheres[available_pieces[i]].center.z)
-        );
-        this->piece_rotation[i] = acos(bspheres[available_pieces[i]].center.x / piece_distance[i]); // já tá em rad
-        printf("r %f\n", piece_rotation[i]);
     }
     set_current();
 }
 
 void BrittleHollow::queda() {
+    if(available_pieces.size() < qt_objects * 0.3) {
+        return;
+    }
+
+    if(
+        piece_position.size() > 0 && 
+        (std::abs(tx) <= std::abs(max_x) - 0.5 || std::abs(tx) >= std::abs(max_x) + 0.5) 
+        && current == available_pieces.size()
+    ) {
+        printf("ainda está caindo %f\n", tx);
+        tx += (max_x - wh->radius) / delta;
+        ty += (max_y - wh->radius) / delta;
+        tz += (max_z - wh->radius) / delta;
+        return;
+        // getchar();
+    } else if(current == available_pieces.size() && piece_position.size() > 0) {
+        change_current_piece();
+        return;
+    }
+
     tx += current_x / delta;
     ty += current_y / delta;
     tz += current_z / delta;
@@ -166,6 +219,7 @@ void BrittleHollow::loadTexture(const char* filename) {
 
 void BrittleHollow::change_current_piece() {
     current = rand() % available_pieces.size();
+    teleported_pieces.push_back(available_pieces[current]);
     tx = ty = tz = 0.0f;
     set_current();
 }

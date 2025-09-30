@@ -439,6 +439,7 @@ void init(void) {
     // Debug desabilitado para produção
     // quantum_moon.debug();
 
+    brittle_hollow.set_white_hole(&white_hole);
 	// Inicializa as estrelas de fundo
 	init_stars();
 
@@ -681,7 +682,7 @@ void idle(void) {
 }
 
 int main(int argc, char** argv) {
-    srand(time(NULL));
+    srand(time(0));
 
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);

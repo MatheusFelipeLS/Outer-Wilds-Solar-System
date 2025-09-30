@@ -239,7 +239,7 @@ void Player::hole_teleport() {
         teleport(p.x, p.y, p.z, white_hole->radius);
     } else if(white_hole->inside(camX, camY, camZ)) {
         auto [x, z] = brittle_hollow->get_black_hole_position();
-        teleport(x, 0.0f, z, brittle_hollow->dh_radius); // acho q o gap (white hole radius) tá muito grande
+        teleport(x, 0.0f, z, brittle_hollow->dh_radius/1.5); // acho q o gap (white hole radius) tá muito grande
     }
 }
 

@@ -6,6 +6,8 @@
 #include <vector>
 #include <numeric>
 #include <cmath>
+
+#include "white_hole.h"
 #include "utils.h"
 
 #define BRITTLE_HOLLOW_COLOR 74.0f/255.0f, 0.0f, 128.0f/255.0f, 1.0f
@@ -41,6 +43,8 @@ class BrittleHollow {
 
         void loadTexture(const char* filename);
 
+        void set_white_hole_position(Vertex p);
+        void set_white_hole(WhiteHole *white_hole) { wh = white_hole; }
 
         double dh_radius;
 
@@ -53,25 +57,29 @@ class BrittleHollow {
         GLint stacks;
         GLuint textureID;
 
-
-
-        bool d;
-
         GLuint surface[285];
         BoundingSphere bspheres[285];
-        float piece_distance[285];
-        float piece_rotation[285];
-        int current;
-
-        float tx = 0.0f;
-        float ty = 0.0f;
-        float tz = 0.0f;
-        float current_x;
-        float current_y;
-        float current_z;
+        
+        size_t current; // indice da peça que está sendo movida
+        float tx = 0.0f; // quanto a peça foi deslocada (no eixo x)
+        float ty = 0.0f; // quanto a peça foi deslocada (no eixo y)
+        float tz = 0.0f; // quanto a peça foi deslocada (no eixo z)
+        float current_x; // posição inicial da peça (no eixo x)
+        float current_y; // posição inicial da peça (no eixo y)
+        float current_z; // posição inicial da peça (no eixo z)
         std::vector<size_t> available_pieces;
-        float delta = 1000.0;
-        int qt_objects = 285;
+        float delta = 1000.0; // tem relação direta com a velocidade que o objeto se move
+        int qt_objects = 285; // quantidade de formas que moldam o planeta
+        
+        Vertex wh_position; // white hole position
+        std::vector<size_t> teleported_pieces; // índice dos pedaços que foram teleportadas
+        std::vector<Vertex> piece_position; // posição dos pedaços teleportados
+        WhiteHole *wh;
+        float max_x;
+        float max_y;
+        float max_z;
+
+        bool d;
 };
 
 #endif

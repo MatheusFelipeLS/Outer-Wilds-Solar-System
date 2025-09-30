@@ -39,30 +39,25 @@ void BrittleHollow::draw() {
             glPushMatrix();
             if(i == available_pieces[current] && available_pieces.size() > qt_objects * 0.3) {
                 glPushMatrix();
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, a);
-                glMaterialfv(GL_FRONT, GL_SPECULAR, a);
-                glMaterialfv(GL_FRONT, GL_AMBIENT, a);
-                glMaterialfv(GL_FRONT, GL_SHININESS, a);
-                glTranslatef(-tx, -ty, -tz);
-                glCallList(surface[available_pieces[current]]);
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, surface_diffuse_color);
-                glMaterialfv(GL_FRONT, GL_SPECULAR, surface_specular_color);
-                glMaterialfv(GL_FRONT, GL_AMBIENT, surface_ambient_color);
-                glMaterialfv(GL_FRONT, GL_SHININESS, surface_shininess);
-                glPopMatrix();
-
-                glPushMatrix();
-                glTranslatef(bspheres[available_pieces[current]].center.x, bspheres[available_pieces[current]].center.y, bspheres[available_pieces[current]].center.z);
-                glColor3f(1.0, .0, .0);
-                glutWireSphere(bspheres[available_pieces[current]].radius, 16, 16);
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE, a);
+                    glMaterialfv(GL_FRONT, GL_SPECULAR, a);
+                    glMaterialfv(GL_FRONT, GL_AMBIENT, a);
+                    glMaterialfv(GL_FRONT, GL_SHININESS, a);
+                    glTranslatef(-tx, -ty, -tz);
+                    glCallList(surface[available_pieces[current]]);
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE, surface_diffuse_color);
+                    glMaterialfv(GL_FRONT, GL_SPECULAR, surface_specular_color);
+                    glMaterialfv(GL_FRONT, GL_AMBIENT, surface_ambient_color);
+                    glMaterialfv(GL_FRONT, GL_SHININESS, surface_shininess);
                 glPopMatrix();
             } else {
                 glPushMatrix();
                 glCallList(surface[available_pieces[i]]);
                 glPopMatrix();
             }
+
+            glPopMatrix();
         }
-        // glutSolidSphere(radius, slices, stacks);    
 
         GLfloat bh_ambient[] = {0.0f, 0.0f, 0.0f};
         GLfloat bh_diffuse[] = {1.0f, 1.0f, 1.0f};
@@ -75,6 +70,30 @@ void BrittleHollow::draw() {
         
         glutSolidSphere(dh_radius, slices, stacks);    
     glPopMatrix();
+}
+
+
+Collision BrittleHollow::check_collision(float camX, float camY, float camZ) {
+    float x = distance * cos(translation*RAD);
+    float z = -distance * sin(translation*RAD);
+    
+    float dist = sqrt(((camX-x) * (camX-x)) + ((camZ-z) * (camZ-z)));
+    float alpha = acos((camX-x)/dist);
+    if(camZ-z > 0) {
+        alpha *= (-1);
+    } 
+
+    for(size_t i = 0; i < available_pieces.size(); i++) {
+        float x_ = dist * cos(alpha - (translation+rotation)*RAD);
+        float z_ = dist * sin(alpha - (translation+rotation)*RAD + 3.14159);
+        // printf("a %f %f %f %f %f %f\n", dist, alpha * 180/3.14159, x_, z_, camX-x, camZ-z);
+        if(bspheres[available_pieces[i]].contains(Vertex(x_, camY, z_))) {
+            printf("Dentro do objeto %ld\n", i);
+            return Collision::BRITTLE_HOLLOW;
+        }
+    }
+
+    return Collision::NOT;
 }
 
 
@@ -97,8 +116,14 @@ void BrittleHollow::set_surface(GLuint brittle_hollow_surface[], int qt) {
 
 void BrittleHollow::set_surface_bouding_boxes(BoundingBox brittle_hollow_bboxes[], int qt) {
     for(int i = 0; i < qt; i++) {
-        // this->bboxes[i] = brittle_hollow_bboxes[i];
-        this->bspheres[i] = BoundingSphere(brittle_hollow_bboxes[i], 0.5);
+        this->bspheres[i] = BoundingSphere(brittle_hollow_bboxes[i], 0.4);
+        this->piece_distance[i] = sqrt(
+            (bspheres[available_pieces[i]].center.x * bspheres[available_pieces[i]].center.x) + 
+            (bspheres[available_pieces[i]].center.y * bspheres[available_pieces[i]].center.y) + 
+            (bspheres[available_pieces[i]].center.z * bspheres[available_pieces[i]].center.z)
+        );
+        this->piece_rotation[i] = acos(bspheres[available_pieces[i]].center.x / piece_distance[i]); // já tá em rad
+        printf("r %f\n", piece_rotation[i]);
     }
     set_current();
 }

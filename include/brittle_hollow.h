@@ -26,6 +26,8 @@ class BrittleHollow {
             change_current_piece();
         }
 
+        Collision check_collision(float camX, float camY, float camZ);
+
         void draw();
 
         void change_current_piece() {
@@ -59,6 +61,7 @@ class BrittleHollow {
         void queda();
 
         double dh_radius;
+
     private:
         GLfloat translation; // movimento de translação => quanto girou em torno do sol
         GLfloat rotation;    // movimento de rotação => quanto girou em torno de si mesmo
@@ -72,6 +75,8 @@ class BrittleHollow {
 
         GLuint surface[285];
         BoundingSphere bspheres[285];
+        float piece_distance[285];
+        float piece_rotation[285];
         int current;
 
         float tx = 0.0f;

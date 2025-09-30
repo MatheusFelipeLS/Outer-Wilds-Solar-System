@@ -17,6 +17,11 @@ Collision Player::check_collision(bool map, float deltaX, float deltaY, float de
         return type;  
     } else {
         Collision type = dark_bramble->check_colision(camX + deltaX, camY + deltaY, camZ + deltaZ);
+        if(type != Collision::NOT) {
+            return type;
+        }
+
+        type = brittle_hollow->check_collision(camX + deltaX, camY + deltaY, camZ + deltaZ);
         return type;
     }
 }

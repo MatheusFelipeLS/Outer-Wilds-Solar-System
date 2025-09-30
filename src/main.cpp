@@ -662,7 +662,7 @@ void idle(void) {
     thimber_hearth.update_position(0.2f * delta_time * 60.0f, 0.3f);
     brittle_hollow.update_position(0.16f * delta_time * 60.0f, 0.3f);
     giants_deep.update_position(0.12f * delta_time * 60.0f, 0.3f);
-    dark_bramble.update_position(0.3f * delta_time * 60.0f, -0.3f);
+    dark_bramble.update_position(0.08f * delta_time * 60.0f, -0.3f);
     interloper.update_position(0.001f * delta_time * 60.0f, 0.3f);
 
     glutPostRedisplay();

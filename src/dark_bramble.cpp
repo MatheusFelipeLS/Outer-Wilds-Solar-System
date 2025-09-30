@@ -77,23 +77,31 @@ void DarkBramble::draw() {
 
 // false se não teve colisão
 Collision DarkBramble::check_colision(float camX, float camY, float camZ) {
-    // começando de dois para ignorar as entradas do portal
     double x = distance * cos(translation*RAD);
-    double z = distance * sin(translation*RAD);
-    // printf("x e z do planeta: %f %f\n", x, z);
-    // printf("meu x, y, z: %f %f %f\n", camX-x, camY, camZ+z);
+    double z = -distance * sin(translation*RAD);
+    
+    float dist = sqrt(((camX-x) * (camX-x)) + ((camZ-z) * (camZ-z)));
+    float alpha = acos((camX-x)/dist);
+    if(camZ-z > 0) {
+        alpha *= (-1);
+    } 
+
+    // começando de dois para ignorar as entradas do portal
     for (size_t i = 0; i < 2; i++) {
-        // printf("i = %ld\n", i);
-        if (bspheres[i].contains(Vertex((camX-x), camY, (camZ+z)))) {
+        float x_ = dist * cos(alpha - (translation+rotation)*RAD);
+        float z_ = dist * sin(alpha - (translation+rotation)*RAD + 3.14159);
+        if (bspheres[i].contains(Vertex(x_, camY, z_))) {
             // std::cout << "Colisão detectada com objeto " << i << std::endl;
             return Collision::DARK_BRAMBLE_PORTAL;
         }
     }
-    
-    for (size_t i = 2; i < sizeof(bboxes) / sizeof(bboxes[0]); i++) {
-        // printf("i = %ld\n", i); 
-        if (bspheres[i].contains(Vertex(camX-x, camY, camZ+z))) {
-            // std::cout << "Colisão detectada com objeto " << i << std::endl;
+
+    for(size_t i = 2; i < sizeof(bboxes) / sizeof(bboxes[0]); i++) {
+        float x_ = dist * cos(alpha - (translation+rotation)*RAD);
+        float z_ = dist * sin(alpha - (translation+rotation)*RAD + 3.14159);
+        // printf("a %f %f %f %f %f %f\n", dist, alpha * 180/3.14159, x_, z_, camX-x, camZ-z);
+        if(bspheres[i].contains(Vertex(x_, camY, z_))) {
+            std::cout << "Colisão detectada com objeto " << i << std::endl;
             return Collision::DARK_BRAMBLE;
         }
     }

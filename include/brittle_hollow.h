@@ -60,6 +60,9 @@ class BrittleHollow {
 
         void queda();
 
+        void loadTexture(const char* filename);
+
+
         double dh_radius;
 
     private:
@@ -69,6 +72,8 @@ class BrittleHollow {
         GLfloat radius;      // raio do planeta
         GLint slices;
         GLint stacks;
+        GLuint textureID;
+
 
 
         bool d;

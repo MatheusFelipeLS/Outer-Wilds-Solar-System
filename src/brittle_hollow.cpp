@@ -1,4 +1,6 @@
 #include "brittle_hollow.h"
+#include <SOIL/SOIL.h>
+
 
 void BrittleHollow::draw() {
     if(d) {
@@ -137,4 +139,17 @@ void BrittleHollow::queda() {
     bspheres[available_pieces[current]].center.y -= current_y / delta;
     bspheres[available_pieces[current]].center.z -= current_z / delta;
 
+}
+
+void BrittleHollow::loadTexture(const char* filename) {
+    textureID = SOIL_load_OGL_texture(
+        filename,
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
+    );
+
+    if(textureID == 0) {
+        std::cout << "Erro carregando textura: " << SOIL_last_result() << std::endl;
+    }
 }

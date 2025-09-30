@@ -23,6 +23,8 @@ class Sun {
 
         void debug() { d = true; }
 
+        void loadTexture(const char* filename);
+
     private:
         GLfloat rotation = 0.0;    // movimento de rotação => quanto girou em torno de si mesmo
         GLfloat radius;      // raio do planeta
@@ -30,6 +32,7 @@ class Sun {
         GLint stacks;
         GLint transition_color_signal = 1;
         GLUquadric *quad;
+        GLuint textureID;
         GLfloat lower_bound_color = 0.5f;
         GLfloat light_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
         GLfloat light_color[4] = {1.0f, 1.0f, 1.0f, 1.0f};

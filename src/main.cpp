@@ -11,7 +11,7 @@
 #include "player.h"
 
 #include "sun.h"
-#include "thimber_hearth.h"
+#include "timber_hearth.h"
 #include "brittle_hollow.h"
 #include "giants_deep.h"
 #include "dark_bramble.h"
@@ -57,7 +57,7 @@ void draw_stars();
 
 static Player player(PLAYER_PARAMS);
 static Sun sun(SUN_PARAMS);
-static ThimberHearth thimber_hearth(THIMBER_HEARTH_PARAMS);
+static TimberHearth timber_hearth(TIMBER_HEARTH_PARAMS);
 static BrittleHollow brittle_hollow(BRITTLE_HOLLOW_PARAMS);
 static GiantsDeep giants_deep(GIANTS_DEEP_PARAMS);
 static DarkBramble dark_bramble(DARK_BRAMBLE_PARAMS);
@@ -67,7 +67,7 @@ static Void infinity_void;
 
 // declaração única (em escopo global ou before main loop)
 static float planet_distances[] = {
-    THIMBER_HEARTH_DISTANCE,
+    TIMBER_HEARTH_DISTANCE,
     BRITTLE_HOLLOW_DISTANCE,
     GIANTS_DEEP_DISTANCE,
     DARK_BRAMBLE_DISTANCE
@@ -78,7 +78,7 @@ static float planet_rotations[] = {0.0f, 0.0f, 0.0f, 0.0f};
 
 // raios correspondentes para gravidade e visual
 static float planet_radii[] = {
-    THIMBER_HEARTH_RADIUS,
+    TIMBER_HEARTH_RADIUS,
     BRITTLE_HOLLOW_RADIUS,
     GIANTS_DEEP_RADIUS,
     DARK_BRAMBLE_RADIUS
@@ -334,7 +334,7 @@ void init(void) {
     loadObj("3d_models/profundezas/tornado.obj", tornados_objects, 1, tor_objects_indexes, giants_deep_bboxes, 1.0);
     giants_deep.set_tornado(tornados_objects[0]);
 
-    player.set_solar_system(&sun, &thimber_hearth, &brittle_hollow, &giants_deep, &dark_bramble, &interloper, &white_hole, &infinity_void);
+    player.set_solar_system(&sun, &timber_hearth, &brittle_hollow, &giants_deep, &dark_bramble, &interloper, &white_hole, &infinity_void);
 
     GLuint void_shell[1]; 
     int void_shell_objects_indexes[] = {0};
@@ -382,7 +382,7 @@ void init(void) {
     
     // Textura das esferas 
     sun.loadTexture("src/image/sun.jpg");
-    thimber_hearth.loadTexture("src/image/ceres_fictional.jpg");
+    timber_hearth.loadTexture("src/image/ceres_fictional.jpg");
     //brittle_hollow.loadTexture("src/image/planeta.jpg");
 
     giants_deep.loadTexture("src/image/makemake_fictional.jpg", giants_deep.textureID);   // esfera maior
@@ -460,7 +460,7 @@ void display(void) {
         glClearColor(0.0, 0.0, 0.0, 0.0);
 
         sun.draw();
-        thimber_hearth.draw();
+        timber_hearth.draw();
         brittle_hollow.draw();
         giants_deep.draw();
         dark_bramble.draw();
@@ -639,7 +639,7 @@ void idle(void) {
     }
 
     sun.update_position(0.3f * delta_time * 60.0f);
-    thimber_hearth.update_position(0.2f * delta_time * 60.0f, 0.3f);
+    timber_hearth.update_position(0.2f * delta_time * 60.0f, 0.3f);
     brittle_hollow.update_position(0.16f * delta_time * 60.0f, 0.3f);
     giants_deep.update_position(0.12f * delta_time * 60.0f, 0.3f);
     dark_bramble.update_position(0.08f * delta_time * 60.0f, -0.3f);

@@ -139,7 +139,7 @@ Collision Player::check_collision(bool map, float deltaX, float deltaY, float de
             return type;
         }
 
-        type = thimber_hearth->check_collision(camX + deltaX, camY + deltaY, camZ + deltaZ);
+        type = timber_hearth->check_collision(camX + deltaX, camY + deltaY, camZ + deltaZ);
         if(type != Collision::NOT) {
             return type;
         }
@@ -263,7 +263,7 @@ void Player::hole_teleport() {
 
 void Player::set_solar_system(
     Sun *sun,
-    ThimberHearth *thimber_hearth,
+    TimberHearth *timber_hearth,
     BrittleHollow *brittle_hollow,
     GiantsDeep *giants_deep,
     DarkBramble *dark_bramble,
@@ -272,7 +272,7 @@ void Player::set_solar_system(
     Void *v
 ) {
     this->sun = sun;
-    this->thimber_hearth = thimber_hearth;
+    this->timber_hearth = timber_hearth;
     this->brittle_hollow = brittle_hollow;
     this->giants_deep = giants_deep;
     this->dark_bramble = dark_bramble;

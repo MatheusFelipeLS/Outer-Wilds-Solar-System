@@ -1,15 +1,15 @@
-#ifndef THIMBER_HEARTH_H
-#define THIMBER_HEARTH_H
+#ifndef TIMBER_HEARTH_H
+#define TIMBER_HEARTH_H
 
 #include <GL/glut.h>
 #include <iostream>
 #include "utils.h"
 
-#define THIMBER_HEARTH_COLOR 1.0f, 1.0f, 1.0f
+#define TIMBER_HEARTH_COLOR 1.0f, 1.0f, 1.0f
 
-class ThimberHearth {
+class TimberHearth {
     public:
-        ThimberHearth(
+        TimberHearth(
             GLfloat radius, GLfloat distance, GLfloat t0, 
             GLint slices, GLint stacks
         );

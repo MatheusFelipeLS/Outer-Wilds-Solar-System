@@ -1,19 +1,19 @@
-#include "thimber_hearth.h"
+#include "timber_hearth.h"
 #include <SOIL/SOIL.h>
 
 
-ThimberHearth::ThimberHearth(
+TimberHearth::TimberHearth(
     GLfloat radius, GLfloat distance, GLfloat t0, 
     GLint slices, GLint stacks
 ) : translation(t0), distance(distance), radius(radius), slices(slices), stacks(stacks) {}
 
 
-void ThimberHearth::update_position(GLfloat t, GLfloat r) {
+void TimberHearth::update_position(GLfloat t, GLfloat r) {
     translation += t;
     rotation += r;
 }
 
-void ThimberHearth::draw() {
+void TimberHearth::draw() {
     if(d) {
         std::cout << "tl = " << translation
                     << " rt = " << rotation
@@ -21,9 +21,9 @@ void ThimberHearth::draw() {
                     << " radius = " << radius
         << std::endl;
     }
-    GLfloat diffuse_color[] = {THIMBER_HEARTH_COLOR};
-    GLfloat specular_color[] = {THIMBER_HEARTH_COLOR};
-    GLfloat ambient_color[] = {THIMBER_HEARTH_COLOR};
+    GLfloat diffuse_color[] = {TIMBER_HEARTH_COLOR};
+    GLfloat specular_color[] = {TIMBER_HEARTH_COLOR};
+    GLfloat ambient_color[] = {TIMBER_HEARTH_COLOR};
     GLfloat shininess[] = {10.0f};
     glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse_color);
     glMaterialfv(GL_FRONT, GL_SPECULAR, specular_color);
@@ -51,7 +51,7 @@ void ThimberHearth::draw() {
 }
 
 
-Collision ThimberHearth::check_collision(float camX, float camY, float camZ) {
+Collision TimberHearth::check_collision(float camX, float camY, float camZ) {
     float x = distance * cos(translation*RAD);
     float z = -distance * sin(translation*RAD);
 
@@ -59,12 +59,12 @@ Collision ThimberHearth::check_collision(float camX, float camY, float camZ) {
     z -= camZ;
     double dist = sqrt((x*x) + (camY*camY) + (z*z));
     if(dist < radius) {
-        return Collision::THIMBER_HEARTH;
+        return Collision::TIMBER_HEARTH;
     }
     return Collision::NOT;
 }
 
-void ThimberHearth::loadTexture(const char* filename) {
+void TimberHearth::loadTexture(const char* filename) {
     textureID = SOIL_load_OGL_texture(
         filename,
         SOIL_LOAD_AUTO,

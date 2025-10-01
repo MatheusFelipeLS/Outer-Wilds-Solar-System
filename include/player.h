@@ -6,7 +6,7 @@
 #include <cmath>
 
 #include "sun.h"
-#include "thimber_hearth.h"
+#include "timber_hearth.h"
 #include "brittle_hollow.h"
 #include "giants_deep.h"
 #include "dark_bramble.h"
@@ -59,7 +59,7 @@ class Player {
         void stop_up() { motion.Up = false; }
         void stop_down() { motion.Down = false; }
 
-        void set_solar_system(Sun *sun, ThimberHearth *thimber_hearth, BrittleHollow *brittle_hollow, GiantsDeep *giants_deep, DarkBramble *dark_bramble, Interloper *interloper, WhiteHole *white_hole, Void *v);
+        void set_solar_system(Sun *sun, TimberHearth *timber_hearth, BrittleHollow *brittle_hollow, GiantsDeep *giants_deep, DarkBramble *dark_bramble, Interloper *interloper, WhiteHole *white_hole, Void *v);
 
         void move_to_solar_system(float rotation, float distance);
         void move_to_portal(int rotation, float distance);
@@ -88,7 +88,7 @@ class Player {
         int num_planets = 0;
 
         Sun *sun;
-        ThimberHearth *thimber_hearth;
+        TimberHearth *timber_hearth;
         BrittleHollow *brittle_hollow;
         GiantsDeep *giants_deep;
         DarkBramble *dark_bramble;

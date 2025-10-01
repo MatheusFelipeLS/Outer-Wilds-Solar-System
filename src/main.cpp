@@ -631,7 +631,7 @@ void idle(void) {
     quantum_moon.update_position(delta_time);
 
     // Atualiza física do player (gravidade, arrasto, etc.)
-    player.update_physics(delta_time, map);
+    // player.update_physics(delta_time, map);
 
     if (!animating) {
         glutPostRedisplay();

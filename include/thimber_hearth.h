@@ -18,6 +18,8 @@ class ThimberHearth {
 
         void update_position(GLfloat t, GLfloat r);
 
+        Collision check_collision(float camX, float camY, float camZ);
+
         void debug() { d = true; }
 
         void loadTexture(const char* filename);

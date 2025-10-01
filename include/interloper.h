@@ -19,7 +19,7 @@ class Interloper {
         void draw();
 
         void bezier(float t, GLfloat *p0, GLfloat *p1, GLfloat *p2, GLfloat *p3, float *out);
-
+        
         void update_position(GLfloat t, GLfloat r);
 
         void debug() { d = true; }

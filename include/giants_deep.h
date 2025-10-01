@@ -26,6 +26,8 @@ class GiantsDeep {
 
         void update_position(GLfloat t, GLfloat r);
 
+        Collision check_collision(float camX, float camY, float camZ);
+
         void set_tornado(GLuint t) { tornados = t; }
 
         void rotate_tornado() { tornado_rotation += 0.01; }

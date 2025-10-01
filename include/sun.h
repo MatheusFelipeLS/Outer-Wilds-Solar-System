@@ -3,6 +3,7 @@
 
 #include <GL/glut.h>
 #include <iostream>
+#include <cmath>
 #include "utils.h"
 
 #define SUN_LIGHT_COLOR 1.0f, 1.0f, 1.0f, 1.0f
@@ -17,6 +18,8 @@ class Sun {
         void draw();
 
         void update_position(GLfloat r);
+
+        Collision check_collision(float camX, float camY, float camZ);
 
         void debug() { d = true; }
 

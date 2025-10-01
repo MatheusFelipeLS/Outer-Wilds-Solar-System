@@ -172,6 +172,19 @@ void GiantsDeep::draw() {
 
 }
 
+Collision GiantsDeep::check_collision(float camX, float camY, float camZ) {
+    float x = distance * cos(translation*RAD);
+    float z = -distance * sin(translation*RAD);
+
+    x -= camX;
+    z -= camZ;
+    double dist = (x*x) + (camY*camY) + (z*z);
+    if(dist <= inner_globe_radius * inner_globe_radius) {
+        return Collision::GIANTS_DEEP;
+    }
+    return Collision::NOT;
+}
+
 void GiantsDeep::loadTexture(const char* filename, GLuint &texID) {
     texID = SOIL_load_OGL_texture(
         filename,

@@ -57,6 +57,13 @@ void Sun::update_position(GLfloat r) {
     light_color[1] = emission[1];
 }
 
+Collision Sun::check_collision(float camX, float camY, float camZ) {
+    double dist = sqrt((camX * camX) + (camY * camY) + (camZ * camZ));
+    if(dist < radius) {
+        return Collision::SUN;
+    }
+    return Collision::NOT;
+}
 
 void Sun::loadTexture(const char* filename) {
     textureID = SOIL_load_OGL_texture(

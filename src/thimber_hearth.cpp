@@ -50,6 +50,20 @@ void ThimberHearth::draw() {
     glPopMatrix();
 }
 
+
+Collision ThimberHearth::check_collision(float camX, float camY, float camZ) {
+    float x = distance * cos(translation*RAD);
+    float z = -distance * sin(translation*RAD);
+
+    x -= camX;
+    z -= camZ;
+    double dist = sqrt((x*x) + (camY*camY) + (z*z));
+    if(dist < radius) {
+        return Collision::THIMBER_HEARTH;
+    }
+    return Collision::NOT;
+}
+
 void ThimberHearth::loadTexture(const char* filename) {
     textureID = SOIL_load_OGL_texture(
         filename,

@@ -135,6 +135,24 @@ Collision Player::check_collision(bool map, float deltaX, float deltaY, float de
         }
 
         type = brittle_hollow->check_collision(camX + deltaX, camY + deltaY, camZ + deltaZ);
+        if(type != Collision::NOT) {
+            return type;
+        }
+
+        type = thimber_hearth->check_collision(camX + deltaX, camY + deltaY, camZ + deltaZ);
+        if(type != Collision::NOT) {
+            return type;
+        }
+
+        type = sun->check_collision(camX + deltaX, camY + deltaY, camZ + deltaZ);
+        if(type != Collision::NOT) {
+            return type;
+        }
+
+        type = giants_deep->check_collision(camX + deltaX, camY + deltaY, camZ + deltaZ);
+        if(type != Collision::NOT) {
+            return type;
+        }
         return type;
     }
 }

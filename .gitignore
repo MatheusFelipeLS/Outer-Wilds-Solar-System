@@ -3,7 +3,4 @@ obj
 tests
 ideas
 .vscode 
-*.jpg
-*.png
-*.jpeg
 *.webp

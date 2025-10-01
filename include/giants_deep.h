@@ -15,6 +15,9 @@ class GiantsDeep {
             GLint slices, GLint stacks
         );
 
+        GLuint textureID;
+        GLuint textureID2;
+
         void draw();
 
         void update_position(GLfloat t, GLfloat r);
@@ -23,7 +26,7 @@ class GiantsDeep {
 
         void rotate_tornado() { tornado_rotation += 0.01; }
 
-        void loadTexture(const char* filename);
+        void loadTexture(const char* filename, GLuint &texID);
 
         void increase_a() {
             a += 0.2;
@@ -67,7 +70,6 @@ class GiantsDeep {
         GLint stacks;
         GLuint tornados;
         GLfloat tornado_rotation = 0.0;
-        GLuint textureID;
 
         GLfloat a = 0;
         GLfloat b = 0;

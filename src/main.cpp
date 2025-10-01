@@ -384,10 +384,15 @@ void init(void) {
     sun.loadTexture("src/image/sun.jpg");
     thimber_hearth.loadTexture("src/image/ceres_fictional.jpg");
     //brittle_hollow.loadTexture("src/image/planeta.jpg");
-    giants_deep.loadTexture("src/image/makemake_fictional.jpg");
+
+    giants_deep.loadTexture("src/image/makemake_fictional.jpg", giants_deep.textureID);   // esfera maior
+    giants_deep.loadTexture("src/image/neptune.jpg", giants_deep.textureID2);       // esfera menor
+
+
     //dark_bramble.loadTexture("src/image/makemake_fictional.jpg");
     interloper.loadTexture("src/image/haumea_fictional.jpg");   
     white_hole.loadTexture("src/image/venus_surface.jpg");
+    //white_hole.loadRingsTexture("src/image/saturn_ring_alpha.png");
     quantum_moon.loadTexture("src/image/moon.jpg");
     
 

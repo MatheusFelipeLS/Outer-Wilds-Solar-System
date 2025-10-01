@@ -39,6 +39,7 @@ void GiantsDeep::draw() {
         glTranslatef (distance, 0.0, 0.0);
         glRotatef (rotation, 0.0, 1.0, 0.0);
 
+        // Textura 1
         glEnable(GL_TEXTURE_2D); 
         glBindTexture(GL_TEXTURE_2D, textureID); 
 
@@ -65,8 +66,19 @@ void GiantsDeep::draw() {
         glMaterialfv(GL_FRONT, GL_AMBIENT, inner_globe_ambient_color);
         glMaterialfv(GL_FRONT, GL_SHININESS, inner_globe_shininess);
     
-        glutSolidSphere(inner_globe_radius, slices, stacks);
-        
+        // textura 2
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, textureID2); // planeta interno
+
+        GLUquadric* quad2 = gluNewQuadric();
+        gluQuadricTexture(quad2, GL_TRUE);
+        gluQuadricOrientation(quad2, GLU_OUTSIDE);
+        gluQuadricNormals(quad2, GLU_SMOOTH);
+
+        gluSphere(quad2, inner_globe_radius, slices, stacks); // raio menor
+        gluDeleteQuadric(quad2);
+
+        glDisable(GL_TEXTURE_2D);        
         // talvez devesse transformar os tornados em uma classe. TQV
         GLfloat tornado_diffuse_color[] = {GIANTS_DEEP_INNER_GLOBE_COLOR};
         GLfloat tornado_specular_color[] = {GIANTS_DEEP_INNER_GLOBE_COLOR};
@@ -160,15 +172,22 @@ void GiantsDeep::draw() {
 
 }
 
-void GiantsDeep::loadTexture(const char* filename) {
-    textureID = SOIL_load_OGL_texture(
+void GiantsDeep::loadTexture(const char* filename, GLuint &texID) {
+    texID = SOIL_load_OGL_texture(
         filename,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
     );
 
-    if(textureID == 0) {
+    if(texID == 0) {
         std::cout << "Erro carregando textura: " << SOIL_last_result() << std::endl;
-    } 
+    } else {
+        glBindTexture(GL_TEXTURE_2D, texID);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
 }
+

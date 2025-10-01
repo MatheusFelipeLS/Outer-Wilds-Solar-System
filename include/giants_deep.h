@@ -25,6 +25,35 @@ class GiantsDeep {
 
         void loadTexture(const char* filename);
 
+        void increase_a() {
+            a += 0.2;
+            printf("a %f\n", a);
+        }
+
+        void decrease_a() {
+            a -= 0.2;
+            printf("a %f\n", a);
+        }
+
+        void increase_b() {
+            b += 0.2;
+            printf("b %f\n", b);
+        }
+
+        void decrease_b() {
+            b -= 0.2;
+            printf("b %f\n", b);
+        }
+
+        void increase_c() {
+            c += 0.2;
+            printf("c %f\n", c);
+        }
+
+        void decrease_c() {
+            c -= 0.2;
+            printf("b %f\n", c);
+        }
 
         void debug() { d = true; }
 
@@ -40,6 +69,9 @@ class GiantsDeep {
         GLfloat tornado_rotation = 0.0;
         GLuint textureID;
 
+        GLfloat a = 0;
+        GLfloat b = 0;
+        GLfloat c = 0;
 
         bool d;
 };

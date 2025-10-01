@@ -5,7 +5,7 @@
 #include <iostream>
 #include "utils.h"
 
-#define GIANTS_DEEP_SURFACE_COLOR 1.0f, 1.0f, 1.0f, 1.0f
+#define GIANTS_DEEP_SURFACE_COLOR 0.0f, 1.0f, 0.0f, 1.0f
 #define GIANTS_DEEP_INNER_GLOBE_COLOR 10.0f/255.0f, 105.0f/255.0f, 74.0f/255.0f, 1.0f
 
 class GiantsDeep {

@@ -11,7 +11,7 @@ GiantsDeep::GiantsDeep(
 }
 
 void GiantsDeep::update_position(GLfloat t, GLfloat r) {
-    // translation += t;
+    translation += t;
     rotation += r;
 }
 
@@ -80,7 +80,7 @@ void GiantsDeep::draw() {
 
         glPushMatrix(); 
             glRotatef(-90, 0, 0, 1);
-            glTranslatef(0.0, inner_globe_radius-33, 0.0);
+            glTranslatef(0.0, inner_globe_radius-35, 0.0);
             glScalef(3.5, 4.4, 3.5);
             glRotatef(rotation, 0, 1, 0);
             glCallList(tornados);

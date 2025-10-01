@@ -5,7 +5,20 @@
 #include <iostream>
 #include "utils.h"
 
-#define DARK_BRAMBLE_COLOR 128.0f/255.0f, 128.0f/255.0f, 128.0f/255.0f, 0.3f
+#define DARK_BRAMBLE_PORTAL_DIFFUSE_COLOR 1.000000, 1.000000, 1.000000, 1.0f
+#define DARK_BRAMBLE_PORTAL_SPECULAR_COLOR 1.000000, 1.000000, 1.000000, 1.0f
+#define DARK_BRAMBLE_PORTAL_AMBIENT_COLOR 1.000000, 1.000000, 1.000000, 1.0f
+#define DARK_BRAMBLE_PORTAL_SHININESS 10.0f
+
+#define DARK_BRAMBLE_WOODEN_DIFFUSE_COLOR 0.125490, 0.000000, 0.074510, 1.0f
+#define DARK_BRAMBLE_WOODEN_SPECULAR_COLOR 0.000000, 0.000000, 0.000000, 1.0f
+#define DARK_BRAMBLE_WOODEN_AMBIENT_COLOR 0.270588, 0.156863, 0.000000, 1.0f
+#define DARK_BRAMBLE_WOODEN_SHININESS 0.549020f
+
+#define DARK_BRAMBLE_ICE_DIFFUSE_COLOR 1.0f, 1.0f, 1.0f, 1.0f
+#define DARK_BRAMBLE_ICE_SPECULAR_COLOR 1.0f, 1.0f, 1.0f, 1.0f
+#define DARK_BRAMBLE_ICE_AMBIENT_COLOR 1.0f, 1.0f, 1.0f, 1.0f
+#define DARK_BRAMBLE_ICE_SHININESS 127
 
 class DarkBramble {
     public:
@@ -34,6 +47,7 @@ class DarkBramble {
         void set_ice(GLuint i) { ice = i; }
 
         void debug() { d = true; }
+
 
     private:
         GLfloat translation; // movimento de translação => quanto girou em torno do sol

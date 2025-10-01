@@ -20,11 +20,11 @@ void BrittleHollow::draw() {
                     << " radius = " << radius
         << std::endl;
     }
-    
-    GLfloat surface_diffuse_color[] = {BRITTLE_HOLLOW_COLOR};
-    GLfloat surface_specular_color[] = {BRITTLE_HOLLOW_COLOR};
-    GLfloat surface_ambient_color[] = {BRITTLE_HOLLOW_COLOR};
-    GLfloat surface_shininess[] = {10.0f};
+
+    GLfloat surface_diffuse_color[] = {BRITTLE_HOLLOW_DIFFUSE_COLOR};
+    GLfloat surface_specular_color[] = {BRITTLE_HOLLOW_SPECULAR_COLOR};
+    GLfloat surface_ambient_color[] = {BRITTLE_HOLLOW_AMBIENT_COLOR};
+    GLfloat surface_shininess[] = {BRITTLE_HOLLOW_SHININESS};
     
     glMaterialfv(GL_FRONT, GL_DIFFUSE, surface_diffuse_color);
     glMaterialfv(GL_FRONT, GL_SPECULAR, surface_specular_color);
@@ -62,21 +62,12 @@ void BrittleHollow::draw() {
         glTranslatef (distance, 0.0, 0.0);
         glRotatef (rotation, 0.0, 1.0, 0.0);
 
-        GLfloat a[] = {1.0, 1.0, 1.0, 1.0};
         for(size_t i = 0; i < available_pieces.size(); i++) {
             glPushMatrix();
             if(current < available_pieces.size() && i == available_pieces[current]) {
                 glPushMatrix();
-                    glMaterialfv(GL_FRONT, GL_DIFFUSE, a);
-                    glMaterialfv(GL_FRONT, GL_SPECULAR, a);
-                    glMaterialfv(GL_FRONT, GL_AMBIENT, a);
-                    glMaterialfv(GL_FRONT, GL_SHININESS, a);
                     glTranslatef(-tx, -ty, -tz);
                     glCallList(surface[available_pieces[current]]);
-                    glMaterialfv(GL_FRONT, GL_DIFFUSE, surface_diffuse_color);
-                    glMaterialfv(GL_FRONT, GL_SPECULAR, surface_specular_color);
-                    glMaterialfv(GL_FRONT, GL_AMBIENT, surface_ambient_color);
-                    glMaterialfv(GL_FRONT, GL_SHININESS, surface_shininess);
                 glPopMatrix();
             } else {
                 glPushMatrix();
@@ -99,6 +90,7 @@ void BrittleHollow::draw() {
         glutSolidSphere(dh_radius, slices, stacks);    
     glPopMatrix();
 
+
     glMaterialfv(GL_FRONT, GL_DIFFUSE, surface_diffuse_color);
     glMaterialfv(GL_FRONT, GL_SPECULAR, surface_specular_color);
     glMaterialfv(GL_FRONT, GL_AMBIENT, surface_ambient_color);
@@ -109,12 +101,8 @@ void BrittleHollow::draw() {
             glCallList(surface[teleported_pieces[i]]);
         glPopMatrix();
     }
-    // printf("%f %f %f %f %f %f\n", tx, max_x, ty, max_y, tz, max_z);
+    
     if(teleported_pieces.size() > 0 && current == available_pieces.size()) {
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, a);
-        glMaterialfv(GL_FRONT, GL_SPECULAR, a);
-        glMaterialfv(GL_FRONT, GL_AMBIENT, a);
-        glMaterialfv(GL_FRONT, GL_SHININESS, a);
         glPushMatrix();
             glTranslatef(wh->p.x + tx, wh->p.y + ty, wh->p.z + tz);
             glCallList(surface[teleported_pieces.back()]);
@@ -173,7 +161,7 @@ void BrittleHollow::set_surface_bouding_boxes(BoundingBox brittle_hollow_bboxes[
     set_current();
 }
 
-void BrittleHollow::queda() {
+void BrittleHollow::move_piece() {
     if(available_pieces.size() < qt_objects * 0.3) {
         return;
     }

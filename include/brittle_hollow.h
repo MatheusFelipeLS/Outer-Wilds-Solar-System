@@ -10,7 +10,12 @@
 #include "white_hole.h"
 #include "utils.h"
 
-#define BRITTLE_HOLLOW_COLOR 74.0f/255.0f, 0.0f, 128.0f/255.0f, 1.0f
+// #define BRITTLE_HOLLOW_COLOR 74.0f/255.0f, 0.0f, 128.0f/255.0f, 1.0f
+#define BRITTLE_HOLLOW_DIFFUSE_COLOR 0.290196, 0.000000, 0.403922,
+#define BRITTLE_HOLLOW_SPECULAR_COLOR 0.290196, 0.000000, 0.568627,
+#define BRITTLE_HOLLOW_AMBIENT_COLOR 0.035294, 0.000000, 0.505882,
+#define BRITTLE_HOLLOW_SHININESS 0.000000
+
 #define RAD 3.14159/180
 
 class BrittleHollow {
@@ -39,7 +44,7 @@ class BrittleHollow {
         void set_surface(GLuint brittle_hollow_surface[], int qt);
         void set_surface_bouding_boxes(BoundingBox brittle_hollow_bboxes[], int qt);
 
-        void queda();
+        void move_piece();
 
         void loadTexture(const char* filename);
 

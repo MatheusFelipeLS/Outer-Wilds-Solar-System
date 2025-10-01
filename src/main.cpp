@@ -53,7 +53,7 @@ void init_stars();
 void draw_stars();
 
 // x, y, z, pitch, yaw iniciais
-#define PLAYER_PARAMS GIANTS_DEEP_DISTANCE, 0, -200, 0.0f, 0.0f
+#define PLAYER_PARAMS DARK_BRAMBLE_DISTANCE, 0, -400, 0.0f, 0.0f
 
 static Player player(PLAYER_PARAMS);
 static Sun sun(SUN_PARAMS);
@@ -391,7 +391,7 @@ void init(void) {
 
     //dark_bramble.loadTexture("src/image/makemake_fictional.jpg");
     interloper.loadTexture("src/image/haumea_fictional.jpg");   
-    white_hole.loadTexture("src/image/venus_surface.jpg");
+    // white_hole.loadTexture("src/image/venus_surface.jpg");
     //white_hole.loadRingsTexture("src/image/saturn_ring_alpha.png");
     quantum_moon.loadTexture("src/image/moon.jpg");
     
@@ -421,7 +421,7 @@ void display(void) {
 	// Estrelas de fundo
 	draw_stars();
     if(queda) {
-        brittle_hollow.queda();
+        brittle_hollow.move_piece();
     }
 
     if(map) {
@@ -552,6 +552,7 @@ void keyboard(unsigned char key,int x,int y) {
         case 'Q':
             queda = !queda;
             break;
+        case 'r':
         case '+':
         case '=':
             if (player_speed < max_speed) {
@@ -630,7 +631,7 @@ void idle(void) {
     quantum_moon.update_position(delta_time);
 
     // Atualiza física do player (gravidade, arrasto, etc.)
-    player.update_physics(delta_time, map);
+    // player.update_physics(delta_time, map);
 
     if (!animating) {
         glutPostRedisplay();

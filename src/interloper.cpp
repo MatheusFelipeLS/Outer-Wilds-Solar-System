@@ -23,10 +23,10 @@ Interloper::Interloper(
     // segundo ponto de controle
     this->ctrl_points[2][0] = -sun_radius;
     this->ctrl_points[2][1] = 0.0f;
-    this->ctrl_points[2][2] = sun_radius * 1.7f;
+    this->ctrl_points[2][2] = sun_radius * 1.9f;
 
     // ponto final
-    this->ctrl_points[3][0] = -sun_radius * 1.17f;
+    this->ctrl_points[3][0] = -sun_radius * 1.2f;
     this->ctrl_points[3][1] = 0.0f;
     this->ctrl_points[3][2] = 0.0f;
 }
@@ -43,12 +43,15 @@ void Interloper::draw() {
                     << " p2 = " << pos[2]
         << std::endl;
     }
+    
+    GLfloat diffuse_color[] = {INTERLOPER_DIFFUSE_COLOR};
+    GLfloat specular_color[] = {INTERLOPER_SPECULAR_COLOR};
+    GLfloat ambient_color[] = {INTERLOPER_AMBIENT_COLOR};
+    GLfloat shininess[] = {INTERLOPER_SHININESS};
 
-    GLfloat material_color[] = {INTERLOPER_COLOR};
-    GLfloat shininess[] = {80.0};
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, material_color);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, material_color);
-    glMaterialfv(GL_FRONT, GL_AMBIENT, material_color);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse_color);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, specular_color);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ambient_color);
     glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
 
     if (animation_direction) {

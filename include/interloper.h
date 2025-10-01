@@ -6,7 +6,10 @@
 #include <vector>
 #include "utils.h"
 
-#define INTERLOPER_COLOR 1.0f, 1.0f, 1.0f, 1.0f
+#define INTERLOPER_DIFFUSE_COLOR 0.000000, 1.000000, 1.000000, 1.0
+#define INTERLOPER_SPECULAR_COLOR 0.000000, 1.000000, 0.941176, 1.0
+#define INTERLOPER_AMBIENT_COLOR 0.000000, 0.576471, 0.509804, 1.0
+#define INTERLOPER_SHININESS 3.015686
 
 
 class Interloper {
@@ -22,7 +25,6 @@ class Interloper {
         void debug() { d = true; }
 
         void loadTexture(const char* filename);
-
 
     private:
         GLfloat rotation = 0;    // movimento de rotação => quanto girou em torno de si mesmo

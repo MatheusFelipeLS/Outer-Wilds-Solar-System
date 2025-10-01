@@ -6,19 +6,18 @@ DarkBramble::DarkBramble(
 ) : translation(t0), distance(distance), radius(radius), slices(slices), stacks(stacks) {}
 
 void DarkBramble::draw() {
-    if(d) {
-        std::cout << "tl = " << translation
-                    << " rt = " << rotation
-                    << " dist = " << distance
-                    << " radius = " << radius
-        << std::endl;
-    }
+    // if(d) {
+    //     std::cout << "tl = " << translation
+    //                 << " rt = " << rotation
+    //                 << " dist = " << distance
+    //                 << " radius = " << radius
+    //     << std::endl;
+    // }
 
-
-    GLfloat portal_diffuse[] = {DARK_BRAMBLE_COLOR};
-    GLfloat portal_specular[] = {DARK_BRAMBLE_COLOR};
-    GLfloat portal_ambient[] = {DARK_BRAMBLE_COLOR};
-    GLfloat portal_shininess[] = {0.0f};
+    GLfloat portal_diffuse[] = {DARK_BRAMBLE_PORTAL_DIFFUSE_COLOR};
+    GLfloat portal_specular[] = {DARK_BRAMBLE_PORTAL_SPECULAR_COLOR};
+    GLfloat portal_ambient[] = {DARK_BRAMBLE_PORTAL_AMBIENT_COLOR};
+    GLfloat portal_shininess[] = {DARK_BRAMBLE_PORTAL_SHININESS};
     glMaterialfv(GL_FRONT, GL_DIFFUSE, portal_diffuse);
     glMaterialfv(GL_FRONT, GL_SPECULAR, portal_specular);
     glMaterialfv(GL_FRONT, GL_AMBIENT, portal_ambient);
@@ -32,10 +31,10 @@ void DarkBramble::draw() {
         glCallList(portal);
     glPopMatrix();
 
-    GLfloat wooden_diffuse[] = {0.26f, 0.125f, 0.0f, 1.0f};
-    GLfloat wooden_specular[] = {0.0, 0.0, 0.0f, 1.0f};
-    GLfloat wooden_ambient[] = {0.26f, 0.125f, 0.0f, 1.0f};
-    GLfloat wooden_shininess[] = {0.0f};
+    GLfloat wooden_diffuse[] = {DARK_BRAMBLE_WOODEN_DIFFUSE_COLOR};
+    GLfloat wooden_specular[] = {DARK_BRAMBLE_WOODEN_SPECULAR_COLOR};
+    GLfloat wooden_ambient[] = {DARK_BRAMBLE_WOODEN_AMBIENT_COLOR};
+    GLfloat wooden_shininess[] = {DARK_BRAMBLE_WOODEN_SHININESS};
     glMaterialfv(GL_FRONT, GL_DIFFUSE, wooden_diffuse);
     glMaterialfv(GL_FRONT, GL_SPECULAR, wooden_specular);
     glMaterialfv(GL_FRONT, GL_AMBIENT, wooden_ambient);
@@ -48,10 +47,10 @@ void DarkBramble::draw() {
         glCallList(shell);
     glPopMatrix();
 
-    GLfloat ice_diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    GLfloat ice_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    GLfloat ice_ambient[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    GLfloat ice_shininess[] = {127.0f};
+    GLfloat ice_diffuse[] = {DARK_BRAMBLE_ICE_DIFFUSE_COLOR};
+    GLfloat ice_specular[] = {DARK_BRAMBLE_ICE_SPECULAR_COLOR};
+    GLfloat ice_ambient[] = {DARK_BRAMBLE_ICE_AMBIENT_COLOR};
+    GLfloat ice_shininess[] = {DARK_BRAMBLE_ICE_SHININESS};
     glMaterialfv(GL_FRONT, GL_DIFFUSE, ice_diffuse);
     glMaterialfv(GL_FRONT, GL_SPECULAR, ice_specular);
     glMaterialfv(GL_FRONT, GL_AMBIENT, ice_ambient);
@@ -82,7 +81,6 @@ Collision DarkBramble::check_colision(float camX, float camY, float camZ) {
         float x_ = dist * cos(alpha - (translation+rotation)*RAD);
         float z_ = dist * sin(alpha - (translation+rotation)*RAD + 3.14159);
         if (bspheres[i].contains(Vertex(x_, camY, z_))) {
-            // std::cout << "Colisão detectada com objeto " << i << std::endl;
             return Collision::DARK_BRAMBLE_PORTAL;
         }
     }
@@ -90,7 +88,6 @@ Collision DarkBramble::check_colision(float camX, float camY, float camZ) {
     for(size_t i = 2; i < sizeof(bboxes) / sizeof(bboxes[0]); i++) {
         float x_ = dist * cos(alpha - (translation+rotation)*RAD);
         float z_ = dist * sin(alpha - (translation+rotation)*RAD + 3.14159);
-        // printf("a %f %f %f %f %f %f\n", dist, alpha * 180/3.14159, x_, z_, camX-x, camZ-z);
         if(bspheres[i].contains(Vertex(x_, camY, z_))) {
             std::cout << "Colisão detectada com objeto " << i << std::endl;
             return Collision::DARK_BRAMBLE;

@@ -22,6 +22,7 @@ void Sun::draw() {
     glMaterialfv(GL_FRONT, GL_EMISSION, this->emission);
 
     glPushMatrix();
+        glRotatef(rotation * 0.1f, 0.0f, 1.0f, 0.0f); 
         quad = gluNewQuadric ();
         gluQuadricTexture ( quad , GL_TRUE );
 
@@ -54,13 +55,6 @@ void Sun::update_position(GLfloat r) {
     }
     emission[1] += transition_color_signal * 0.003;
     light_color[1] = emission[1];
-
-    // girar a textura
-    glMatrixMode(GL_TEXTURE);
-    glLoadIdentity();
-    glRotatef(rotation * 0.1f, 0.1f, 0.0f, 1.0f); 
-    glMatrixMode(GL_MODELVIEW);
-
 }
 
 

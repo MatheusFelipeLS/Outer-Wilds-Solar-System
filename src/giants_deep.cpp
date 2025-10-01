@@ -16,18 +16,18 @@ void GiantsDeep::update_position(GLfloat t, GLfloat r) {
 }
 
 void GiantsDeep::draw() {
-    if(d) {
-        std::cout << "tl = " << translation
-                    << " rt = " << rotation
-                    << " dist = " << distance
-                    << " radius = " << radius
-        << std::endl;
-    }
+    // if(d) {
+    //     std::cout << "tl = " << translation
+    //                 << " rt = " << rotation
+    //                 << " dist = " << distance
+    //                 << " radius = " << radius
+    //     << std::endl;
+    // }
     
-    GLfloat surface_diffuse_color[] = {GIANTS_DEEP_SURFACE_COLOR};
-    GLfloat surface_specular_color[] = {GIANTS_DEEP_SURFACE_COLOR};
-    GLfloat surface_ambient_color[] = {GIANTS_DEEP_SURFACE_COLOR};
-    GLfloat surface_shininess[] = {30.0f};
+    GLfloat surface_diffuse_color[] = {GIANTS_DEEP_SURFACE_DIFFUSE_COLOR};
+    GLfloat surface_specular_color[] = {GIANTS_DEEP_SURFACE_SPECULAR_COLOR};
+    GLfloat surface_ambient_color[] = {GIANTS_DEEP_SURFACE_AMBIENT_COLOR};
+    GLfloat surface_shininess[] = {GIANTS_DEEP_SURFACE_SHININESS};
 
     glMaterialfv(GL_FRONT, GL_DIFFUSE, surface_diffuse_color);
     glMaterialfv(GL_FRONT, GL_SPECULAR, surface_specular_color);

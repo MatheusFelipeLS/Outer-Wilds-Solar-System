@@ -2,7 +2,7 @@
 
 Este projeto é uma recriação em 3D do sistema solar do jogo Outer Wilds, implementando as mecânicas únicas de cada planeta usando OpenGL e C++. O simulador permite explorar um sistema solar dinâmico onde cada corpo celeste possui comportamentos especiais baseados no jogo original.
 
-![Solar System](outer-wilds-solar-system.jpg)
+![Solar System](repo_images/outerwilds-solar-system.png)
 
 ## 🎮 Visão Geral do Projeto
 
@@ -20,16 +20,21 @@ Este é um simulador 3D interativo que recria o sistema solar de Outer Wilds, pe
 ## 🪐 Sistema Solar
 
 ### Sol
+<img src="repo_images/sun.jpeg" width=500>
 - **Função**: Fonte de luz principal do sistema
 - **Mecânica**: Explode no final da animação, marcando o início de um novo ciclo
 - **Características**: Textura realista, iluminação dinâmica, animação de explosão
 
 ### Recanto Lenhoso (Timber Hearth)
+<img src="repo_images/timber_hearth.jpeg" width=500>
+
 - **Tipo**: Planeta terrestre similar à Terra
 - **Mecânica**: Planeta base sem mecânicas especiais
 - **Características**: Textura de superfície rochosa, órbita estável
 
 ### Vale da Incerteza (Brittle Hollow)
+<img src="repo_images/brittle_hollow.jpeg" width=500>
+
 - **Mecânica Principal**: **Fragmentação Dinâmica**
   - O planeta se despedaça ao longo do tempo
   - Peças caem no buraco negro central
@@ -39,6 +44,8 @@ Este é um simulador 3D interativo que recria o sistema solar de Outer Wilds, pe
 - **Visual**: Modelo 3D detalhado com texturas realistas
 
 ### Profundezas do Gigante (Giants Deep)
+<img src="repo_images/giants_deep.jpeg" width=500>
+
 - **Tipo**: Planeta gasoso com oceano interno
 - **Mecânica Principal**: **Sistema de Tornados**
   - Múltiplos tornados rotativos na superfície
@@ -48,6 +55,8 @@ Este é um simulador 3D interativo que recria o sistema solar de Outer Wilds, pe
 - **Visual**: Duas esferas concêntricas (atmosfera e oceano)
 
 ### Abrolho Sombrio (Dark Bramble)
+<img src="repo_images/dark_bramble.jpeg" width=500>
+
 - **Mecânica Principal**: **Dimensão Infinita**
   - Aparência pequena externamente
   - Interior com espaço infinito
@@ -59,6 +68,8 @@ Este é um simulador 3D interativo que recria o sistema solar de Outer Wilds, pe
 - **Navegação**: Apenas portais corretos levam à saída
 
 ### Lua Quântica
+<img src="repo_images/quantum_moon.jpeg" width=500>
+
 - **Mecânica Principal**: **Comportamento Quântico**
   - Teleporta quando sai do campo de visão do jogador
   - Orbita diferentes planetas dinamicamente
@@ -70,6 +81,8 @@ Este é um simulador 3D interativo que recria o sistema solar de Outer Wilds, pe
 - **Visual**: Efeitos de brilho e distorção quântica
 
 ### O Xereta (Interloper)
+<img src="repo_images/interloper.jpeg" width=500>
+
 - **Tipo**: Cometa congelado
 - **Mecânica**: **Derretimento por Proximidade Solar**
   - Derrete ao se aproximar do Sol
@@ -542,13 +555,6 @@ a = F / m = G * M / r²
 x = r * cos(θ)
 z = r * sin(θ)
 θ = θ₀ + ω * t
-```
-
-#### **Interpolação de Cores**
-```
-R = 0.9 + 0.1 * sin(t)
-G = 0.9 + 0.1 * cos(t)
-B = 1.0
 ```
 
 #### **Detecção de Colisão**

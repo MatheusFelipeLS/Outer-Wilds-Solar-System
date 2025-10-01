@@ -6,7 +6,7 @@
 #include <vector>
 #include "utils.h"
 
-#define INTERLOPER_COLOR 26.0f/255.0f, 224.0f/255.0f, 200.0f/255.0f, 1.0f
+#define INTERLOPER_COLOR 1.0f, 1.0f, 1.0f, 1.0f
 
 
 class Interloper {
@@ -21,6 +21,9 @@ class Interloper {
 
         void debug() { d = true; }
 
+        void loadTexture(const char* filename);
+
+
     private:
         GLfloat rotation = 0;    // movimento de rotação => quanto girou em torno de si mesmo
         GLfloat distance;    // distancia do sol
@@ -28,6 +31,8 @@ class Interloper {
         GLfloat ctrl_points[4][3];
         GLint slices;
         GLint stacks;
+        GLuint textureID;
+
 
         // animação eliptica em torno do sol
         bool animation_direction = true; // true => indo em direção ao sol, false => se afastando do sol

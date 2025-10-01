@@ -9,7 +9,7 @@
 #include <ctime>
 #include "utils.h"
 
-#define QUANTUM_MOON_COLOR 0.8f, 0.8f, 1.0f, 0.9f
+#define QUANTUM_MOON_COLOR 1.0f, 1.0f, 1.0f, 1.0f
 static constexpr float PI_F = 3.14159265f;
 
 class QuantumMoon {
@@ -57,9 +57,14 @@ class QuantumMoon {
         bool is_player_near(float camX, float camY, float camZ, float threshold = 50.0f);
         void debug() { d = true; }
 
+        void loadTexture(const char* filename);
+
+
     private:
         GLfloat radius;
         GLint slices, stacks;
+        GLuint textureID;
+
 
         // posição atual
         float current_x, current_y, current_z;

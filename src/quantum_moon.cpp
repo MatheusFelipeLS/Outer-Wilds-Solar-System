@@ -1,4 +1,5 @@
 #include "quantum_moon.h"
+#include <SOIL/SOIL.h>
 
 void QuantumMoon::draw() {
     if (!is_visible) return;
@@ -11,11 +12,14 @@ void QuantumMoon::draw() {
     glMaterialfv(GL_FRONT, GL_EMISSION, emission);
 
     glColor4f(
-        0.8f + 0.2f * sinf(color_shift),
-        0.8f + 0.2f * cosf(color_shift),
+        0.9f + 0.1f * sinf(color_shift),
+        0.9f + 0.1f * cosf(color_shift),
         1.0f,
         0.9f
     );
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureID);
 
     GLUquadric *quad = gluNewQuadric();
     gluQuadricTexture(quad, GL_TRUE);
@@ -31,6 +35,8 @@ void QuantumMoon::draw() {
     glMaterialfv(GL_FRONT, GL_EMISSION, no_emission);
 
     gluDeleteQuadric(quad);
+    glDisable(GL_TEXTURE_2D);
+
     glPopMatrix();
 }
 
@@ -170,4 +176,23 @@ bool QuantumMoon::is_player_near(float camX, float camY, float camZ, float thres
     float dz = current_z - camZ;
     float distance = sqrtf(dx*dx + dy*dy + dz*dz);
     return distance < threshold;
+}
+
+void QuantumMoon::loadTexture(const char* filename) {
+    textureID = SOIL_load_OGL_texture(
+        filename,
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
+    );
+
+    if(textureID == 0) {
+        std::cout << "Erro carregando textura: " << SOIL_last_result() << std::endl;
+    } else {
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
 }

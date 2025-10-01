@@ -58,7 +58,7 @@ void Sun::update_position(GLfloat r) {
     // girar a textura
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
-    glRotatef(rotation * 0.1f, 0.0f, 0.0f, 1.0f); 
+    glRotatef(rotation * 0.1f, 0.1f, 0.0f, 1.0f); 
     glMatrixMode(GL_MODELVIEW);
 
 }

@@ -1,4 +1,6 @@
 #include "giants_deep.h"
+#include <SOIL/SOIL.h>
+
 
 GiantsDeep::GiantsDeep(
     GLfloat radius, GLfloat distance, GLfloat t0, 
@@ -37,7 +39,21 @@ void GiantsDeep::draw() {
         glTranslatef (distance, 0.0, 0.0);
         glRotatef (rotation, 0.0, 1.0, 0.0);
 
-        glutSolidSphere(radius, slices, stacks);    
+        glEnable(GL_TEXTURE_2D); 
+        glBindTexture(GL_TEXTURE_2D, textureID); 
+
+        glColor3f(1.0f, 1.0f, 1.0f); 
+
+        GLUquadric* quad = gluNewQuadric(); 
+
+        gluQuadricTexture(quad, GL_TRUE); 
+        gluQuadricOrientation(quad, GLU_OUTSIDE); 
+
+        gluQuadricNormals(quad, GL_SMOOTH); 
+        gluSphere(quad, radius, slices, stacks); 
+        gluDeleteQuadric(quad); 
+
+        glDisable(GL_TEXTURE_2D);  
 
         GLfloat inner_globe_diffuse_color[] = {GIANTS_DEEP_INNER_GLOBE_COLOR};
         GLfloat inner_globe_specular_color[] = {GIANTS_DEEP_INNER_GLOBE_COLOR};
@@ -132,4 +148,17 @@ void GiantsDeep::draw() {
     //     glRotatef (tornado_rotation, 0.0, 1.0, 0.0);
     //     glCallList(tornados);
     // glPopMatrix();
+}
+
+void GiantsDeep::loadTexture(const char* filename) {
+    textureID = SOIL_load_OGL_texture(
+        filename,
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
+    );
+
+    if(textureID == 0) {
+        std::cout << "Erro carregando textura: " << SOIL_last_result() << std::endl;
+    } 
 }

@@ -120,9 +120,14 @@ void QuantumMoon::quantum_jump() {
 void QuantumMoon::update_observation(float camX, float camY, float camZ, float pitch, float yaw, float current_time) {
     bool observed = is_being_observed(camX, camY, camZ, pitch, yaw);
     if (observed) {
+        // Se está sendo observado, ela deve SUMIR (ficar invisível)
+        // Opcionalmente, salta enquanto não está sendo vista para reforçar o efeito de "desaparecer"
+        if (is_visible) {
+            quantum_jump();
+            last_jump_time = current_time;
+        }
+        is_visible = false;
         last_observation_time = current_time;
-        // se observado, garante que a lua esteja visível (ela fica "colapsada" quando não observada)
-        is_visible = true;
         return;
     }
 
@@ -153,19 +158,21 @@ void QuantumMoon::update_observation(float camX, float camY, float camZ, float p
             float angle_diff_y = fabsf(view_angle_y - pitch);
             if (angle_diff_x > 180.0f) angle_diff_x = 360.0f - angle_diff_x;
 
-            // se o jogador está olhando para o planeta com tolerância menor, faz jump
-            if ((angle_diff_x < 15.0f && angle_diff_y < 15.0f) || dwell_exceeded) {
+            // Se o jogador está OLHANDO para o planeta atual com tolerância menor, não reaparecer aqui.
+            // Caso contrário (não observado) ou se o tempo de permanência foi excedido, faz jump e reaparece.
+            if (((angle_diff_x >= 15.0f || angle_diff_y >= 15.0f) && cooldown_passed) || dwell_exceeded) {
                 quantum_jump();
                 last_observation_time = current_time;
                 last_jump_time = current_time;
-                // opcional: podemos momentaneamente tornar invisível até a próxima observação
-                is_visible = false;
+                // Reaparece quando não observado
+                is_visible = true;
             }
         } else {
             // se sem planetas, pode saltar aleatoriamente
             quantum_jump();
             last_observation_time = current_time;
             last_jump_time = current_time;
+            is_visible = true;
         }
     }
 }

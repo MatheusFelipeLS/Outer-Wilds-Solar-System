@@ -21,6 +21,12 @@ void BrittleHollow::draw() {
         << std::endl;
     }
 
+    // TESTE: Desabilita temporariamente cada luz para identificar qual causa sombra
+    // Descomente uma linha por vez para testar:
+    glDisable(GL_LIGHT0); // Sol
+    // glDisable(GL_LIGHT1); // White hole  
+    // glDisable(GL_LIGHT2); // Player
+
     GLfloat surface_diffuse_color[] = {BRITTLE_HOLLOW_DIFFUSE_COLOR};
     GLfloat surface_specular_color[] = {BRITTLE_HOLLOW_SPECULAR_COLOR};
     GLfloat surface_ambient_color[] = {BRITTLE_HOLLOW_AMBIENT_COLOR};
@@ -82,9 +88,9 @@ void BrittleHollow::draw() {
         GLfloat bh_diffuse[] = {1.0f, 1.0f, 1.0f};
         GLfloat bh_specular[] = {0.1f, 0.1f, 0.1f};
         GLfloat bh_shininess[] = { 120.0f };
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, bh_ambient);
-        glMaterialfv(GL_FRONT, GL_SPECULAR, bh_diffuse);
-        glMaterialfv(GL_FRONT, GL_AMBIENT, bh_specular);
+        glMaterialfv(GL_FRONT, GL_AMBIENT,   bh_ambient);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE,   bh_diffuse);
+        glMaterialfv(GL_FRONT, GL_SPECULAR,  bh_specular);
         glMaterialfv(GL_FRONT, GL_SHININESS, bh_shininess);
         
         glutSolidSphere(dh_radius, slices, stacks);    
@@ -108,6 +114,12 @@ void BrittleHollow::draw() {
             glCallList(surface[teleported_pieces.back()]);
         glPopMatrix();
     }
+
+    // TESTE: Reabilita as luzes que foram desabilitadas no teste acima
+    // Descomente as linhas correspondentes:
+    glEnable(GL_LIGHT0); // Sol
+    // glEnable(GL_LIGHT1); // White hole
+    // glEnable(GL_LIGHT2); // Player
 }
 
 void BrittleHollow::set_white_hole_position(Vertex p) {

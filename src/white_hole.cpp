@@ -1,4 +1,5 @@
 #include "white_hole.h"
+#include <SOIL/SOIL.h>
 
 void WhiteHole::draw() {
     GLfloat light_pos[4] = {p.x, p.y, p.z, 1.0f};
@@ -15,9 +16,19 @@ void WhiteHole::draw() {
 
     glPushMatrix();
         glTranslatef(p.x, p.y, p.z);
-        quad = gluNewQuadric();
-        gluQuadricTexture (quad, GL_TRUE);
-        gluSphere (quad, radius, slices, stacks);
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
+        GLUquadric* quad = gluNewQuadric();
+        gluQuadricTexture(quad, GL_TRUE);
+        gluQuadricNormals(quad, GLU_SMOOTH);
+
+        gluSphere(quad, radius, slices, stacks);
+
+        gluDeleteQuadric(quad);
+        glDisable(GL_TEXTURE_2D);
+
     glPopMatrix();
     
     // Depois, sempre volte a emissão pro "zero" pros outros planetas:
@@ -36,3 +47,23 @@ bool WhiteHole::inside(GLdouble camX, GLdouble camY, GLdouble camZ) {
 Vertex WhiteHole::get_position() {
     return p;
 }
+
+void WhiteHole::loadTexture(const char* filename) {
+    textureID = SOIL_load_OGL_texture(
+        filename,
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
+    );
+
+    if(textureID == 0) {
+        std::cout << "Erro carregando textura: " << SOIL_last_result() << std::endl;
+    } else {
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
+}
+

@@ -5,7 +5,7 @@
 #include <iostream>
 #include "utils.h"
 
-#define THIMBER_HEARTH_COLOR 0.0f, 0.0f, 200.0f/255.0f
+#define THIMBER_HEARTH_COLOR 1.0f, 1.0f, 1.0f
 
 class ThimberHearth {
     public:
@@ -20,6 +20,8 @@ class ThimberHearth {
 
         void debug() { d = true; }
 
+        void loadTexture(const char* filename);
+
     private:
         GLfloat translation; // movimento de translação => quanto girou em torno do sol
         GLfloat rotation = 0;    // movimento de rotação => quanto girou em torno de si mesmo
@@ -27,6 +29,8 @@ class ThimberHearth {
         GLfloat radius;      // raio do planeta
         GLint slices;
         GLint stacks;
+        GLuint textureID;
+
 
         bool d;
 };

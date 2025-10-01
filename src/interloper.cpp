@@ -1,4 +1,6 @@
 #include "interloper.h"
+#include <SOIL/SOIL.h>
+
 
 Interloper::Interloper(
     GLfloat radius,
@@ -72,7 +74,20 @@ void Interloper::draw() {
     glPushMatrix(); 
         glTranslatef(pos[0], pos[1], pos[2]);
         glRotatef (rotation, 0.0, 1.0, 0.0);
-        glutSolidSphere(radius, slices, stacks);    
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
+        GLUquadric* quad = gluNewQuadric();
+        gluQuadricTexture(quad, GL_TRUE);
+
+        gluQuadricNormals(quad, GL_SMOOTH);
+
+        gluSphere(quad, radius, slices, stacks);
+        
+        gluDeleteQuadric(quad);
+        glDisable(GL_TEXTURE_2D);
+
     glPopMatrix();
 }
 
@@ -98,3 +113,23 @@ void Interloper::update_position(GLfloat t, GLfloat r) {
     } 
     rotation += r;
 }
+
+void Interloper::loadTexture(const char* filename) {
+    textureID = SOIL_load_OGL_texture(
+        filename,
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
+    );
+
+    if(textureID == 0) {
+        std::cout << "Erro carregando textura: " << SOIL_last_result() << std::endl;
+    } else {
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
+}
+

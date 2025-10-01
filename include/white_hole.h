@@ -24,10 +24,15 @@ class WhiteHole {
 
         Vertex get_position();
 
+        void loadTexture(const char* filename);
+
+
         GLfloat radius;
         GLfloat slices;
         GLfloat stacks;
         Vertex p;
+        GLuint textureID;
+
 
     private:
         GLUquadric *quad;

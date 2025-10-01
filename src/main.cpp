@@ -425,9 +425,14 @@ void init(void) {
     brittle_hollow.set_surface_bouding_boxes(brittle_hollow_bboxes, 285);
     
     // Textura das esferas 
-    // sun.loadTexture("src/image/sun.jpg");
-    // thimber_hearth.loadTexture("src/image/haumea_fictional.jpg");
-    // brittle_hollow.loadTexture("src/image/haumea_fictional.jpg");
+    sun.loadTexture("src/image/sun.jpg");
+    thimber_hearth.loadTexture("src/image/ceres_fictional.jpg");
+    //brittle_hollow.loadTexture("src/image/planeta.jpg");
+    giants_deep.loadTexture("src/image/makemake_fictional.jpg");
+    //dark_bramble.loadTexture("src/image/makemake_fictional.jpg");
+    interloper.loadTexture("src/image/haumea_fictional.jpg");   
+    white_hole.loadTexture("src/image/venus_surface.jpg");
+    quantum_moon.loadTexture("src/image/moon.jpg");
     
 
     // Configura a lua quântica para orbitar os planetas (arrays globais)

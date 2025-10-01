@@ -109,7 +109,7 @@ void BrittleHollow::draw() {
             glCallList(surface[teleported_pieces[i]]);
         glPopMatrix();
     }
-    printf("%f %f %f %f %f %f\n", tx, max_x, ty, max_y, tz, max_z);
+    // printf("%f %f %f %f %f %f\n", tx, max_x, ty, max_y, tz, max_z);
     if(teleported_pieces.size() > 0 && current == available_pieces.size()) {
         glMaterialfv(GL_FRONT, GL_DIFFUSE, a);
         glMaterialfv(GL_FRONT, GL_SPECULAR, a);
@@ -183,7 +183,7 @@ void BrittleHollow::queda() {
         (std::abs(tx) <= std::abs(max_x) - 0.5 || std::abs(tx) >= std::abs(max_x) + 0.5) 
         && current == available_pieces.size()
     ) {
-        printf("ainda está caindo %f\n", tx);
+        // printf("ainda está caindo %f\n", tx);
         tx += (max_x - wh->radius) / delta;
         ty += (max_y - wh->radius) / delta;
         tz += (max_z - wh->radius) / delta;

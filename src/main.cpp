@@ -97,7 +97,7 @@ void init_stars();
 void draw_stars();
 
 // x, y, z, pitch, yaw iniciais
-#define PLAYER_PARAMS BRITTLE_HOLLOW_DISTANCE, 0, -200, 0.0f, 0.0f
+#define PLAYER_PARAMS GIANTS_DEEP_DISTANCE, 0, -200, 0.0f, 0.0f
 
 static Player player(PLAYER_PARAMS);
 static Sun sun(SUN_PARAMS);
@@ -373,7 +373,7 @@ void init(void) {
     dark_bramble.set_bouding_boxes(dark_bramble_bboxes, 33);
 
     GLuint tornados_objects[1]; 
-    int tor_objects_indexes[] = {1};
+    int tor_objects_indexes[] = {0};
     BoundingBox giants_deep_bboxes[1];
     loadObj("3d_models/profundezas/tornado.obj", tornados_objects, 1, tor_objects_indexes, giants_deep_bboxes, 1.0);
     giants_deep.set_tornado(tornados_objects[0]);
@@ -585,6 +585,24 @@ void keyboard(unsigned char key,int x,int y) {
         case 'q':
         case 'Q':
             queda = !queda;
+            break;
+        case 'u':
+            giants_deep.increase_a();
+            break;
+        case 'U':
+            giants_deep.decrease_a();
+            break;
+        case 'i':
+            giants_deep.increase_b();
+            break;
+        case 'I':
+            giants_deep.decrease_b();
+            break;
+        case 'o':
+            giants_deep.increase_c();
+            break;
+        case 'O':
+            giants_deep.decrease_c();
             break;
         case '+':
         case '=':
